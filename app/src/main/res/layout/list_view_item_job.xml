@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingRight="50dp"
+    android:paddingLeft="30dp"
+    android:background="@drawable/shadow">
+
+    <ImageView
+        android:id="@+id/img_job"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_weight="0.8"
+        android:padding="20dp"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_name_job"
+            style="@style/text_view_job"
+            android:text="Graphic Designer (Chuyên Viên Thiết Kế Đồ Họa)"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_company"
+            style="@style/text_view_job"
+            android:text="Xgeme Studio" />
+
+        <TextView
+            android:id="@+id/tv_place"
+            style="@style/text_view_job"
+            android:layout_marginTop="15dp"
+            android:drawableLeft="@drawable/ic_baseline_location_on_24"
+            android:drawablePadding="15dp"
+            android:text="Hà Nội, Việt Nam" />
+
+        <TextView
+            android:id="@+id/tv_salary"
+            style="@style/text_view_job"
+            android:layout_marginTop="15dp"
+            android:drawableLeft="@drawable/ic_baseline_attach_money"
+            android:drawablePadding="15dp"
+            android:text="VND 7.000.000 - 12.000.000" />
+
+        <TextView
+            android:id="@+id/tv_time_updated"
+            style="@style/text_view_job"
+            android:layout_marginTop="15dp"
+            android:text="Cập nhật 37 phút trước"
+            android:textColor="#4F4C4C" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.2"
+        android:src="@drawable/icon_tag_job"
+        android:paddingLeft="10dp"
+        android:layout_marginBottom="160dp"/>
+
+
+</LinearLayout>

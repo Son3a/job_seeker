@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_saved_job"
+        android:title="Saved"/>
+    <item
+        android:id="@+id/menu_applied_job"
+        android:title="Applied"/>
+</menu>

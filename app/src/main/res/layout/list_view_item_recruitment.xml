@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shadow"
+    android:orientation="horizontal"
+    android:paddingLeft="30dp"
+    android:paddingRight="50dp">
+
+    <ImageView
+        android:id="@+id/img_job"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="0.8"
+        android:padding="20dp"
+        android:src="@drawable/ic_launcher_background" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_name_job"
+            style="@style/text_view_job"
+            android:text="Graphic Designer (Chuyên Viên Thiết Kế Đồ Họa)"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_place"
+            style="@style/text_view_job"
+            android:layout_marginTop="15dp"
+            android:drawableLeft="@drawable/ic_location"
+            android:drawablePadding="15dp"
+            android:text="Hà Nội, Việt Nam" />
+        <TextView
+            android:id="@+id/tv_time_created"
+            style="@style/text_view_job"
+            android:layout_marginTop="15dp"
+            android:drawableLeft="@drawable/ic_time_created"
+            android:drawablePadding="15dp"
+            android:text="12/02/2023" />
+        <TextView
+            android:id="@+id/tv_amount_cv"
+            style="@style/text_view_job"
+            android:layout_marginTop="15dp"
+            android:drawableLeft="@drawable/ic_cv"
+            android:drawablePadding="15dp"
+            android:text="Số lượng hồ sơ: 5" />
+
+
+        <TextView
+            android:id="@+id/tv_deadline"
+            style="@style/text_view_job"
+            android:layout_marginTop="15dp"
+            android:text="Còn 4 ngày"
+            android:drawableLeft="@drawable/ic_deadline"
+            android:drawablePadding="15dp"/>
+    </LinearLayout>
+</LinearLayout>

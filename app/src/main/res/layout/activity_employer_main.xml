@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".seeder.SeekerMainActivity">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/frame_layout" />
+
+    <!--Navigation-->
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_above="@+id/bottom_navigation_employer"
+        android:background="@drawable/custom_shadow" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation_employer"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        app:itemIconSize="40dp"
+        app:itemIconTint="@color/custom_bottom_navigation_employer"
+        app:itemTextColor="@color/custom_bottom_navigation_employer"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/menu_employer"
+        app:itemTextAppearanceActive="@style/text_bottom_navigation"
+        app:itemTextAppearanceInactive="@style/text_bottom_navigation"
+        app:itemPaddingBottom="15dp"/>
+</RelativeLayout>

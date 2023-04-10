@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">job_seeker</string>
+    <string name="my_text">
+  <![CDATA[
+    <b>Autor:</b> Mr Nice Guy<br/>
+    <b>Contact:</b> myemail@grail.com<br/>
+    <i>Copyright © 2011-2012 Intergalactic Spacebar Confederation </i>
+  ]]>
+</string>
+</resources>

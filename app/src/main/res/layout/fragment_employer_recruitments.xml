@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--Header-->
+    <FrameLayout
+        android:id="@+id/frame_layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/blue_main">
+        <TextView
+            android:id="@+id/txt_title"
+            style="@style/text_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Danh sách tin tuyển dụng"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textSize="25sp" />
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/frame_layout_header"
+        android:background="#D4D4D4" />
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_below="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tổng số lượng tin: 3"
+            android:layout_marginLeft="10dp"
+            style="@style/text"
+            android:layout_centerVertical="true"/>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Mới nhất"
+            android:layout_marginRight="10dp"/>
+    </RelativeLayout>
+
+    <!--Body-->
+    <ListView
+        android:id="@+id/lv_recruitments"
+        android:layout_below="@+id/layout"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:divider="@null"
+        android:scrollingCache="true"
+        android:smoothScrollbar="true" />
+
+</RelativeLayout>
