@@ -11,6 +11,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.nsb.job_seeker.R;
+
 public class DialogNotification {
     static void openDialogNotification(String content, Context context) {
         final Dialog dialog = new Dialog(context);

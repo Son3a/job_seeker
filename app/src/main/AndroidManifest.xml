@@ -14,8 +14,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Job_seeker"
-        android:windowSoftInputMode="stateAlwaysVisible"
         android:usesCleartextTraffic="true"
+        android:windowSoftInputMode="stateAlwaysVisible"
         tools:targetApi="31">
         <activity android:name=".seeder.ApplyJobActivity" />
         <activity android:name=".seeder.JobDetailActivity" />
@@ -23,13 +23,40 @@
         <activity android:name=".seeder.SeekerMainActivity" />
         <activity android:name=".employer.RecruitmentDetailActivity" />
         <activity android:name=".employer.ListCVActivity" />
-        <activity android:name=".employer.EditRecruitmentActivity"/>
-        <activity android:name=".seeder.ListJobByCompany"/>
+        <activity android:name=".employer.EditRecruitmentActivity" />
+        <activity android:name=".seeder.ListJobByCompany" />
+
         <activity
-            android:name=".employer.EmployerMainActivity"
-            android:windowSoftInputMode="adjustPan"  />
+            android:name=".auth.SetNewPassword"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".auth.ConfirmOTP"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".auth.ForgotActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".auth.RegisterActivity"
+            android:exported="false"
+            android:label="Đăng Ký">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".auth.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,6 +68,9 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name=".employer.EmployerMainActivity"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

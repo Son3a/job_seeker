@@ -8,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -114,25 +115,39 @@ public class SearchFragment extends Fragment {
     }
 
     private void searchJob() {
-        edtSearch.setOnKeyListener(new View.OnKeyListener() {
-            String idOccupation[] = {};
-            String idCompany[] = {};
-            String locationWorking[] = {};
-
+        String idOccupation[] = {};
+        String idCompany[] = {};
+        String locationWorking[] = {};
+        edtSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    findJob(edtSearch.getText().toString(), idOccupation, idCompany, locationWorking);
-//                    if(edtSearch.getText().toString().trim() != ""){
-//                        Toast.makeText(getActivity(), edtSearch.getText().toString(), Toast.LENGTH_SHORT).show();
-//                    }
-
-                    return true;
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (!edtSearch.getText().toString().trim().equals("")) {
+                        Toast.makeText(getActivity(), edtSearch.getText().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                    handled = true;
                 }
-                return false;
+                return handled;
             }
         });
+//        edtSearch.setOnKeyListener(new View.OnKeyListener() {
+//
+//
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+//                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+//                    findJob(edtSearch.getText().toString(), idOccupation, idCompany, locationWorking);
+////                    if(edtSearch.getText().toString().trim() != ""){
+////                        Toast.makeText(getActivity(), edtSearch.getText().toString(), Toast.LENGTH_SHORT).show();
+////                    }
+//
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
     }
 
     private void setAdapterEditText() {
@@ -143,7 +158,7 @@ public class SearchFragment extends Fragment {
 //        dataList.add("Reactjs");
 //        dataList.add("C++");
 //        dataList.add("SQL");
-        String[] data = new String[]{"Nodejs","Python","Java","Reactjs","C++","SQL"};
+        String[] data = new String[]{"Nodejs", "Python", "Java", "Reactjs", "C++", "SQL"};
         ArrayAdapter arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, data);
         edtSearch.setAdapter(arrayAdapter);
 //        edtSearch.setInputType(0);
@@ -182,7 +197,7 @@ public class SearchFragment extends Fragment {
         pbLoading.setVisibility(View.VISIBLE);
         jobResultList = new ArrayList<Job>();
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-       // String jsonBody = "{" +
+        // String jsonBody = "{" +
 //                        "\"key\":\"" + key + "\"," +
 //                        "\"idOccupation\":\"" + idOccupation + "\"," +
 //                        "\"idCompany\":\"" + idCompany + "\"," +

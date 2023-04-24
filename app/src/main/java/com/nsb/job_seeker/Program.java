@@ -1,5 +1,9 @@
 package com.nsb.job_seeker;
 
+import android.content.SharedPreferences;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -9,9 +13,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Program {
-    public static boolean isLogin = false;
-    public static String baseUrl = "http://10.41.183.201:8000";
-    public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDNkN2MzZGVjZGRkY2EwYmY3ZGU0OGIiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2ODIzNDA4MzAsImV4cCI6MTY4MjM0NDQzMH0.2-CUqgP0RtM8DkckiHAkCI87Cgslhj_MGR9XOXAp8XM";
+    public static String token = "";
 
     public static String formatSalary(String salary) {
         NumberFormat df = NumberFormat.getCurrencyInstance();

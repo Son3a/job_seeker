@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterActivity"
+    android:paddingHorizontal="16dp"
+    android:gravity="center_horizontal"
+    android:paddingTop="20dp"
+    >
+
+    <TextView
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tên"
+        android:layout_marginVertical="8dp"
+        />
+
+    <EditText
+        android:id="@+id/edtName"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_below="@+id/txtName"
+        android:background="@drawable/custom_input"
+        android:paddingHorizontal="8dp"
+
+        android:drawableStart="@drawable/custom_icon_name"
+        android:drawablePadding="12dp"
+        android:ems="10"
+        />
+
+    <TextView
+        android:id="@+id/txtEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:layout_below="@+id/edtName"
+        android:layout_marginVertical="8dp"
+
+        />
+
+    <EditText
+        android:id="@+id/edtEmail"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:inputType="textEmailAddress"
+        android:layout_below="@+id/txtEmail"
+        android:background="@drawable/custom_input"
+        android:paddingHorizontal="8dp"
+        android:drawableStart="@drawable/custom_icon_email"
+        android:drawablePadding="12dp"
+        android:ems="10"
+        />
+
+    <TextView
+        android:id="@+id/txtUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:layout_below="@+id/edtEmail"
+        android:layout_marginVertical="8dp"
+
+        />
+
+    <EditText
+        android:id="@+id/edtUsername"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:inputType="textEmailAddress"
+        android:layout_below="@+id/txtUsername"
+        android:background="@drawable/custom_input"
+        android:paddingHorizontal="8dp"
+        android:drawableStart="@drawable/custom_icon_user"
+        android:drawablePadding="12dp"
+        android:ems="10"
+        />
+
+    <TextView
+        android:id="@+id/txtPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mật khẩu"
+        android:layout_below="@+id/edtUsername"
+        android:layout_marginVertical="8dp"
+
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/txtPassword"
+        app:passwordToggleEnabled="true"
+        app:hintAnimationEnabled="false"
+        app:hintEnabled="false"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        android:drawablePadding="12dp"
+        app:startIconDrawable="@drawable/custom_icon_password"
+        android:id="@+id/edtPasswordContainer"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
+            android:textSize="18sp"
+            android:background="@drawable/custom_input"
+            app:hintEnabled="false"
+            android:id="@+id/edtPassword"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/txtPasswordConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Xác nhận mật khẩu"
+        android:layout_below="@+id/edtPasswordContainer"
+        android:layout_marginVertical="8dp"
+
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/txtPasswordConfirm"
+        app:passwordToggleEnabled="true"
+        app:hintAnimationEnabled="false"
+        app:hintEnabled="false"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        android:drawablePadding="12dp"
+        app:startIconDrawable="@drawable/custom_icon_password"
+        android:id="@+id/edtPasswordConfirmContainer"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="textPassword"
+            android:textSize="18sp"
+            android:background="@drawable/custom_input"
+            app:hintEnabled="false"
+            android:id="@+id/edtPasswordConfirm"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/txtPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Số điện thoại"
+        android:layout_below="@+id/edtPasswordConfirmContainer"
+        android:layout_marginVertical="8dp"
+
+        />
+
+
+    <EditText
+        android:id="@+id/edtPhone"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:inputType="phone"
+        android:layout_below="@+id/txtPhone"
+        android:background="@drawable/custom_input"
+        android:paddingHorizontal="8dp"
+        android:drawableStart="@drawable/custom_icon_phone"
+        android:drawablePadding="12dp"
+        android:ems="10"
+
+        />
+
+    <TextView
+        android:id="@+id/txtError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_below="@+id/edtPhone"
+        android:layout_marginVertical="8dp"
+        android:visibility="gone"
+        android:textColor="@android:color/holo_red_light"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtError"
+        android:text="Bằng việc bấm Đăng ký, bạn đã đọc và đồng ý với Điều khoản sử dụng và chính sách bảo mật."
+        android:id="@+id/txtPrivate"
+        android:textColor="#319AED"
+        android:layout_marginTop="16dp"
+        />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtPrivate"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_btn_primary"
+        android:backgroundTint="#319AED"
+        android:text="ĐĂNG KÝ"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:layout_marginVertical="24dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnRegister"
+        android:gravity="center"
+        android:layout_marginVertical="16dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bạn đã có tài khoản ? "
+            android:textSize="16sp"
+
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đăng nhập ngay"
+            android:textColor="#1887DF"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

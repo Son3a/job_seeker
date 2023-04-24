@@ -24,6 +24,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nsb.job_seeker.Program;
+import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.employer.EmployerMainActivity;
+import com.nsb.job_seeker.seeder.SeekerMainActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,14 +44,14 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String base_url = "http://192.168.1.10:8000/auth";
+    private String base_url = "https://job-seeker-smy5.onrender.com/auth";
     private String sharedPreferencesName = "JobSharedPreference";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
         this.loadingDialog = new LoadingDialog(MainActivity.this);
         setControl();
         setEvent();
@@ -117,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
+                    Program.token = convertedObject.get("accessToken").toString();
                     String accessToken = convertedObject.get("accessToken").toString();
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
@@ -168,9 +173,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    String name = response.getString("name");
-                    Log.d("ABC", name);
+                    String role = response.getString("role");
+
+                    Log.d("ABC", role);
                     loadingDialog.dismissDialog();
+
+                    if(role.trim().equals("user")){
+                        startActivity(new Intent(MainActivity.this, SeekerMainActivity.class));
+                    }
+                    else{
+                        startActivity(new Intent(MainActivity.this, EmployerMainActivity.class));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

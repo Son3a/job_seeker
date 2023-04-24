@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nsb.job_seeker.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.nsb.job_seeker.R;
+
 public class ConfirmOTP extends AppCompatActivity {
     private Button btnConfirmOTP;
     private ImageView backArrow;
