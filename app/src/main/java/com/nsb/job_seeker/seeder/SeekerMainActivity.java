@@ -10,12 +10,13 @@ import android.view.Window;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.nsb.job_seeker.AccountFragment;
 import com.nsb.job_seeker.R;
 
 public class SeekerMainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
-    private HomeFragment homeFragment;
+    private ForMeFragment forMeFragment;
     private SearchFragment searchFragment;
     private MyJobFragment myJobFragment;
     private NotificationFragment notificationFragment;
@@ -35,7 +36,7 @@ public class SeekerMainActivity extends AppCompatActivity {
     private void setControl() {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        homeFragment = new HomeFragment();
+        forMeFragment = new ForMeFragment();
         searchFragment = new SearchFragment();
         myJobFragment = new MyJobFragment();
         notificationFragment = new NotificationFragment();
@@ -43,7 +44,7 @@ public class SeekerMainActivity extends AppCompatActivity {
     }
 
     private void setEvent() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, forMeFragment).commit();
 
         BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.menu_notifiation);
         badgeDrawable.setVisible(true);
@@ -54,7 +55,7 @@ public class SeekerMainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_forme:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, homeFragment).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, forMeFragment).commit();
                         return true;
                     case R.id.menu_search:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, searchFragment).commit();

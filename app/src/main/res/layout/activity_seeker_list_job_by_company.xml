@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_height="match_parent" android:layout_width="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blue_main"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/ic_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_name_company"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/header"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/background_company" />
+
+            <ImageView
+                android:id="@+id/img_company"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="-50dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/company" />
+
+            <TextView
+                android:id="@+id/tv_name_company"
+                style="@style/text_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="NCC" />
+
+            <TextView
+                android:id="@+id/tv_about_company"
+                style="@style/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Top company about technology in Viet Nam"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/layout_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_below="@+id/layout_name_company"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/custom_shadow"
+            android:rotationX="180" />
+
+        <LinearLayout
+            android:id="@+id/infor_company"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_shadow"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                style="@style/text_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="Thông tin"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/txt_salary_detail"
+                style="@style/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_location"
+                android:drawablePadding="15dp"
+                android:text="Ho Chi Minh"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_type_company"
+                style="@style/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:drawableLeft="@drawable/ic_job"
+                android:drawablePadding="15dp"
+                android:text="Software, outsource"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_phone_company"
+                style="@style/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:drawableLeft="@drawable/ic_phone_company"
+                android:drawablePadding="15dp"
+                android:text="032568945"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_amount_company"
+                style="@style/text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:drawableLeft="@drawable/ic_amount_employer_company"
+                android:drawablePadding="15dp"
+                android:text="100"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/line"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/infor_company"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="#D4D4D4" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/line"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                style="@style/text_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="Danh sách tuyển việc"
+                android:textSize="16sp" />
+
+            <ListView
+                android:id="@+id/lv_job_by_company"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:divider="@null"
+                android:scrollingCache="true"
+                android:smoothScrollbar="true"
+                android:nestedScrollingEnabled="true"/>
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/idLoadingPB"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
+    </RelativeLayout>
+</ScrollView>

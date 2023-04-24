@@ -1,43 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/edt_search"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_marginTop="10dp"
+            android:layout_weight="1"
             android:background="@drawable/custom_search_job"
+            android:completionThreshold="1"
+            android:cursorVisible="true"
             android:drawableLeft="@drawable/ic_baseline_search_job"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:hint="Tìm kiếm theo vị trí, kĩ năng hoặc..."
+            android:inputType="text"
+            android:maxLines="1"
             android:paddingLeft="10dp"
             android:paddingTop="10dp"
             android:paddingRight="10dp"
             android:paddingBottom="10dp"
-            android:textSize="15sp"
-            android:layout_weight="1"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:inputType="text"/>
+            android:singleLine="true"
+            android:textSize="15dp" />
 
         <ImageView
             android:id="@+id/img_filter"
             android:layout_width="0dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_filter"
             android:layout_alignParentRight="true"
-            android:layout_weight="0.1"
             android:layout_gravity="center"
-            android:paddingRight="10dp"/>
+            android:layout_weight="0.1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:paddingRight="10dp"
+            android:src="@drawable/ic_filter" />
     </LinearLayout>
 
     <FrameLayout
@@ -46,19 +51,35 @@
         android:layout_height="2dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:background="#BAB4B4" />
+        android:background="#BAB4B4"
+        android:layout_below="@id/header"/>
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/container_result"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/line">
 
         <TextView
+            android:id="@+id/tv_note_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Chưa có tìm kiếm nào gần đây"
             android:textColor="@color/black"
             android:textSize="20dp"
             android:textStyle="bold" />
-    </LinearLayout>
 
-</LinearLayout>
+        <ListView
+            android:id="@+id/lv_job_search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/idLoadingPB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+</RelativeLayout>

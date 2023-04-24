@@ -1,7 +1,7 @@
 package com.nsb.job_seeker.seeder;
 
 public class Job {
-    private String nameJob, company, place, salary, time_update;
+    private String nameJob, company, place, salary, time_update, id;
 
     public Job() {
     }
@@ -12,6 +12,23 @@ public class Job {
         this.place = place;
         this.salary = salary;
         this.time_update = time_update;
+    }
+
+    public Job(String id,String nameJob, String company, String place, String salary, String time_update) {
+        this.id = id;
+        this.nameJob = nameJob;
+        this.company = company;
+        this.place = place;
+        this.salary = salary;
+        this.time_update = time_update;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNameJob() {
@@ -52,5 +69,16 @@ public class Job {
 
     public void setTime_update(String time_update) {
         this.time_update = time_update;
+    }
+
+    @Override
+    public String toString() {
+        return "Job{" +
+                "nameJob='" + nameJob + '\'' +
+                ", company='" + company + '\'' +
+                ", place='" + place + '\'' +
+                ", salary='" + salary + '\'' +
+                ", time_update='" + time_update + '\'' +
+                '}';
     }
 }

@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".seeder.SeekerMainActivity">
+    tools:context=".seeder.SeekerMainActivity"
+    android:orientation="vertical"
+    android:layout_gravity="bottom">
 
     <FrameLayout
         android:id="@+id/container"
@@ -25,12 +27,13 @@
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         app:itemIconSize="40dp"
         app:itemIconTint="@color/custom_bottom_navigation_employer"
         app:itemTextColor="@color/custom_bottom_navigation_employer"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/menu_employer"
         app:itemTextAppearanceActive="@style/text_bottom_navigation"
-        app:itemTextAppearanceInactive="@style/text_bottom_navigation"
-        app:itemPaddingBottom="15dp"/>
+        app:itemPaddingBottom="15dp"
+        />
 </RelativeLayout>

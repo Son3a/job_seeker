@@ -16,9 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_back" />
 
         <TextView
@@ -56,6 +54,7 @@
             android:text="Hồ sơ ứng tuyển" />
 
         <TextView
+            android:id="@+id/tv_upload_cv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -67,7 +66,8 @@
             android:paddingBottom="20dp"
             android:text="Upload CV (địng dạng PDF, tối đa 5MB)"
             android:textColor="@color/blue_main"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:onClick="openFileChooser"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -88,6 +88,10 @@
             android:text="GỬI HỒ SƠ"
             android:textSize="16sp"
             android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/img_upload"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
     </LinearLayout>
 
 

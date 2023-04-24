@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.employer;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -12,11 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.seeder.BarChartFragment;
 
 public class StatisticalJobActivity extends AppCompatActivity {
     private ImageView icExpend, icBack;
     private BarChartFragment barChartFragment;
     private PieChartFragment pieChartFragment;
+    private StatisticalAmountJobFragment statisticalAmountJobFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +36,7 @@ public class StatisticalJobActivity extends AppCompatActivity {
         icBack = findViewById(R.id.ic_back);
         barChartFragment = new BarChartFragment();
         pieChartFragment = new PieChartFragment();
+        statisticalAmountJobFragment = new StatisticalAmountJobFragment();
     }
 
     private void setEvent() {
@@ -44,20 +47,25 @@ public class StatisticalJobActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Fragment fragmentInFrame = getSupportFragmentManager().findFragmentById(R.id.container_chart);
                 PopupMenu popupMenu = new PopupMenu(StatisticalJobActivity.this, v);
-                Fragment temp;
-                if (fragmentInFrame instanceof PieChartFragment) {
-                    popupMenu.getMenuInflater().inflate(R.menu.menu_statistival_barchart, popupMenu.getMenu());
-                    temp = barChartFragment;
-                } else {
-                    popupMenu.getMenuInflater().inflate(R.menu.menu_statistival_piechart, popupMenu.getMenu());
-                    temp = pieChartFragment;
-                }
-
+                popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_piechart, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, temp).commit();
-                        return true;
+
+                        if (item.getItemId() == R.id.bar_chart) {
+                            popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_barchart, popupMenu.getMenu());
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, barChartFragment).commit();
+                            return true;
+                        } else if (item.getItemId() == R.id.pie_chart) {
+                            popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_piechart, popupMenu.getMenu());
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, pieChartFragment).commit();
+                            return true;
+                        } else if(item.getItemId() == R.id.amount_job){
+                            popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_amount_job, popupMenu.getMenu());
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, statisticalAmountJobFragment).commit();
+                            return true;
+                        }
+                        return false;
                     }
                 });
                 popupMenu.show();

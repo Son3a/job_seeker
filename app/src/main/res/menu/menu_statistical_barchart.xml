@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/pie_chart"
+        android:title="Thống kê theo số lượng">
+    </item>
+    <item
+        android:id="@+id/amount_job"
+        android:title="Thống kê theo số lượng công việc">
+    </item>
+</menu>

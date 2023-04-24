@@ -12,14 +12,13 @@
         android:padding="20dp">
 
         <ImageView
-            android:id="@+id/ic_cancel"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
+            android:id="@+id/ic_back_rec_detail"
+            android:layout_width="50dp"
+            android:layout_height="35dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:clickable="true"
-            android:focusable="true"
-            android:paddingLeft="-70dp"
+            android:layout_marginLeft="-10dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_back"
             android:visibility="visible" />
 
@@ -35,13 +34,13 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:background="@color/white"
             android:orientation="vertical"
             android:padding="20dp">
 
@@ -54,48 +53,51 @@
                     style="@style/text_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/custom_edittext_cre_news"
                     android:text="Kế toán nội bộ" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true">
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/ic_edit_recruitment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentRight="true"
-                        android:src="@drawable/ic_edit" />
+                        android:src="@drawable/ic_edit"
+                        android:background="?attr/selectableItemBackgroundBorderless"/>
 
                     <ImageView
                         android:id="@+id/ic_delete_recruitment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/ic_delete_recruitment"
-                        android:src="@drawable/ic_cv" />
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_toRightOf="@+id/ic_edit_recruitment"
+                        android:src="@drawable/ic_delete_recruitment"
+                        android:background="?attr/selectableItemBackgroundBorderless"/>
 
                     <ImageView
-                        android:id="@+id/ic_list_recruitment"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:id="@+id/ic_list_cv"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentRight="true"
+                        android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@+id/ic_delete_recruitment"
-                        android:src="@drawable/ic_edit" />
+                        android:src="@drawable/ic_cv"
+                        android:background="?attr/selectableItemBackgroundBorderless"/>
                 </LinearLayout>
             </RelativeLayout>
 
-            <EditText
+            <TextView
                 android:id="@+id/edt_place"
                 style="@style/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:background="@drawable/custom_edittext_cre_news"
-                android:hint="Địa chỉ" />
+                android:text="Hà nội" />
 
             <FrameLayout
                 android:id="@+id/line"
@@ -110,64 +112,59 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <EditText
+                <TextView
                     android:id="@+id/edt_salary"
                     style="@style/text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_salary_black"
                     android:drawablePadding="20dp"
-                    android:hint="Lương" />
+                    android:text="Thỏa thuận" />
 
-                <EditText
+                <TextView
                     android:id="@+id/edt_work_time"
                     style="@style/text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_work_time"
                     android:drawablePadding="20dp"
-                    android:hint="Thời gian làm việc" />
+                    android:text="9h - 18h" />
 
-                <EditText
+                <TextView
                     android:id="@+id/edt_field_job"
                     style="@style/text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_field_job"
                     android:drawablePadding="20dp"
-                    android:hint="Lĩnh vực" />
+                    android:text="Tài chính" />
 
-                <EditText
+                <TextView
                     android:id="@+id/edt_time_create"
                     style="@style/text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_time_created"
                     android:drawablePadding="20dp"
-                    android:hint="Hôm nay" />
+                    android:text="Đăng ngày 12/02/2023" />
 
-                <EditText
+                <TextView
                     android:id="@+id/edt_deadline"
                     style="@style/text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_deadline"
                     android:drawablePadding="20dp"
-                    android:hint="Hạn nộp hồ sơ" />
+                    android:text="Hạn nộp hồ sơ: 16/02/2023" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -195,13 +192,13 @@
                         android:textColor="@color/black"
                         android:textSize="18sp" />
 
-                    <EditText
+                    <TextView
                         android:id="@+id/edt_detail_job"
                         style="@style/text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/custom_edittext_cre_news"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:text="\u25CF Tìm kiếm công việc, sàng lọc hồ sơ ứng viên\n\u25CF Thực hiện liên hệ ứng viên mời phỏng vấn  và hỗ trợ công tác phỏng vấn với đơn vị" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -211,13 +208,13 @@
                         android:textColor="@color/black"
                         android:textSize="18sp" />
 
-                    <EditText
+                    <TextView
                         android:id="@+id/edt_job_req"
                         style="@style/text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/custom_edittext_cre_news"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:text="\u25CF Nam/nữ, tuổi 20-24\n\u25CF Tốt nghiệp cao đảng trở lên chuyên ngành quản trị nhân lực, kinh tế,...\n\u25CF Khả năng giao tiếp tốt, giọng nói dễ nghe." />
 
                 </LinearLayout>
 
@@ -239,14 +236,14 @@
                         android:layout_height="wrap_content"
                         android:text="Kỹ năng yêu cầu" />
 
-                    <EditText
+                    <TextView
                         android:id="@+id/edt_skill"
                         style="@style/text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:background="@drawable/custom_edittext_cre_news"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:text="\u25CF Giọng nói dễ nghe.\n\u25CF Khả năng làm việc độc lập." />
                 </LinearLayout>
 
             </LinearLayout>

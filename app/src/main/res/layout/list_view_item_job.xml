@@ -2,19 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/shadow"
     android:orientation="horizontal"
-    android:paddingRight="50dp"
     android:paddingLeft="30dp"
-    android:background="@drawable/shadow">
+    android:paddingRight="50dp">
 
     <ImageView
         android:id="@+id/img_job"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:src="@drawable/ic_launcher_background"
         android:layout_weight="0.8"
-        android:padding="20dp"/>
+        android:padding="20dp"
+        android:src="@drawable/ic_launcher_background" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -59,12 +59,15 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/img_save_job"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="20dp"
         android:layout_weight="0.2"
-        android:src="@drawable/icon_tag_job"
-        android:paddingLeft="10dp"
-        android:layout_marginBottom="160dp"/>
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_save_job" />
 
 
 </LinearLayout>

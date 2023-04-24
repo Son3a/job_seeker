@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.employer;
 
 import static java.lang.String.format;
 
@@ -16,14 +16,15 @@ import androidx.annotation.Nullable;
 import com.nsb.job_seeker.R;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class StatisticalPieChartAdapter extends ArrayAdapter{
 
-    private String[] listNameJobs;
-    private int[] listAmountJobs;
+    private ArrayList<String> listNameJobs;
+    private ArrayList<Integer> listAmountJobs;
     private Context context;
     private int layoutId, sum;
-    public StatisticalPieChartAdapter(@NonNull Context context, int layoutId, String[] listNameJobs, int[] listAmountJobs, int sum) {
+    public StatisticalPieChartAdapter(@NonNull Context context, int layoutId, ArrayList<String> listNameJobs, ArrayList<Integer> listAmountJobs, int sum) {
         super(context, layoutId);
         this.context = context;
         this.layoutId = layoutId;
@@ -35,7 +36,7 @@ public class StatisticalPieChartAdapter extends ArrayAdapter{
     }
     @Override
     public int getCount() {
-        return listAmountJobs.length;
+        return listAmountJobs.size();
     }
 
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -45,8 +46,8 @@ public class StatisticalPieChartAdapter extends ArrayAdapter{
 
         StatisticalPieChartAdapter.JobHolder holder = new StatisticalPieChartAdapter.JobHolder();
 
-        holder.nameJob = listNameJobs[position];
-        holder.amountJob = listAmountJobs[position];
+        holder.nameJob = listNameJobs.get(position);
+        holder.amountJob = listAmountJobs.get(position);
 
         holder.txtNameJob = (TextView) row.findViewById(R.id.txt_name_job);
         holder.txtAmountJob = (TextView) row.findViewById(R.id.txt_amount_job);

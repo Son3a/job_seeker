@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,7 +41,7 @@ public class ListViewApdapter extends ArrayAdapter {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        row = inflater.inflate(layoutId, parent,false);
+        row = inflater.inflate(layoutId, parent, false);
 
         JobHolder holder = new JobHolder();
         holder.job = jobList.get(position);
@@ -56,12 +58,24 @@ public class ListViewApdapter extends ArrayAdapter {
         holder.tvSalary.setText(holder.job.getSalary());
         holder.tvTimeUpdated.setText(holder.job.getTime_update());
 
+        ImageView imgSaveButton = (ImageView) row.findViewById(R.id.img_save_job);
+        boolean check = true;
+        imgSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("CLick on job " + position);
+//                if (check == true) {
+//                    imgSaveButton.setImageResource(R.drawable.ic_save_job1);
+//                    check = false;
+//                }
+            }
+        });
         return row;
     }
-    
-    public static class JobHolder{
+
+    public static class JobHolder {
         Job job;
-        TextView tvCompany,tvNameJob,tvPlace,tvSalary,tvTimeUpdated;
+        TextView tvCompany, tvNameJob, tvPlace, tvSalary, tvTimeUpdated;
     }
 
 }

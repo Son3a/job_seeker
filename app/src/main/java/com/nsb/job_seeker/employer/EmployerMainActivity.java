@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.nsb.job_seeker.AccountFragment;
 import com.nsb.job_seeker.R;
 
 public class EmployerMainActivity extends AppCompatActivity {
