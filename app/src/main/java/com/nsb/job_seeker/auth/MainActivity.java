@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String base_url = "https://job-seeker-smy5.onrender.com/auth";
+    private String base_url = Program.url_dev+"/auth";
     private String sharedPreferencesName = "JobSharedPreference";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;

@@ -17,6 +17,13 @@
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="stateAlwaysVisible"
         tools:targetApi="31">
+        <activity
+            android:name=".auth.Activity_ChangePassword"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity android:name=".seeder.ApplyJobActivity" />
         <activity android:name=".seeder.JobDetailActivity" />
         <activity android:name=".employer.StatisticalJobActivity" />
@@ -25,7 +32,6 @@
         <activity android:name=".employer.ListCVActivity" />
         <activity android:name=".employer.EditRecruitmentActivity" />
         <activity android:name=".seeder.ListJobByCompany" />
-
         <activity
             android:name=".auth.SetNewPassword"
             android:exported="false">
