@@ -45,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
     private String base_url = Program.url_dev+"/auth";
-    private String sharedPreferencesName = "JobSharedPreference";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
     @Override
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
 
-                    SharedPreferences sharedPreferences = getSharedPreferences(sharedPreferencesName, MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("accessToken", accessToken);
                     editor.putString("refreshToken", refreshToken);
@@ -174,10 +173,20 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     String role = response.getString("role");
+                    String name = response.getString("name");
+                    String email = response.getString("email");
+                    String phone = response.getString("phone");
+                    String avatar = response.getString("avatar");
 
-                    Log.d("ABC", role);
+                    SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("name", name);
+                    editor.putString("email", email);
+                    editor.putString("phone", phone);
+                    editor.putString("avatar", avatar);
+
+                    editor.commit();
                     loadingDialog.dismissDialog();
-
                     if(role.trim().equals("user")){
                         startActivity(new Intent(MainActivity.this, SeekerMainActivity.class));
                     }

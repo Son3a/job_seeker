@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.Activity_ChangePassword;
+import com.nsb.job_seeker.common.Activity_Profile;
 import com.nsb.job_seeker.employer.StatisticalJobActivity;
 
 public class AccountFragment extends Fragment {
@@ -60,6 +61,13 @@ public class AccountFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity(), Activity_ChangePassword.class);
+                startActivity(i);
+            }
+        });
+        tvMyFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), Activity_Profile.class);
                 startActivity(i);
             }
         });
