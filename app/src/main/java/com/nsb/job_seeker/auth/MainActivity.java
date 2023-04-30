@@ -44,8 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String base_url = "https://job-seeker-smy5.onrender.com/auth";
-    private String sharedPreferencesName = "JobSharedPreference";
+    private String base_url = Program.url_dev+"/auth";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
     @Override
@@ -122,12 +121,11 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
                     Program.token = convertedObject.get("accessToken").toString();
-
                     String accessToken = convertedObject.get("accessToken").toString();
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
 
-                    SharedPreferences sharedPreferences = getSharedPreferences(sharedPreferencesName, MODE_PRIVATE);
+                    SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("accessToken", accessToken);
                     editor.putString("refreshToken", refreshToken);
@@ -174,12 +172,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-
-                    Program.idUser = response.getString("_id");
-
                     String role = response.getString("role");
-                    loadingDialog.dismissDialog();
+                    String name = response.getString("name");
+                    String email = response.getString("email");
+                    String phone = response.getString("phone");
+                    String avatar = response.getString("avatar");
 
+                    SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("name", name);
+                    editor.putString("email", email);
+                    editor.putString("phone", phone);
+                    editor.putString("avatar", avatar);
+
+                    editor.commit();
+                    loadingDialog.dismissDialog();
                     if(role.trim().equals("user")){
                         startActivity(new Intent(MainActivity.this, SeekerMainActivity.class));
                     }
