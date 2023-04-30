@@ -9,6 +9,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.view.WindowManager;
+
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -32,18 +35,31 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+
+import com.nsb.job_seeker.model.TypeJob;
+import com.nsb.job_seeker.seeder.CustomRequest;
+import com.nsb.job_seeker.seeder.JobDetailActivity;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+
+import java.time.LocalDate;
+import java.time.Month;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+
+import java.util.Iterator;
+
 import java.util.List;
 import java.util.Map;
 
@@ -95,6 +111,9 @@ public class UpdateNewsFragment extends Fragment {
         SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
         Date date = new Date(System.currentTimeMillis());
         tvTimeCreate.setText(formatter.format(date));
+
+        //synchronized (getTypeJob());
+        
 
         getTypeJob();
         System.out.println("List id Jobs");
@@ -484,7 +503,8 @@ public class UpdateNewsFragment extends Fragment {
         spnTypeJob.setAdapter(adapter);
     }
 
-    synchronized private void getTypeJob() {
+    private void getTypeJob() {
+
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {

@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String base_url = Program.url_dev+"/auth";
+    private String base_url = Program.url_product+"/auth";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
     @Override
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 String body;
                 //get status code here
-                String statusCode = String.valueOf(error.networkResponse.statusCode);
+                //String statusCode = String.valueOf(error.networkResponse.statusCode);
 
                 if(error.networkResponse.data!=null) {
                     try {
