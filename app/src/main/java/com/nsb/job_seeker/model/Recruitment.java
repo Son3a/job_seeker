@@ -1,7 +1,7 @@
-package com.nsb.job_seeker.employer;
+package com.nsb.job_seeker.model;
 
 public class Recruitment {
-    private String nameJob, place, timeCreated,amountCV,deadline;
+    private String id, nameJob, place, timeCreated, amountCV, deadline;
 
     public Recruitment() {
     }
@@ -12,6 +12,23 @@ public class Recruitment {
         this.timeCreated = timeCreated;
         this.amountCV = amountCV;
         this.deadline = deadline;
+    }
+
+    public Recruitment(String id, String nameJob, String place, String timeCreated, String amountCV, String deadline) {
+        this.id = id;
+        this.nameJob = nameJob;
+        this.place = place;
+        this.timeCreated = timeCreated;
+        this.amountCV = amountCV;
+        this.deadline = deadline;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNameJob() {
@@ -52,5 +69,16 @@ public class Recruitment {
 
     public void setDeadline(String deadline) {
         this.deadline = deadline;
+    }
+
+    @Override
+    public String toString() {
+        return "Recruitment{" +
+                "nameJob='" + nameJob + '\'' +
+                ", place='" + place + '\'' +
+                ", timeCreated='" + timeCreated + '\'' +
+                ", amountCV='" + amountCV + '\'' +
+                ", deadline='" + deadline + '\'' +
+                '}';
     }
 }

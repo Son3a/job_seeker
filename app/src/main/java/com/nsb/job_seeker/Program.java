@@ -1,6 +1,9 @@
 package com.nsb.job_seeker;
 
+import static java.lang.Math.abs;
+
 import android.content.SharedPreferences;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,9 +16,11 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Program {
-    public static String token = "";
+    public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRjMGUzMDU0ZTIxZTk3YjQzMzljYWYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2ODI4NDYyMzUsImV4cCI6MTY4Mjg0OTgzNX0.d5eo4U8JXNqKKQeP6qf1ppbJA-ZzbQnVt0Z2hUF-eRU";
+    public static String idUser = "643d7c3decdddca0bf7de48b";
 
     public static String formatSalary(String salary) {
+        if(!salary.matches(".*\\d.*")) return salary;
         NumberFormat df = NumberFormat.getCurrencyInstance();
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setGroupingSeparator('.');
@@ -29,8 +34,7 @@ public class Program {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date timeNow = new Date(System.currentTimeMillis());
         Date create = format.parse(timeCreate);
-        long difference = timeNow.getTime() - create.getTime();
-        System.out.println("Time difference: " + difference);
+        long difference = abs(timeNow.getTime() - create.getTime());
         return difference;
     }
 
@@ -45,12 +49,20 @@ public class Program {
         month = date / 30;
         year = month / 365;
 
-        if (year != 0) return "Cập nhật " + year + " năm trước";
-        if (month != 0) return "Cập nhật " + month + " tháng trước";
-        if (date != 0) return "Cập nhật " + date + " ngày trước";
-        if (h != 0) return "Cập nhật " + h + " giờ trước";
-        if (m != 0) return "Cập nhật " + m + " phút trước";
-        return "Vừa mới cập nhật";
+        if (year != 0) return year + " năm";
+        if (month != 0) return month + " tháng";
+        if (date != 0) return date + " ngày";
+        if (h != 0) return h + " giờ";
+        if (m != 0) return m + " phút";
+        return null;
+    }
+
+    public static String formatTimeDDMMYYYY(String time) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat output = new SimpleDateFormat("dd-MM-yyyy");
+
+        String newTime = output.format(sdf.parse(time));
+        return newTime;
     }
 
     public static boolean checkValidDeadline(int day, int month, int year) {
@@ -60,12 +72,41 @@ public class Program {
         int currentMonth = currentdate.getMonthValue();
         //getting the current year
         int currentYear = currentdate.getYear();
-        System.out.println(currentDay + '/' + currentMonth + '/' + currentYear);
 
         if (year < currentYear) return false;
         if (month < currentMonth) return false;
         if (day < currentDay) return false;
 
         return true;
+    }
+
+    public static void addNewLine(CharSequence text, int lengthBefore, int lengthAfter, EditText edtText) {
+        if (lengthAfter > lengthBefore) {
+            if (text.toString().length() == 1) {
+                text = "• " + text;
+                edtText.setText(text);
+                edtText.setSelection(edtText.getText().length());
+            }
+
+            if (text.toString().endsWith("\n")) {
+                text = text.toString().replace("\n", "\n• ");
+                text = text.toString().replace("• •", "•");
+                text = text.toString().replace("\n• \n• ", "\n• ");
+                text = text.toString().replace("• \n• ", "• ");
+                edtText.setText(text);
+                edtText.setSelection(edtText.getText().length());
+            }
+        }
+    }
+
+    public static String formatStringFromBullet(String oldString) {
+        String newString = "";
+        String temp = "";
+        String[] listString = oldString.substring(1).split("•");
+        for (int i = 0; i < listString.length; i++) {
+            temp = listString[i].trim().replace(".", "");
+            newString = newString + temp + ".";
+        }
+        return newString;
     }
 }

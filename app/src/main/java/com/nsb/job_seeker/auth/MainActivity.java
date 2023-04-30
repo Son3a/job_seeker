@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
                     Program.token = convertedObject.get("accessToken").toString();
+
                     String accessToken = convertedObject.get("accessToken").toString();
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
@@ -173,9 +174,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    String role = response.getString("role");
 
-                    Log.d("ABC", role);
+                    Program.idUser = response.getString("_id");
+
+                    String role = response.getString("role");
                     loadingDialog.dismissDialog();
 
                     if(role.trim().equals("user")){

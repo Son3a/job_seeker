@@ -12,8 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.seeder.Job;
-import com.nsb.job_seeker.seeder.ListViewApdapter;
+import com.nsb.job_seeker.model.Recruitment;
 
 import java.util.List;
 
