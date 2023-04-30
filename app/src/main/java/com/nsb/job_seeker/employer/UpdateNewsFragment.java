@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -25,27 +27,41 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.model.TypeJob;
+import com.nsb.job_seeker.seeder.CustomRequest;
+import com.nsb.job_seeker.seeder.JobDetailActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class UpdateNewsFragment extends Fragment {
     private View updateNewsView;
@@ -96,6 +112,8 @@ public class UpdateNewsFragment extends Fragment {
         Date date = new Date(System.currentTimeMillis());
         tvTimeCreate.setText(formatter.format(date));
 
+        //synchronized (getTypeJob());
+        
         getTypeJob();
         System.out.println("List id Jobs");
         System.out.println(tvSaveIdJobs.getText());
@@ -484,7 +502,7 @@ public class UpdateNewsFragment extends Fragment {
         spnTypeJob.setAdapter(adapter);
     }
 
-    synchronized private void getTypeJob() {
+    private void getTypeJob() {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
