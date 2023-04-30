@@ -2,8 +2,6 @@ package com.nsb.job_seeker.seeder;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,13 +11,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,13 +27,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.gson.Gson;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -124,44 +119,18 @@ public class SearchFragment extends Fragment {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     if (!edtSearch.getText().toString().trim().equals("")) {
-                        Toast.makeText(getActivity(), edtSearch.getText().toString(), Toast.LENGTH_SHORT).show();
-                    }
+                        findJob(edtSearch.getText().toString(), idOccupation, idCompany, locationWorking);                    }
                     handled = true;
                 }
                 return handled;
             }
         });
-//        edtSearch.setOnKeyListener(new View.OnKeyListener() {
-//
-//
-//            @Override
-//            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-//                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
-//                    findJob(edtSearch.getText().toString(), idOccupation, idCompany, locationWorking);
-////                    if(edtSearch.getText().toString().trim() != ""){
-////                        Toast.makeText(getActivity(), edtSearch.getText().toString(), Toast.LENGTH_SHORT).show();
-////                    }
-//
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
     }
 
     private void setAdapterEditText() {
-//        ArrayList<String> dataList = new ArrayList<>();
-//        dataList.add("Nodejs");
-//        dataList.add("Python");
-//        dataList.add("Java");
-//        dataList.add("Reactjs");
-//        dataList.add("C++");
-//        dataList.add("SQL");
         String[] data = new String[]{"Nodejs", "Python", "Java", "Reactjs", "C++", "SQL"};
         ArrayAdapter arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, data);
         edtSearch.setAdapter(arrayAdapter);
-//        edtSearch.setInputType(0);
     }
 
     private void applyDataFilter() {
@@ -197,19 +166,6 @@ public class SearchFragment extends Fragment {
         pbLoading.setVisibility(View.VISIBLE);
         jobResultList = new ArrayList<Job>();
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        // String jsonBody = "{" +
-//                        "\"key\":\"" + key + "\"," +
-//                        "\"idOccupation\":\"" + idOccupation + "\"," +
-//                        "\"idCompany\":\"" + idCompany + "\"," +
-//                        "\"locationWorking\":\"" + locationWorking + "\"}";
-        //String[] idOccupation = {""};
-//        Gson gson = new Gson();
-//        String inputString = "{\"id\":2550,\"cityName\":\"Langkawi\",\"hotelName\":\"favehotel Cenang Beach - Langkawi\",\"hotelId\":\"H1266070\"}";
-//        List<String> myList = gson.fromJson(inputString, ArrayList.class);
-////        String gt4g = "gt4g";
-//        String json = gson.toJson({idOccupation:);
-//        JSONObject jsonObject = new JSONObject();
-//        jsonObject.put(,);
 
         StringRequest sr = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -225,13 +181,19 @@ public class SearchFragment extends Fragment {
                         } else {
                             idCompany = "";
                         }
+
+                        String time = Program.setTime(job.getString("postingDate"));
+                        if(time.equals(null))
+                            time = "Vừa mới cập nhật";
+                        else
+                            time = "Cập nhật " + time + " trước";
                         jobResultList.add(new Job(
                                 job.getString("_id"),
                                 job.getString("name"),
                                 idCompany,
                                 job.getString("locationWorking"),
                                 job.getString("salary"),
-                                "Cập nhật 37 phút trước"
+                                time
                         ));
 
                         System.out.println(jobResultList.get(i).toString());
@@ -243,6 +205,8 @@ public class SearchFragment extends Fragment {
                     System.out.println("Create Successful!!!");
 
                 } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
 

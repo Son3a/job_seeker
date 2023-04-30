@@ -1,16 +1,13 @@
 package com.nsb.job_seeker.seeder;
 
-import android.app.DownloadManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +21,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,7 +57,7 @@ public class ForMeFragment extends Fragment {
     private void setControl() {
         jobList = new ArrayList<Job>();
         listViewJob = homeView.findViewById(R.id.lv_job);
-        pbLoading=homeView.findViewById(R.id.idLoadingPB);
+        pbLoading = homeView.findViewById(R.id.idLoadingPB);
     }
 
     private void callAPI(String url) {
@@ -76,20 +74,27 @@ public class ForMeFragment extends Fragment {
                             JSONArray jobsList = response.getJSONObject("data").getJSONArray("data");
                             for (int i = 0; i < jobsList.length(); i++) {
                                 JSONObject job = jobsList.getJSONObject(i);
-                                if (!job.isNull("idCompany")) {
-                                    idCompany = job.getJSONObject("idCompany").getString("name");
-                                } else {
-                                    idCompany = "";
-                                }
-                                jobList.add(new Job(
-                                        job.getString("_id"),
-                                        job.getString("name"),
-                                        idCompany,
-                                        job.getString("locationWorking"),
-                                        job.getString("salary"),
-                                        Program.setTime(job.getString("postingDate"))
-                                ));
+                                if (Program.calculateTime(job.getString("postingDate")) < 8640000) {
+                                    if (!job.isNull("idCompany")) {
+                                        idCompany = job.getJSONObject("idCompany").getString("name");
+                                    } else {
+                                        idCompany = "";
+                                    }
 
+                                    String time = Program.setTime(job.getString("postingDate"));
+                                    if(time.equals(null))
+                                        time = "Vừa mới cập nhật";
+                                    else
+                                        time = "Cập nhật " + time + " trước";
+                                    jobList.add(new Job(
+                                            job.getString("_id"),
+                                            job.getString("name"),
+                                            idCompany,
+                                            job.getString("locationWorking"),
+                                            job.getString("salary"),
+                                            time
+                                    ));
+                                }
                             }
                             pbLoading.setVisibility(View.GONE);
                             setEvent();

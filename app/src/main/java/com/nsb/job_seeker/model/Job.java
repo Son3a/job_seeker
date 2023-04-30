@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.model;
 
 public class Job {
     private String nameJob, company, place, salary, time_update, id;

@@ -1,6 +1,5 @@
 package com.nsb.job_seeker.seeder;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -13,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.model.Job;
 
 import java.util.ArrayList;
 import java.util.List;

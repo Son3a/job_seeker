@@ -14,31 +14,34 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.seeder.Job;
+import com.nsb.job_seeker.model.Recruitment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RecruitmentsFragment extends Fragment {
-    private RecruitmentsListViewAdapter recruitmentsListViewAdapter;
     private ListView listViewRecruitments;
     private List<Recruitment> recruitmentList;
     private View recruitmentView;
     private TextView amountRec;
     private ProgressBar pbLoading;
-//    private String url = "https://job-seeker-smy5.onrender.com/job/update";
-    private String url = "https://job-seeker-smy5.onrender.com/job/list";
+    //    private String url = "https://job-seeker-smy5.onrender.com/job/update";
+    private String Url = "https://job-seeker-smy5.onrender.com/job/list/company/";
+    private String idCompany = "";
 
     @Nullable
     @Override
@@ -56,63 +59,114 @@ public class RecruitmentsFragment extends Fragment {
         pbLoading = recruitmentView.findViewById(R.id.idLoadingPB);
 
         recruitmentList = new ArrayList<Recruitment>();
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
-        recruitmentList.add(new Recruitment("Junior PHP Developer", "Hồ Chí Minh", "12/02/2023", "Số lượng hồ sơ: 5", "còn 4 ngày"));
     }
 
 
     private void setEvent() {
-        setListViewAdapter();
-
-        amountRec.setText("Tổng số lượng tin: " + String.valueOf(recruitmentList.size()));
+        findIdCompanyByUser();
     }
 
     private void setListViewAdapter() {
-        recruitmentsListViewAdapter = new RecruitmentsListViewAdapter(getActivity(), R.layout.list_view_item_recruitment, recruitmentList);
+        amountRec.setText("Tổng số lượng tin: " + String.valueOf(recruitmentList.size()));
+        RecruitmentsListViewAdapter recruitmentsListViewAdapter = new RecruitmentsListViewAdapter(getActivity(), R.layout.list_view_item_recruitment, recruitmentList);
         listViewRecruitments.setAdapter(recruitmentsListViewAdapter);
         listViewRecruitments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getActivity(), RecruitmentDetailActivity.class);
+                i.putExtra("id", recruitmentList.get(position).getId());
                 startActivity(i);
             }
         });
     }
 
-    private void callAPI(String url) {
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-
+    private void findIdCompanyByUser() {
         pbLoading.setVisibility(View.VISIBLE);
+        String url = "https://job-seeker-smy5.onrender.com/company/list";
+
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest data = new JsonObjectRequest(
                 url,
                 new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject response) {try {
-                            String idCompany = "";
-                            JSONArray jobsList = response.getJSONObject("data").getJSONArray("data");
-                            for (int i = 0; i < jobsList.length(); i++) {
-                                JSONObject job = jobsList.getJSONObject(i);
-                                if (!job.isNull("idCompany")) {
-                                    idCompany = job.getJSONObject("idCompany").getString("name");
-                                } else {
-                                    idCompany = "";
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONArray companysList = response.getJSONObject("data").getJSONArray("data");
+                            for (int i = 0; i < companysList.length(); i++) {
+                                JSONObject company = companysList.getJSONObject(i);
+                                if (Program.idUser.equals(company.getString("idUser"))) {
+                                    getListCompanyByIdUser(Url + company.getString("_id"));
+                                    break;
                                 }
-                                recruitmentList.add(new Recruitment(
-
-                                ));
-
                             }
                             pbLoading.setVisibility(View.GONE);
-                            setEvent();
                         } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error);
+                    }
+                }
+        );
+        data.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        queue.add(data);
+    }
+
+    private void getListCompanyByIdUser(String url) {
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
+                url,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String idCompany = "";
+                            JSONArray jobsList = response.getJSONArray("data");
+                            for (int i = 0; i < jobsList.length(); i++) {
+                                JSONObject job = jobsList.getJSONObject(i);
+
+                                String time = Program.setTime(job.getString("deadline"));
+
+                                if (time.equals(null)) {
+                                    time = "Hết hạn";
+                                } else {
+                                    time = "Còn " + time;
+                                }
+                                recruitmentList.add(new Recruitment(
+                                        job.getString("_id"),
+                                        job.getString("name"),
+                                        job.getString("locationWorking"),
+                                        Program.formatTimeDDMMYYYY(job.getString("updateDate")),
+                                        "Số lượng hồ sơ: 5",
+                                        time
+                                ));
+                            }
+                            setListViewAdapter();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     }

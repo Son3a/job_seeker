@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,18 +21,38 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 public class EditRecruitmentActivity extends AppCompatActivity {
-    private EditText edtNameJob, edtPlace, edtSalary, edtWorkTime, edtJobField, edtDeadLine,
-            edtDetailJob, edtJobReq, edtSkill;
+    private EditText edtSalary, edtTimeWork, edtDescJob, edtNameJob, edtPlace, edtDeadLine, edtJobReq;
+    private Spinner spnTypeJob;
     private ImageView icBack, icUpdateRec;
     private TextView tvTimeCreate, tvTitle;
     private ProgressBar loadingPB;
-    private String url = "https://job-delta.vercel.app/job/create";
+    private String url = "https://job-seeker-smy5.onrender.com/job/update";
+    private String idJob = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,23 +69,24 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         edtNameJob = findViewById(R.id.edt_name_job);
         edtPlace = findViewById(R.id.edt_place);
         edtSalary = findViewById(R.id.edt_salary);
-        edtWorkTime = findViewById(R.id.edt_work_time);
-        edtJobField = findViewById(R.id.edt_field_job);
-        edtDetailJob = findViewById(R.id.edt_detail_job);
+        edtTimeWork = findViewById(R.id.edt_work_time);
+        spnTypeJob = findViewById(R.id.spn_type_job);
+        edtDescJob = findViewById(R.id.edt_detail_job);
         edtJobReq = findViewById(R.id.edt_job_req);
-        edtSkill = findViewById(R.id.edt_skill);
-        icBack = findViewById(R.id.ic_cancel);
         edtDeadLine = findViewById(R.id.edt_deadline);
         tvTimeCreate = findViewById(R.id.tv_time_create_new);
+
         icUpdateRec = findViewById(R.id.ic_create_recruitment);
         loadingPB = findViewById(R.id.idLoadingPB);
         tvTitle = findViewById(R.id.txt_title);
+        icBack = findViewById(R.id.ic_cancel);
     }
 
     private void setEvent() {
         icBack.setImageResource(R.drawable.ic_back);
-        tvTitle.setText("Chỉnh sửa tin tuyển dụng");
         icBack.setVisibility(View.VISIBLE);
+        tvTitle.setText("Chỉnh sửa tin tuyển dụng");
+
         icBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,6 +94,117 @@ public class EditRecruitmentActivity extends AppCompatActivity {
             }
         });
 
+        setValue();
+
+        pickTimeUpdate();
+
+        formatBullet();
+
+        clickUpdate();
+
+    }
+
+    private void clickUpdate() {
+        icUpdateRec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nameJob = edtNameJob.getText().toString();
+                String place = edtPlace.getText().toString();
+                String salary = edtSalary.getText().toString();
+                String timeWork = edtTimeWork.getText().toString();
+                String deadLine = edtDeadLine.getText().toString();
+                String descJob = Program.formatStringFromBullet(edtDescJob.getText().toString());
+                String jobReq = Program.formatStringFromBullet(edtJobReq.getText().toString());
+
+                try {
+                    updateRecruitmentApi(idJob, nameJob, place, salary, timeWork, deadLine, descJob, jobReq);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void updateRecruitmentApi(String id, String nameJob, String place, String salary, String timeWork,
+                                      String deadline, String descJob, String jobReq) throws JSONException {
+        String access_token = Program.token;
+        System.out.println(access_token);
+//        loadingPB.setVisibility(View.VISIBLE);
+        RequestQueue queue = Volley.newRequestQueue(EditRecruitmentActivity.this);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_id", id);
+        jsonObject.put("name", nameJob);
+        jsonObject.put("locationWorking", place);
+        jsonObject.put("salary", salary);
+        jsonObject.put("hourWorking", timeWork);
+        jsonObject.put("deadline", deadline);
+        jsonObject.put("description", descJob);
+        jsonObject.put("requirement", jobReq);
+
+        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.PUT, url, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Toast.makeText(EditRecruitmentActivity.this, "Chỉnh sửa thành công!!!", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(EditRecruitmentActivity.this,RecruitmentDetailActivity.class);
+                i.putExtra("id",id);
+                i.putExtra("isChange","true");
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+                finish();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println(error);
+            }
+        }) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", access_token);
+                return headers;
+            }
+        };
+        sr.setRetryPolicy(new DefaultRetryPolicy(
+                0,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(sr);
+    }
+
+    private void setValue() {
+        Bundle bundle = getIntent().getExtras();
+        idJob = bundle.getString("id");
+        edtNameJob.setText(bundle.getString("nameJob"));
+        edtPlace.setText(bundle.getString("place"));
+        edtSalary.setText(bundle.getString("salary").split(" ")[1].replace(".", ""));
+        edtTimeWork.setText(bundle.getString("timeWork"));
+//        edtTypeJob.setText(bundle.getString("typeJob"));
+        edtDeadLine.setText(bundle.getString("deadline"));
+
+        String descJob = "";
+        String[] listStringDescJob = bundle.getString("detailJob").split("\\.");
+        for (int i = 0; i < listStringDescJob.length; i++) {
+            System.out.println(listStringDescJob[i]);
+            descJob = descJob + "• " + listStringDescJob[i] + "\n";
+        }
+
+        edtDescJob.setText(descJob.substring(0, descJob.length() - 1));
+
+        String jobReq = "";
+        String[] listStringJobReq = bundle.getString("jobReq").split("\\.");
+        for (int i = 0; i < listStringJobReq.length; i++) {
+            System.out.println(listStringJobReq[i]);
+            jobReq = jobReq + "• " + listStringJobReq[i] + "\n";
+        }
+
+        edtJobReq.setText(jobReq.substring(0, jobReq.length() - 1));
+    }
+
+    private void pickTimeUpdate() {
         edtDeadLine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,15 +229,17 @@ public class EditRecruitmentActivity extends AppCompatActivity {
 
             }
         });
+    }
 
-        edtDetailJob.addTextChangedListener(new TextWatcher() {
+    private void formatBullet() {
+        edtDescJob.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
             public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-                addNewLine(text, lengthBefore, lengthAfter, edtDetailJob);
+                Program.addNewLine(text, lengthBefore, lengthAfter, edtDescJob);
             }
 
             @Override
@@ -119,23 +255,7 @@ public class EditRecruitmentActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-                addNewLine(text, lengthBefore, lengthAfter, edtJobReq);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        edtSkill.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
-                addNewLine(text, lengthBefore, lengthAfter, edtSkill);
+                Program.addNewLine(text, lengthBefore, lengthAfter, edtJobReq);
             }
 
             @Override
@@ -145,22 +265,17 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         });
     }
 
-    private void addNewLine(CharSequence text, int lengthBefore, int lengthAfter, EditText edtText) {
-        if (lengthAfter > lengthBefore) {
-            if (text.toString().length() == 1) {
-                text = "• " + text;
-                edtText.setText(text);
-                edtText.setSelection(edtText.getText().length());
-            }
+    private boolean isEmpty(EditText editText) {
+        return editText.getText().toString().trim().length() == 0;
+    }
 
-            if (text.toString().endsWith("\n")) {
-                text = text.toString().replace("\n", "\n• ");
-                text = text.toString().replace("• •", "•");
-                text = text.toString().replace("\n• \n• ", "\n• ");
-                text = text.toString().replace("• \n• ", "• ");
-                edtText.setText(text);
-                edtText.setSelection(edtText.getText().length());
-            }
+    private boolean validate() {
+        if (isEmpty(edtDescJob) || isEmpty(edtNameJob) ||
+                isEmpty(edtPlace) || isEmpty(edtSalary) ||
+                isEmpty(edtDescJob) || isEmpty(edtDeadLine) ||
+                isEmpty(edtJobReq)) {
+            return false;
         }
-    } 
+        return true;
+    }
 }

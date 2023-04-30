@@ -139,6 +139,12 @@ public class JobDetailActivity extends AppCompatActivity {
                     String[] listSkill = job.getString("requirement").split(",");
                     setViewSkillReq(listSkill);
 
+                    String time = Program.setTime(job.getString("postingDate"));
+                    if(time.equals(null))
+                        time = "Vừa mới cập nhật";
+                    else
+                        time = "Cập nhật " + time + " trước";
+
                     tvNameJob.setText(job.getString("name"));
                     tvCompany.setText(idCompany);
                     tvPlace.setText(place);
@@ -146,7 +152,7 @@ public class JobDetailActivity extends AppCompatActivity {
                     tvTypeJob.setText(typeJob);
                     tvTimeJob.setText(job.getString("hourWorking"));
                     tvExperience.setText("Không cần kinh nghiệm");
-                    tvTimeUpdated.setText(Program.setTime(job.getString("postingDate")));
+                    tvTimeUpdated.setText(time);
                     tvAddress.setText("\u25CF    " + job.getString("locationWorking"));
                     tvDescJob.setText("\u25CF    " + job.getString("description"));
 

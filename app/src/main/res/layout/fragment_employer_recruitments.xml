@@ -39,7 +39,7 @@
             android:id="@+id/tv_amount_recruitment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tổng số lượng tin: 3"
+            android:text="Tổng số lượng tin:"
             android:layout_marginLeft="10dp"
             style="@style/text"
             android:layout_centerVertical="true"/>
@@ -61,5 +61,10 @@
         android:scrollingCache="true"
         android:smoothScrollbar="true" />
 
-
+    <ProgressBar
+        android:id="@+id/idLoadingPB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
 </RelativeLayout>
