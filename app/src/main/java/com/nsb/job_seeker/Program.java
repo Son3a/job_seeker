@@ -18,6 +18,9 @@ import java.util.Date;
 public class Program {
     public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRjMGUzMDU0ZTIxZTk3YjQzMzljYWYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2ODI4NDYyMzUsImV4cCI6MTY4Mjg0OTgzNX0.d5eo4U8JXNqKKQeP6qf1ppbJA-ZzbQnVt0Z2hUF-eRU";
     public static String idUser = "643d7c3decdddca0bf7de48b";
+    public static String url_dev = "http://192.168.1.10:8000";
+    public static String url_product = "https://job-seeker-smy5.onrender.com";
+    public static String sharedPreferencesName = "JobSharedPreference";
 
     public static String formatSalary(String salary) {
         if(!salary.matches(".*\\d.*")) return salary;
