@@ -251,21 +251,16 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <FrameLayout
-                android:id="@+id/layout_skill"
+            <TextView
+                android:id="@+id/tv_request_skill"
+                style="@style/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:inputType="textMultiLine"
+                android:text="\u25CF    Phân tích yêu cầu, thiết kế cơ sở dữ liệu\n\u25CF    Tìm hiểu, ứng dụng các công nghệ mới" />
 
-                <GridView
-                    android:id="@+id/gv_skill"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:horizontalSpacing="-50dp"
-                    android:numColumns="3"
-                    android:verticalSpacing="10dp" />
-            </FrameLayout>
 
         </LinearLayout>
 

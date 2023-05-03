@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.view.WindowManager;
-
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
@@ -36,13 +34,8 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-
-import com.nsb.job_seeker.model.TypeJob;
-import com.nsb.job_seeker.seeder.CustomRequest;
-import com.nsb.job_seeker.seeder.JobDetailActivity;
 
 
 import org.json.JSONArray;
@@ -51,15 +44,10 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 
-import java.time.LocalDate;
-import java.time.Month;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-
-import java.util.Iterator;
 
 import java.util.List;
 import java.util.Map;
@@ -326,76 +314,44 @@ public class UpdateNewsFragment extends Fragment {
     }
 
     private void showFuncCancel() {
-        edtNameJob.addTextChangedListener(new TextWatcher() {
+        edtNameJob.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (validateEmpty()) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (validateEmpty() && hasFocus) {
                     icCancel.setVisibility(View.GONE);
                 } else {
                     icCancel.setVisibility(View.VISIBLE);
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
             }
         });
-        edtPlace.addTextChangedListener(new TextWatcher() {
+        edtPlace.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (validateEmpty()) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (validateEmpty() && hasFocus) {
                     icCancel.setVisibility(View.GONE);
                 } else {
                     icCancel.setVisibility(View.VISIBLE);
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
             }
         });
-        edtSalary.addTextChangedListener(new TextWatcher() {
+        edtSalary.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (validateEmpty()) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (validateEmpty() && hasFocus) {
                     icCancel.setVisibility(View.GONE);
                 } else {
                     icCancel.setVisibility(View.VISIBLE);
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
             }
         });
-        edtWorkTime.addTextChangedListener(new TextWatcher() {
+        edtWorkTime.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (validateEmpty()) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (validateEmpty() && hasFocus) {
                     icCancel.setVisibility(View.GONE);
                 } else {
                     icCancel.setVisibility(View.VISIBLE);
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
             }
         });
         spnTypeJob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -413,61 +369,36 @@ public class UpdateNewsFragment extends Fragment {
 
             }
         });
-        edtDetailJob.addTextChangedListener(new TextWatcher() {
+        edtDetailJob.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (validateEmpty()) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (validateEmpty() && hasFocus) {
                     icCancel.setVisibility(View.GONE);
                 } else {
                     icCancel.setVisibility(View.VISIBLE);
                 }
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
         });
-        edtJobReq.addTextChangedListener(new TextWatcher() {
+        edtJobReq.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (validateEmpty()) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (validateEmpty() && hasFocus) {
                     icCancel.setVisibility(View.GONE);
                 } else {
                     icCancel.setVisibility(View.VISIBLE);
                 }
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
         });
-        edtDeadLine.addTextChangedListener(new TextWatcher() {
+        edtDeadLine.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (validateEmpty()) {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (validateEmpty() && hasFocus) {
                     icCancel.setVisibility(View.GONE);
                 } else {
                     icCancel.setVisibility(View.VISIBLE);
                 }
             }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
         });
-
     }
 
     private void clearText() {

@@ -55,7 +55,7 @@ public class StatisticalJobActivity extends AppCompatActivity {
 
     private void setPopupMenu() {
         popupMenu = new PopupMenu(StatisticalJobActivity.this, icExpend);
-        popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_piechart, popupMenu.getMenu());
+        popupMenu.getMenuInflater().inflate(R.menu.menu_statistical, popupMenu.getMenu());
         getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, pieChartFragment).commit();
         popupMenu.getMenu().getItem(0).setVisible(false);
     }

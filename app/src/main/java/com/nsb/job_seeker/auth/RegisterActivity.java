@@ -137,7 +137,7 @@ public class RegisterActivity extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     String body;
                     //get status code here
-                    String statusCode = String.valueOf(error.networkResponse.statusCode);
+//                    String statusCode = String.valueOf(error.networkResponse.statusCode);
                     if(error.networkResponse.data!=null) {
                         try {
                             body = new String(error.networkResponse.data,"UTF-8");

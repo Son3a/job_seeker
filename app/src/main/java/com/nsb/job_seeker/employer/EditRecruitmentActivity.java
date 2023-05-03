@@ -197,24 +197,8 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         edtSalary.setText(bundle.getString("salary").split(" ")[1].replace(".", ""));
         edtTimeWork.setText(bundle.getString("timeWork"));
         edtDeadLine.setText(bundle.getString("deadline"));
-
-        String descJob = "";
-        String[] listStringDescJob = bundle.getString("detailJob").split("\\.");
-        for (int i = 0; i < listStringDescJob.length; i++) {
-            System.out.println(listStringDescJob[i]);
-            descJob = descJob + "• " + listStringDescJob[i] + "\n";
-        }
-
-        edtDescJob.setText(descJob.substring(0, descJob.length() - 1));
-
-        String jobReq = "";
-        String[] listStringJobReq = bundle.getString("jobReq").split("\\.");
-        for (int i = 0; i < listStringJobReq.length; i++) {
-            System.out.println(listStringJobReq[i]);
-            jobReq = jobReq + "• " + listStringJobReq[i] + "\n";
-        }
-
-        edtJobReq.setText(jobReq.substring(0, jobReq.length() - 1));
+        edtDescJob.setText(Program.formatStringToBullet(bundle.getString("detailJob")));
+        edtJobReq.setText(Program.formatStringToBullet(bundle.getString("jobReq")));
     }
 
     private void pickTimeUpdate() {

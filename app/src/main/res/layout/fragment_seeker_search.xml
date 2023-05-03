@@ -18,11 +18,7 @@
             android:layout_marginTop="10dp"
             android:layout_weight="1"
             android:background="@drawable/custom_search_job"
-            android:completionThreshold="1"
-            android:cursorVisible="true"
             android:drawableLeft="@drawable/ic_baseline_search_job"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:hint="Tìm kiếm theo vị trí, kĩ năng hoặc..."
             android:inputType="text"
             android:maxLines="1"
@@ -31,7 +27,9 @@
             android:paddingRight="10dp"
             android:paddingBottom="10dp"
             android:singleLine="true"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
 
         <ImageView
             android:id="@+id/img_filter"
@@ -61,13 +59,14 @@
         android:layout_below="@+id/line">
 
         <TextView
-            android:id="@+id/tv_note_search"
+            android:id="@+id/tv_note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Chưa có tìm kiếm nào gần đây"
             android:textColor="@color/black"
-            android:textSize="20dp"
-            android:textStyle="bold" />
+            android:textSize="18dp"
+            android:visibility="visible"
+            android:layout_marginLeft="10dp"/>
 
         <ListView
             android:id="@+id/lv_job_search"

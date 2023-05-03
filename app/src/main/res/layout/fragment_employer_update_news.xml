@@ -22,7 +22,7 @@
             android:focusable="true"
             android:paddingLeft="-0dp"
             android:src="@drawable/ic_cancel"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/txt_title"
