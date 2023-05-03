@@ -9,11 +9,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -39,7 +41,8 @@ public class RecruitmentsFragment extends Fragment {
     private View recruitmentView;
     private TextView amountRec;
     private ProgressBar pbLoading;
-    private String Url = "https://job-seeker-smy5.onrender.com/job/list/company/" + Program.idCompany;
+    private String Url = "https://job-seeker-smy5.onrender.com/job/list/company/";
+    private String IDCompany = "";
 
     @Nullable
     @Override
@@ -62,7 +65,9 @@ public class RecruitmentsFragment extends Fragment {
 
     private void setEvent() {
         getListJobOfCompany(Url);
+
     }
+
 
     private void setListViewAdapter() {
         amountRec.setText("Tổng số lượng tin: " + String.valueOf(recruitmentList.size()));
@@ -79,8 +84,9 @@ public class RecruitmentsFragment extends Fragment {
     }
 
     private void getListJobOfCompany(String url) {
+        url += Program.idCompany;
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-
+        pbLoading.setVisibility(View.VISIBLE);
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
                 url,
                 null,
@@ -110,6 +116,7 @@ public class RecruitmentsFragment extends Fragment {
                                     ));
                                 }
                             }
+                            pbLoading.setVisibility(View.GONE);
                             setListViewAdapter();
 
                         } catch (JSONException e) {

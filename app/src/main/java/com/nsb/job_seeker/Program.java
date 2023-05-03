@@ -15,9 +15,9 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Program {
-    public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRmYzZiODU4MjVjMGQzMDlmNjJmY2EiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MzA1MTk2MywiZXhwIjoxNjgzMDU1NTYzfQ.xOWsYbaI43ZqUN72OXdPhvsNQoH9H3ie2HH4ue1L6Ww";
-    public static String idUser = "643d7c3decdddca0bf7de48b";
-    public static String idCompany = "641684bda8922acf0dfc7a8c";
+    public static String token;
+    public static String idUser;
+    public static String idCompany;
     public static String url_dev = "http://192.168.1.10:8000";
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";

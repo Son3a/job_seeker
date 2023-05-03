@@ -105,9 +105,6 @@ public class UpdateNewsFragment extends Fragment {
         nameTypeJobs.add("Lĩnh vực");
     }
 
-    private void setValue() {
-
-    }
 
     private void setEvent() {
 
@@ -194,6 +191,7 @@ public class UpdateNewsFragment extends Fragment {
         icCreateRec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (validateNotEmpty()) {
                     String nameJob = edtNameJob.getText().toString();
                     String place = edtPlace.getText().toString();
@@ -203,7 +201,7 @@ public class UpdateNewsFragment extends Fragment {
                     String descJob = Program.formatStringFromBullet(edtDetailJob.getText().toString());
                     String jobReq = Program.formatStringFromBullet(edtJobReq.getText().toString());
                     String idTypeJob = idTypeJobs.get(spnTypeJob.getSelectedItemPosition() - 1);
-                    String idCompany = "641684bda8922acf0dfc7a8c";
+                    String idCompany = Program.idCompany;
 
 
                     try {

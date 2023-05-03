@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
 
                     String accessToken = convertedObject.get("accessToken").toString();
-                    Program.token = "bearer " + accessToken;
+                    Program.token = "bearer " + accessToken.replace("\"","");
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
 
@@ -178,8 +178,8 @@ public class MainActivity extends AppCompatActivity {
                     String email = response.getString("email");
                     String phone = response.getString("phone");
                     String avatar = response.getString("avatar");
-                    String idCompany = response.getJSONObject("idCompany").getString("_id");
-                    Log.d("ABC", idCompany);
+                    Program.idUser = response.getString("_id");
+                    Program.idCompany = response.getJSONObject("company").getString("_id");
 
                     SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();

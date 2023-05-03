@@ -64,17 +64,11 @@ public class CompanyActivity extends AppCompatActivity {
         tvAmountEmployer = findViewById(R.id.tv_amount_employer);
 
         jobList = new ArrayList<>();
-        jobList.add(new Job("Lap trinh Mobile", "FPT", "Ho Chi Minh", "20.0000", "Cap nhat 1 thang"));
-        jobList.add(new Job("Lap trinh Mobile", "FPT", "Ho Chi Minh", "20.0000", "Cap nhat 1 thang"));
-        jobList.add(new Job("Lap trinh Mobile", "FPT", "Ho Chi Minh", "20.0000", "Cap nhat 1 thang"));
-        jobList.add(new Job("Lap trinh Mobile", "FPT", "Ho Chi Minh", "20.0000", "Cap nhat 1 thang"));
-        jobList.add(new Job("Lap trinh Mobile", "FPT", "Ho Chi Minh", "20.0000", "Cap nhat 1 thang"));
-
     }
 
     private void setEvent() {
         back();
-        setListView();
+        getListJobOfCompany(url);
     }
 
     private void back() {
@@ -86,7 +80,7 @@ public class CompanyActivity extends AppCompatActivity {
         });
     }
 
-    private void setListView() {
+    private void setListViewAdapter() {
         ListViewApdapter listViewApdapter = new ListViewApdapter(CompanyActivity.this, R.layout.list_view_item_job, jobList, true);
         listView.setAdapter(listViewApdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -141,7 +135,7 @@ public class CompanyActivity extends AppCompatActivity {
                                     ));
                                 }
                             }
-//                            setListViewAdapter();
+                            setListViewAdapter();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
