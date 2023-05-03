@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ForMeFragment extends Fragment {
-
-    private ListViewApdapter listViewApdapter;
     private ListView listViewJob;
     private String url = "https://job-seeker-smy5.onrender.com/job/list";
     private View homeView;
@@ -47,9 +45,7 @@ public class ForMeFragment extends Fragment {
         homeView = inflater.inflate(R.layout.fragment_seeker_for_me, container, false);
 
         setControl();
-        if (ForMeFragment.jobList.isEmpty()) {
-            callAPI(url);
-        }
+        setEvent();
 
         return homeView;
     }
@@ -60,7 +56,13 @@ public class ForMeFragment extends Fragment {
         pbLoading = homeView.findViewById(R.id.idLoadingPB);
     }
 
-    private void callAPI(String url) {
+    private void setEvent() {
+        if (ForMeFragment.jobList.isEmpty()) {
+            getNewJobs(url);
+        }
+    }
+
+    private void getNewJobs(String url) {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         pbLoading.setVisibility(View.VISIBLE);
@@ -74,7 +76,7 @@ public class ForMeFragment extends Fragment {
                             JSONArray jobsList = response.getJSONObject("data").getJSONArray("data");
                             for (int i = 0; i < jobsList.length(); i++) {
                                 JSONObject job = jobsList.getJSONObject(i);
-                                if (Program.calculateTime(job.getString("postingDate")) < 8640000) {
+                                if (Program.calculateTime(job.getString("postingDate")) > 8640000 && job.getString("status").equals("true")) {
                                     if (!job.isNull("idCompany")) {
                                         idCompany = job.getJSONObject("idCompany").getString("name");
                                     } else {
@@ -97,7 +99,7 @@ public class ForMeFragment extends Fragment {
                                 }
                             }
                             pbLoading.setVisibility(View.GONE);
-                            setEvent();
+                            setListViewAdapter();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
@@ -131,8 +133,8 @@ public class ForMeFragment extends Fragment {
         queue.add(data);
     }
 
-    private void setEvent() {
-        listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList);
+    private void setListViewAdapter(){
+        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList,true);
         listViewJob.setAdapter(listViewApdapter);
         listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

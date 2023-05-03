@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/pie_chart"
+        android:title="Thống kê số lượng công việc được apply">
+    </item>
+    <item
         android:id="@+id/bar_chart"
-        android:title="Thống kê theo thời gian">
+        android:title="Thống kê công việc theo thời gian">
     </item>
     <item
         android:id="@+id/amount_job"
-        android:title="Thống kê theo số lượng công việc">
+        android:title="Thống kê công việc theo loại">
     </item>
 </menu>

@@ -1,21 +1,17 @@
-package com.nsb.job_seeker.employer;
+package com.nsb.job_seeker.seeder;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,6 +21,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.model.Job;
 import com.nsb.job_seeker.model.Recruitment;
 
 import org.json.JSONArray;
@@ -35,58 +32,80 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecruitmentsFragment extends Fragment {
-    private ListView listViewRecruitments;
-    private List<Recruitment> recruitmentList;
-    private View recruitmentView;
-    private TextView amountRec;
+public class CompanyActivity extends AppCompatActivity {
+    private ListView listView;
     private ProgressBar pbLoading;
-    private String Url = "https://job-seeker-smy5.onrender.com/job/list/company/";
+    private List<Job> jobList;
+    private ImageView icBack;
+    private TextView tvNameCompany, tvAboutCompany, tvLocationOfCompany, tvTypeCompany,tvPhone, tvAmountEmployer;
     private String IDCompany = "";
+    private String url = "https://job-seeker-smy5.onrender.com/job/list/company/";
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        recruitmentView = inflater.inflate(R.layout.fragment_employer_recruitments, container, false);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();
+        setContentView(R.layout.activity_seeker_list_job_by_company);
 
         setControl();
         setEvent();
-        return recruitmentView;
     }
 
     private void setControl() {
-        amountRec = recruitmentView.findViewById(R.id.tv_amount_recruitment);
-        listViewRecruitments = recruitmentView.findViewById(R.id.lv_recruitments);
-        pbLoading = recruitmentView.findViewById(R.id.idLoadingPB);
+        listView = findViewById(R.id.lv_job_by_company);
+        pbLoading = findViewById(R.id.idLoadingPB);
+        icBack = findViewById(R.id.ic_back);
+        tvNameCompany = findViewById(R.id.tv_name_company);
+        tvAboutCompany = findViewById(R.id.tv_about_company);
+        tvLocationOfCompany = findViewById(R.id.tv_location_company);
+        tvTypeCompany = findViewById(R.id.tv_type_company);
+        tvPhone = findViewById(R.id.tv_phone_company);
+        tvAmountEmployer = findViewById(R.id.tv_amount_employer);
 
-        recruitmentList = new ArrayList<Recruitment>();
+        jobList = new ArrayList<>();
     }
-
 
     private void setEvent() {
-        getListJobOfCompany(Url);
-
+        back();
+        getListJobOfCompany(url);
     }
 
-
-    private void setListViewAdapter() {
-        amountRec.setText("Tổng số lượng tin: " + String.valueOf(recruitmentList.size()));
-        RecruitmentsListViewAdapter recruitmentsListViewAdapter = new RecruitmentsListViewAdapter(getActivity(), R.layout.list_view_item_recruitment, recruitmentList);
-        listViewRecruitments.setAdapter(recruitmentsListViewAdapter);
-        listViewRecruitments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    private void back() {
+        icBack.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getActivity(), RecruitmentDetailActivity.class);
-                i.putExtra("id", recruitmentList.get(position).getId());
-                startActivity(i);
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
     }
 
+    private void setListViewAdapter() {
+        ListViewApdapter listViewApdapter = new ListViewApdapter(CompanyActivity.this, R.layout.list_view_item_job, jobList, true);
+        listView.setAdapter(listViewApdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+//                Intent i = new Intent(ListJobByCompany.this, JobDetailActivity.class);
+//                i.putExtra("id", jobList.get(position).getId());
+//                i.putExtra("isApply", true);
+//                startActivity(i);
+            }
+        });
+    }
+
+    private void getInforCompany(String url){
+
+    }
+
     private void getListJobOfCompany(String url) {
-        url += Program.idCompany;
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-        pbLoading.setVisibility(View.VISIBLE);
+        Bundle bundle = getIntent().getExtras();
+        IDCompany = bundle.getString("idCompany");
+        url += IDCompany;
+
+        RequestQueue queue = Volley.newRequestQueue(CompanyActivity.this);
+
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
                 url,
                 null,
@@ -106,17 +125,16 @@ public class RecruitmentsFragment extends Fragment {
                                     } else {
                                         time = "Còn " + time;
                                     }
-                                    recruitmentList.add(new Recruitment(
+                                    jobList.add(new Job(
                                             job.getString("_id"),
                                             job.getString("name"),
+                                            idCompany,
                                             job.getString("locationWorking"),
-                                            Program.formatTimeDDMMYYYY(job.getString("updateDate")),
-                                            "Số lượng hồ sơ: 5",
+                                            job.getString("salary"),
                                             time
                                     ));
                                 }
                             }
-                            pbLoading.setVisibility(View.GONE);
                             setListViewAdapter();
 
                         } catch (JSONException e) {

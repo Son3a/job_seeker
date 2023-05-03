@@ -46,12 +46,13 @@
         android:layout_below="@+id/line">
 
         <TextView
+            android:id="@+id/tv_amount_cv"
             style="@style/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:text="Tổng số lượng hồ sơ: 3" />
+            android:text="Tổng số lượng hồ sơ:" />
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -76,6 +77,7 @@
             <TableRow android:background="@color/blue_main">
 
                 <TextView
+                    style="@style/text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -83,10 +85,10 @@
                     android:padding="10dp"
                     android:text="STT"
                     android:textColor="@color/black"
-                    style="@style/text"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
+                    style="@style/text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="8"
@@ -94,10 +96,10 @@
                     android:padding="10dp"
                     android:text="Thời gian nộp"
                     android:textColor="@color/black"
-                    style="@style/text"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <TextView
+                    style="@style/text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="4"
@@ -105,9 +107,18 @@
                     android:padding="10dp"
                     android:text="File"
                     android:textColor="@color/black"
-                    style="@style/text"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
             </TableRow>
+
+            <TextView
+                android:id="@+id/tv_notify_empty"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:text="Danh sách hồ sơ trống"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:visibility="gone" />
 
             <ListView
                 android:id="@+id/lv_cv"

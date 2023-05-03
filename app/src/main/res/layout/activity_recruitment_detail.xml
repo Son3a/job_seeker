@@ -34,11 +34,13 @@
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/layout_recruitment_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/header"
         android:layout_margin="10dp"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"

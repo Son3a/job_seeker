@@ -7,17 +7,23 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
@@ -28,12 +34,15 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class RecruitmentDetailActivity extends AppCompatActivity {
     private ImageView icBack, icListCV, icDelete, icEdit;
     private ProgressBar pbLoading;
     private TextView tvSalary, tvTypeJob, tvTimeWork, tvTimeUpdated, tvDescJob, tvNameJob, tvPlace, tvDeadLine, tvJobReq;
+    private ScrollView layoutBody;
 
     private String url = "https://job-seeker-smy5.onrender.com/job/detail?id=";
     private String idJob = "";
@@ -67,6 +76,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
         tvDeadLine = findViewById(R.id.tv_deadline);
         tvDescJob = findViewById(R.id.tv_detail_job);
         tvJobReq = findViewById(R.id.tv_job_req);
+        layoutBody = findViewById(R.id.layout_recruitment_detail);
     }
 
     private void setEvent() {
@@ -74,10 +84,21 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
         idJob = bundle.getString("id");
         url += idJob;
 
+        back();
+
+        getRecruitment();
+
+        clickDeleteRecruitment();
+        clickEditRecruitment();
+        showListCV();
+    }
+
+    private void back(){
         icBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(bundle.containsKey("isChange")){
+                Bundle bundle = getIntent().getExtras();
+                if (bundle.containsKey("isChange")) {
                     Intent i = new Intent(RecruitmentDetailActivity.this, EmployerMainActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(i);
@@ -87,12 +108,6 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        getRecruitment();
-
-        deleteRecruitment();
-        editRecruitment();
-        showListCV();
     }
 
     private void getRecruitment() {
@@ -115,7 +130,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                     }
 
                     String salary = job.getString("salary");
-                    if (Pattern.matches("[a-zA-Z]+", salary) == false && salary.length() > 2) {
+                    if (Pattern.matches("[a-zA-Z]+", salary) == false) {
                         salary = "VND " + Program.formatSalary(salary);
                     }
 
@@ -136,6 +151,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                     tvJobReq.setText("\u25CF    " + job.getString("requirement"));
 
                     pbLoading.setVisibility(View.GONE);
+                    layoutBody.setVisibility(View.VISIBLE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (ParseException e) {
@@ -167,16 +183,60 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
         requestQueue.add(data);
     }
 
-    private void deleteRecruitment() {
+    private void clickDeleteRecruitment() {
         icDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDialogDelete("Bạn có muốn xóa tin tuyển dụng này không ?");
+                try {
+                    deleteRecruitmentAPI();
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+//                showDialogDelete("Bạn có muốn xóa tin tuyển dụng này không ?");
             }
         });
     }
 
-    private void editRecruitment() {
+    private void deleteRecruitmentAPI() throws JSONException {
+        String urlDeleteRecruitment = "https://job-seeker-smy5.onrender.com/job/delete";
+        String access_token = Program.token;
+        RequestQueue queue = Volley.newRequestQueue(RecruitmentDetailActivity.this);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("_id", "64168513a8922acf0dfc7a8e");
+
+        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.DELETE, urlDeleteRecruitment, jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Toast.makeText(RecruitmentDetailActivity.this, "Xóa thành công!!!", Toast.LENGTH_SHORT).show();
+//                Intent i = new Intent(RecruitmentDetailActivity.this, EmployerMainActivity.class);
+//                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(i);
+//                finish();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println(error);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", access_token);
+                return headers;
+            }
+        };
+        sr.setRetryPolicy(new DefaultRetryPolicy(
+                0,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(sr);
+    }
+
+    private void clickEditRecruitment() {
         icEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -200,6 +260,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(RecruitmentDetailActivity.this, ListCVActivity.class);
+                i.putExtra("id",idJob);
                 startActivity(i);
             }
         });
@@ -218,12 +279,13 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                        try {
+                            deleteRecruitmentAPI();
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }).create();
         dialog.show();
-    }
-
-    private void deleteRecuitment() {
     }
 }

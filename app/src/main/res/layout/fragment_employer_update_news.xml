@@ -95,7 +95,8 @@
                     android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_salary_black"
                     android:drawablePadding="20dp"
-                    android:hint="Lương" />
+                    android:hint="Lương"
+                    android:inputType="number"/>
 
                 <EditText
                     android:id="@+id/edt_work_time"
@@ -140,7 +141,8 @@
                     android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_deadline"
                     android:drawablePadding="20dp"
-                    android:hint="Hạn nộp hồ sơ" />
+                    android:hint="Hạn nộp hồ sơ"
+                    android:inputType="date"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"

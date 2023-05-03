@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -35,14 +36,17 @@ import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EditRecruitmentActivity extends AppCompatActivity {
@@ -53,6 +57,8 @@ public class EditRecruitmentActivity extends AppCompatActivity {
     private ProgressBar loadingPB;
     private String url = "https://job-seeker-smy5.onrender.com/job/update";
     private String idJob = "";
+    private List<String> nameTypeJobs;
+    private List<String> idTypeJobs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,6 +86,10 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         loadingPB = findViewById(R.id.idLoadingPB);
         tvTitle = findViewById(R.id.txt_title);
         icBack = findViewById(R.id.ic_cancel);
+
+        idTypeJobs = new ArrayList<>();
+        nameTypeJobs = new ArrayList<>();
+        nameTypeJobs.add("Lĩnh vực");
     }
 
     private void setEvent() {
@@ -93,6 +103,8 @@ public class EditRecruitmentActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        getTypeJob();
 
         setValue();
 
@@ -115,9 +127,10 @@ public class EditRecruitmentActivity extends AppCompatActivity {
                 String deadLine = edtDeadLine.getText().toString();
                 String descJob = Program.formatStringFromBullet(edtDescJob.getText().toString());
                 String jobReq = Program.formatStringFromBullet(edtJobReq.getText().toString());
+                String idTypeJob = idTypeJobs.get(spnTypeJob.getSelectedItemPosition() - 1);
 
                 try {
-                    updateRecruitmentApi(idJob, nameJob, place, salary, timeWork, deadLine, descJob, jobReq);
+                    updateRecruitmentApi(idJob, nameJob, place, salary, timeWork, deadLine, descJob, jobReq, idTypeJob);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -126,7 +139,7 @@ public class EditRecruitmentActivity extends AppCompatActivity {
     }
 
     private void updateRecruitmentApi(String id, String nameJob, String place, String salary, String timeWork,
-                                      String deadline, String descJob, String jobReq) throws JSONException {
+                                      String deadline, String descJob, String jobReq, String idTypeJob) throws JSONException {
         String access_token = Program.token;
         System.out.println(access_token);
 //        loadingPB.setVisibility(View.VISIBLE);
@@ -141,14 +154,15 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         jsonObject.put("deadline", deadline);
         jsonObject.put("description", descJob);
         jsonObject.put("requirement", jobReq);
+        jsonObject.put("idOccupation", idTypeJob);
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.PUT, url, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Toast.makeText(EditRecruitmentActivity.this, "Chỉnh sửa thành công!!!", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(EditRecruitmentActivity.this,RecruitmentDetailActivity.class);
-                i.putExtra("id",id);
-                i.putExtra("isChange","true");
+                Intent i = new Intent(EditRecruitmentActivity.this, RecruitmentDetailActivity.class);
+                i.putExtra("id", id);
+                i.putExtra("isChange", "true");
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
                 finish();
@@ -182,7 +196,6 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         edtPlace.setText(bundle.getString("place"));
         edtSalary.setText(bundle.getString("salary").split(" ")[1].replace(".", ""));
         edtTimeWork.setText(bundle.getString("timeWork"));
-//        edtTypeJob.setText(bundle.getString("typeJob"));
         edtDeadLine.setText(bundle.getString("deadline"));
 
         String descJob = "";
@@ -278,4 +291,75 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    private void getTypeJob() {
+
+        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
+        RequestQueue queue = Volley.newRequestQueue(EditRecruitmentActivity.this);
+
+        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray listTypeJob = response.getJSONObject("data").getJSONArray("data");
+                    for (int i = 0; i < listTypeJob.length(); i++) {
+                        JSONObject typeJob = listTypeJob.getJSONObject(i);
+                        if (typeJob.getString("isDelete").equals("false")) {
+                            nameTypeJobs.add(typeJob.getString("name"));
+                            idTypeJobs.add(typeJob.getString("_id"));
+                        }
+                    }
+                    bindingDataToSpinner();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println(error);
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        sr.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                System.out.println(error);
+            }
+        });
+        queue.add(sr);
+    }
+
+    private void bindingDataToSpinner() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(EditRecruitmentActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, nameTypeJobs);
+        spnTypeJob.setAdapter(adapter);
+        Bundle bundle = getIntent().getExtras();
+        spnTypeJob.setSelection(getIndexSpinner(nameTypeJobs, bundle.getString("typeJob")));
+    }
+
+    private int getIndexSpinner(List<String> listTypeJob, String nameTypeJob) {
+        for (int i = 0; i < listTypeJob.size(); i++) {
+            if (listTypeJob.get(i).equals(nameTypeJob)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 }

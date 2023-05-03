@@ -119,7 +119,8 @@ public class SearchFragment extends Fragment {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     if (!edtSearch.getText().toString().trim().equals("")) {
-                        findJob(edtSearch.getText().toString(), idOccupation, idCompany, locationWorking);                    }
+                        findJob(edtSearch.getText().toString(), idOccupation, idCompany, locationWorking);
+                    }
                     handled = true;
                 }
                 return handled;
@@ -183,7 +184,7 @@ public class SearchFragment extends Fragment {
                         }
 
                         String time = Program.setTime(job.getString("postingDate"));
-                        if(time.equals(null))
+                        if (time.equals(null))
                             time = "Vừa mới cập nhật";
                         else
                             time = "Cập nhật " + time + " trước";
@@ -267,7 +268,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void setListView() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobResultList);
+        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobResultList, true);
         listView.setAdapter(listViewApdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
