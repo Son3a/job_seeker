@@ -28,6 +28,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -73,7 +74,6 @@ public class UpdateNewsFragment extends Fragment {
     private TextView tvTimeCreate;
     private ProgressBar loadingPB;
     private String urlCreate = "https://job-seeker-smy5.onrender.com/job/create";
-    private String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
     private List<String> nameTypeJobs;
     private List<String> idTypeJobs;
 
@@ -105,6 +105,10 @@ public class UpdateNewsFragment extends Fragment {
         nameTypeJobs.add("Lĩnh vực");
     }
 
+    private void setValue() {
+
+    }
+
     private void setEvent() {
 
         //set porting date
@@ -112,12 +116,8 @@ public class UpdateNewsFragment extends Fragment {
         Date date = new Date(System.currentTimeMillis());
         tvTimeCreate.setText(formatter.format(date));
 
-        //synchronized (getTypeJob());
-        
-
         getTypeJob();
-        System.out.println("List id Jobs");
-        System.out.println(tvSaveIdJobs.getText());
+
         showFuncCancel();
 
         pickTime();
@@ -202,9 +202,12 @@ public class UpdateNewsFragment extends Fragment {
                     String deadLine = edtDeadLine.getText().toString();
                     String descJob = Program.formatStringFromBullet(edtDetailJob.getText().toString());
                     String jobReq = Program.formatStringFromBullet(edtJobReq.getText().toString());
+                    String idTypeJob = idTypeJobs.get(spnTypeJob.getSelectedItemPosition() - 1);
+                    String idCompany = "641684bda8922acf0dfc7a8c";
+
 
                     try {
-                        createRecruitment(nameJob, place, salary, timeWork, deadLine, descJob, jobReq);
+                        createRecruitment(nameJob, place, salary, timeWork, deadLine, descJob, jobReq, idTypeJob, idCompany);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -215,7 +218,7 @@ public class UpdateNewsFragment extends Fragment {
     }
 
     private void createRecruitment(String nameJob, String place, String salary, String timeWork,
-                                   String deadline, String descJob, String jobReq) throws JSONException {
+                                   String deadline, String descJob, String jobReq, String idTypeJob, String idCompany) throws JSONException {
         String access_token = Program.token;
 //        loadingPB.setVisibility(View.VISIBLE);
         RequestQueue queue = Volley.newRequestQueue(getActivity());
@@ -229,6 +232,8 @@ public class UpdateNewsFragment extends Fragment {
         jsonObject.put("deadline", deadline);
         jsonObject.put("description", descJob);
         jsonObject.put("requirement", jobReq);
+        jsonObject.put("idOccupation", idTypeJob);
+        jsonObject.put("idcompany", idCompany);
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.POST, urlCreate, jsonObject, new Response.Listener<JSONObject>() {
             @Override
@@ -239,7 +244,9 @@ public class UpdateNewsFragment extends Fragment {
                     Toast.makeText(getActivity(), "Tạo thành công!!!", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(getActivity(), RecruitmentDetailActivity.class);
                     i.putExtra("id", id);
+                    i.putExtra("isChange", "true");
                     startActivity(i);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -259,22 +266,10 @@ public class UpdateNewsFragment extends Fragment {
                 return headers;
             }
         };
-        sr.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-                System.out.println(error);
-            }
-        });
+        sr.setRetryPolicy(new DefaultRetryPolicy(
+                0,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(sr);
     }
 
@@ -505,6 +500,7 @@ public class UpdateNewsFragment extends Fragment {
 
     private void getTypeJob() {
 
+        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
@@ -512,15 +508,13 @@ public class UpdateNewsFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 try {
                     JSONArray listTypeJob = response.getJSONObject("data").getJSONArray("data");
-                    String ids = "";
                     for (int i = 0; i < listTypeJob.length(); i++) {
                         JSONObject typeJob = listTypeJob.getJSONObject(i);
                         if (typeJob.getString("isDelete").equals("false")) {
                             nameTypeJobs.add(typeJob.getString("name"));
-                            ids += typeJob.getString("_id") + " ";
+                            idTypeJobs.add(typeJob.getString("_id"));
                         }
                     }
-                    tvSaveIdJobs.setText(ids);
                     bindingDataToSpinner();
                 } catch (JSONException e) {
                     e.printStackTrace();

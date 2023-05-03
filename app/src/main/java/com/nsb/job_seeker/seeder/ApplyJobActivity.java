@@ -8,13 +8,18 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -28,14 +33,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.nsb.job_seeker.R;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 
 public class ApplyJobActivity extends AppCompatActivity {
     private static final int MY_REQUEST_CODE = 10;
     private static final String TAG = ApplyJobActivity.class.getName();
-    private ImageView imgBack, imgUpload;
+    private ImageView imgBack;
     private Button btnSendCv;
-    private TextView tvUploadCV;
+    private TextView tvUploadCV, imgUpload;
     private Uri mUri;
     private ActivityResultLauncher<Intent> mActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -63,7 +69,11 @@ public class ApplyJobActivity extends AppCompatActivity {
         setContentView(R.layout.activity_seeker_apply_job);
 
         setControl();
-        setEvent();
+        try {
+            setEvent();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void setControl() {
@@ -73,18 +83,54 @@ public class ApplyJobActivity extends AppCompatActivity {
         imgUpload = findViewById(R.id.img_upload);
     }
 
-    private void setEvent() {
-        tvUploadCV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickRequestPermision();
-            }
-        });
+    private void setEvent() throws URISyntaxException {
+        back();
 
+        clickOpenFile();
+
+        createApplication();
+    }
+
+    private void back() {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+    }
+
+    private void createApplication() throws URISyntaxException {
+//        String strRealPath = RealPathUtil.getPath(ApplyJobActivity.this, Uri.parse("content://com.android.providers.downloads.documents/document/document/msf%3A1000000034"));
+//        String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+//        File file = new File(baseDir +  File.separator + "Download" + File.separator + tvUploadCV.getText().toString());
+
+        btnSendCv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Cursor cursor = null;
+                cursor = ApplyJobActivity.this.getContentResolver().query(mUri, new String[]{MediaStore.MediaColumns.DISPLAY_NAME}, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+//                    String fileName = cursor.getString(0);
+////                    String path = Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName;
+//                    final int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.);
+
+//                    if (!TextUtils.isEmpty(cursor.getString(index))) {
+//                        imgUpload.setText(cursor.getString(index));
+//                    }
+//
+                }
+
+            }
+        });
+    }
+
+    private void clickOpenFile() {
+        tvUploadCV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                onClickRequestPermision();
+                openStorge();
             }
         });
     }
@@ -130,10 +176,12 @@ public class ApplyJobActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == MY_REQUEST_CODE){
-            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == MY_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openStorge();
             }
         }
     }
+
+
 }

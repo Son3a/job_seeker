@@ -1,6 +1,7 @@
 package com.nsb.job_seeker.employer;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -12,13 +13,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.seeder.BarChartFragment;
 
 public class StatisticalJobActivity extends AppCompatActivity {
     private ImageView icExpend, icBack;
     private BarChartFragment barChartFragment;
     private PieChartFragment pieChartFragment;
     private StatisticalAmountJobFragment statisticalAmountJobFragment;
+    private PopupMenu popupMenu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,28 +41,45 @@ public class StatisticalJobActivity extends AppCompatActivity {
     }
 
     private void setEvent() {
+
+        showPopupMenu();
+
+
+        icBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+    }
+
+    private void setPopupMenu() {
+        popupMenu = new PopupMenu(StatisticalJobActivity.this, icExpend);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_piechart, popupMenu.getMenu());
         getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, pieChartFragment).commit();
+        popupMenu.getMenu().getItem(0).setVisible(false);
+    }
+
+    private void showPopupMenu() {
+        setPopupMenu();
+
 
         icExpend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment fragmentInFrame = getSupportFragmentManager().findFragmentById(R.id.container_chart);
-                PopupMenu popupMenu = new PopupMenu(StatisticalJobActivity.this, v);
-                popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_piechart, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-
-                        if (item.getItemId() == R.id.bar_chart) {
-                            popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_barchart, popupMenu.getMenu());
-                            getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, barChartFragment).commit();
-                            return true;
-                        } else if (item.getItemId() == R.id.pie_chart) {
-                            popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_piechart, popupMenu.getMenu());
+                        if (item.getItemId() == R.id.pie_chart) {
+                            setVisiableItemPopupMenu(0, 1, 2);
                             getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, pieChartFragment).commit();
                             return true;
-                        } else if(item.getItemId() == R.id.amount_job){
-                            popupMenu.getMenuInflater().inflate(R.menu.menu_statistical_amount_job, popupMenu.getMenu());
+                        } else if (item.getItemId() == R.id.bar_chart) {
+                            setVisiableItemPopupMenu(1, 0, 2);
+                            getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, barChartFragment).commit();
+                            return true;
+                        } else if (item.getItemId() == R.id.amount_job) {
+                            setVisiableItemPopupMenu(2, 0, 1);
                             getSupportFragmentManager().beginTransaction().replace(R.id.container_chart, statisticalAmountJobFragment).commit();
                             return true;
                         }
@@ -71,12 +89,11 @@ public class StatisticalJobActivity extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+    }
 
-        icBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+    private void setVisiableItemPopupMenu(int a, int b, int c) {
+        popupMenu.getMenu().getItem(a).setVisible(false);
+        popupMenu.getMenu().getItem(b).setVisible(true);
+        popupMenu.getMenu().getItem(c).setVisible(true);
     }
 }

@@ -23,12 +23,14 @@ public class ListViewApdapter extends ArrayAdapter {
     private Context context;
     private int layoutId;
     private List<Job> jobList;
+    private boolean isVisibleBtnSave;
 
-    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList) {
+    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList, boolean isVisibleBtnSave) {
         super(context, layoutId);
         this.context = context;
         this.layoutId = layoutId;
         this.jobList = jobList;
+        this.isVisibleBtnSave = isVisibleBtnSave;
     }
 
     @Override
@@ -58,6 +60,21 @@ public class ListViewApdapter extends ArrayAdapter {
         holder.tvSalary.setText(holder.job.getSalary());
         holder.tvTimeUpdated.setText(holder.job.getTime_update());
 
+        hideBtnSave(row,position);
+
+        saveJob(row,position);
+
+        return row;
+    }
+
+    private void hideBtnSave(View row, int position){
+        ImageView imgSaveButton = (ImageView) row.findViewById(R.id.img_save_job);
+        if(isVisibleBtnSave == false){
+            imgSaveButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void saveJob(View row, int position){
         ImageView imgSaveButton = (ImageView) row.findViewById(R.id.img_save_job);
         boolean check = true;
         imgSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +87,6 @@ public class ListViewApdapter extends ArrayAdapter {
 //                }
             }
         });
-        return row;
     }
 
     public static class JobHolder {

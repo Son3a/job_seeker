@@ -31,5 +31,6 @@
         android:layout_weight="4"
         android:gravity="center_horizontal"
         android:padding="10dp"
-        android:textColor="#2784A1" />
+        android:textColor="#2784A1"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
 </TableRow>

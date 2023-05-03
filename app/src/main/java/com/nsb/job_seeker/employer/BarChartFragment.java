@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.employer;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -40,7 +40,7 @@ public class BarChartFragment extends Fragment {
     private void setControl() {
         barChart = barChartView.findViewById(R.id.barchart);
         listValues = new int[]{420, 475, 508, 660, 550, 630, 475};
-        listLabels = new String[]{"2014", "2015", "2016", "2017", "2018", "2019", "2020"};
+        listLabels = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"};
     }
 
     private void setEvent() {

@@ -2,10 +2,9 @@ package com.nsb.job_seeker;
 
 import static java.lang.Math.abs;
 
-import android.content.SharedPreferences;
+import android.view.View;
 import android.widget.EditText;
-
-import androidx.appcompat.app.AppCompatActivity;
+import android.widget.ImageView;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -16,14 +15,15 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Program {
-    public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRjMGUzMDU0ZTIxZTk3YjQzMzljYWYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2ODI4NDYyMzUsImV4cCI6MTY4Mjg0OTgzNX0.d5eo4U8JXNqKKQeP6qf1ppbJA-ZzbQnVt0Z2hUF-eRU";
+    public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRmYzZiODU4MjVjMGQzMDlmNjJmY2EiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MzA1MTk2MywiZXhwIjoxNjgzMDU1NTYzfQ.xOWsYbaI43ZqUN72OXdPhvsNQoH9H3ie2HH4ue1L6Ww";
     public static String idUser = "643d7c3decdddca0bf7de48b";
+    public static String idCompany = "641684bda8922acf0dfc7a8c";
     public static String url_dev = "http://192.168.1.10:8000";
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";
 
     public static String formatSalary(String salary) {
-        if(!salary.matches(".*\\d.*")) return salary;
+        if (!salary.matches(".*\\d.*")) return salary;
         NumberFormat df = NumberFormat.getCurrencyInstance();
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setGroupingSeparator('.');
@@ -69,18 +69,30 @@ public class Program {
     }
 
     public static boolean checkValidDeadline(int day, int month, int year) {
-        LocalDate currentdate = LocalDate.now();
-        int currentDay = currentdate.getDayOfMonth();
+        LocalDate currentdate = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentdate = LocalDate.now();
+        }
+        int currentDay = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentDay = currentdate.getDayOfMonth();
+        }
         //Getting the current month
-        int currentMonth = currentdate.getMonthValue();
+        int currentMonth = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentMonth = currentdate.getMonthValue();
+        }
         //getting the current year
-        int currentYear = currentdate.getYear();
+        int currentYear = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentYear = currentdate.getYear();
+        }
 
-        if (year < currentYear) return false;
-        if (month < currentMonth) return false;
-        if (day < currentDay) return false;
+        if(year > currentYear) return true;
+        if (year == currentYear && month > currentMonth) return true;
+        if (year == currentYear && month == currentMonth && day > currentDay) return true;
 
-        return true;
+        return false;
     }
 
     public static void addNewLine(CharSequence text, int lengthBefore, int lengthAfter, EditText edtText) {
