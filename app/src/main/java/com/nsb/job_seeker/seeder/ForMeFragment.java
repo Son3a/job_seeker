@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ForMeFragment extends Fragment {
     private ListView listViewJob;
-    private String url = "https://job-seeker-smy5.onrender.com/job/list";
+    private String url = "https://job-seeker-smy5.onrender.com/job/list/sort-by-date";
     private View homeView;
     private ProgressBar pbLoading;
 
@@ -73,29 +73,34 @@ public class ForMeFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             String idCompany = "";
-                            JSONArray jobsList = response.getJSONObject("data").getJSONArray("data");
-                            for (int i = 0; i < jobsList.length(); i++) {
-                                JSONObject job = jobsList.getJSONObject(i);
-                                if (Program.calculateTime(job.getString("postingDate")) > 8640000 && job.getString("status").equals("true")) {
-                                    if (!job.isNull("idCompany")) {
-                                        idCompany = job.getJSONObject("idCompany").getString("name");
-                                    } else {
-                                        idCompany = "";
-                                    }
+                            JSONArray jobsList = response.getJSONArray("data");
+                            int lenghJobs = jobsList.length();
+                            if (Program.calculateTime(jobsList.getJSONObject(0).getString("updateDate")) >= (7 * 24 * 60 * 60 * 1000)) {      //check time update job if it > 1 week to show on news
+                                lenghJobs = 10;
+                            } else {
+                                for (int i = 0; i < lenghJobs; i++) {
+                                    JSONObject job = jobsList.getJSONObject(i);
+                                    if (Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000) && job.getString("status").equals("true")) {
+                                        if (!job.isNull("idCompany")) {
+                                            idCompany = job.getJSONObject("idCompany").getString("name");
+                                        } else {
+                                            idCompany = "";
+                                        }
 
-                                    String time = Program.setTime(job.getString("postingDate"));
-                                    if(time.equals(null))
-                                        time = "Vừa mới cập nhật";
-                                    else
-                                        time = "Cập nhật " + time + " trước";
-                                    jobList.add(new Job(
-                                            job.getString("_id"),
-                                            job.getString("name"),
-                                            idCompany,
-                                            job.getString("locationWorking"),
-                                            job.getString("salary"),
-                                            time
-                                    ));
+                                        String time = Program.setTime(job.getString("updateDate"));
+                                        if (time.equals(null))
+                                            time = "Vừa mới cập nhật";
+                                        else
+                                            time = "Cập nhật " + time + " trước";
+                                        jobList.add(new Job(
+                                                job.getString("_id"),
+                                                job.getString("name"),
+                                                idCompany,
+                                                job.getString("locationWorking"),
+                                                job.getString("salary"),
+                                                time
+                                        ));
+                                    }
                                 }
                             }
                             pbLoading.setVisibility(View.GONE);
@@ -133,8 +138,8 @@ public class ForMeFragment extends Fragment {
         queue.add(data);
     }
 
-    private void setListViewAdapter(){
-        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList,true);
+    private void setListViewAdapter() {
+        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList, true);
         listViewJob.setAdapter(listViewApdapter);
         listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

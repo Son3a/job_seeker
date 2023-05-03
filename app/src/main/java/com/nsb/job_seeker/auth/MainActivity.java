@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 String body;
                 //get status code here
-                //String statusCode = String.valueOf(error.networkResponse.statusCode);
+                String statusCode = String.valueOf(error.networkResponse.statusCode);
 
                 if(error.networkResponse.data!=null) {
                     try {
@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                     String avatar = response.getString("avatar");
                     Program.idUser = response.getString("_id");
                     Program.idCompany = response.getJSONObject("company").getString("_id");
+                    Program.role = role;
 
                     SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();

@@ -2,7 +2,10 @@ package com.nsb.job_seeker;
 
 import static java.lang.Math.abs;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -15,9 +18,10 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Program {
-    public static String token;
+    public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRmYzZiODU4MjVjMGQzMDlmNjJmY2EiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MzExODIyMiwiZXhwIjoxNjgzMTIxODIyfQ.TbAUWlP9fpkibjoB0a1udA1yOOMqCeE39vkcFtxo_sk";
     public static String idUser;
     public static String idCompany;
+    public static String role;
     public static String url_dev = "http://192.168.1.10:8000";
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";
@@ -98,16 +102,16 @@ public class Program {
     public static void addNewLine(CharSequence text, int lengthBefore, int lengthAfter, EditText edtText) {
         if (lengthAfter > lengthBefore) {
             if (text.toString().length() == 1) {
-                text = "• " + text;
+                text = "\u25CF " + text;
                 edtText.setText(text);
                 edtText.setSelection(edtText.getText().length());
             }
 
             if (text.toString().endsWith("\n")) {
-                text = text.toString().replace("\n", "\n• ");
-                text = text.toString().replace("• •", "•");
-                text = text.toString().replace("\n• \n• ", "\n• ");
-                text = text.toString().replace("• \n• ", "• ");
+                text = text.toString().replace("\n", "\n\u25CF ");
+                text = text.toString().replace("\u25CF \u25CF", "\u25CF");
+                text = text.toString().replace("\n\u25CF \n\u25CF ", "\n\u25CF ");
+                text = text.toString().replace("\u25CF \n\u25CF ", "\u25CF ");
                 edtText.setText(text);
                 edtText.setSelection(edtText.getText().length());
             }
@@ -117,11 +121,26 @@ public class Program {
     public static String formatStringFromBullet(String oldString) {
         String newString = "";
         String temp = "";
-        String[] listString = oldString.substring(1).split("•");
+        String[] listString = oldString.substring(1).split("\u25CF");
         for (int i = 0; i < listString.length; i++) {
             temp = listString[i].trim().replace(".", "");
             newString = newString + temp + ".";
         }
         return newString;
+    }
+
+    public static String formatStringToBullet(String string){
+        String newString = "";
+        String[] listString = string.split("\\.");
+        for (int i = 0; i < listString.length; i++) {
+            newString = newString + "\u25CF " + listString[i] + "\n";
+        }
+
+        return newString.substring(0,newString.length()-1);
+    }
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

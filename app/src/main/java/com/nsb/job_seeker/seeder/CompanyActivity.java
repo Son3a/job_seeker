@@ -1,5 +1,6 @@
 package com.nsb.job_seeker.seeder;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -22,7 +23,6 @@ import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.model.Job;
-import com.nsb.job_seeker.model.Recruitment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +37,7 @@ public class CompanyActivity extends AppCompatActivity {
     private ProgressBar pbLoading;
     private List<Job> jobList;
     private ImageView icBack;
-    private TextView tvNameCompany, tvAboutCompany, tvLocationOfCompany, tvTypeCompany,tvPhone, tvAmountEmployer;
+    private TextView tvNameCompany, tvAboutCompany, tvLocationOfCompany, tvTypeCompany, tvPhone, tvAmountEmployer;
     private String IDCompany = "";
     private String url = "https://job-seeker-smy5.onrender.com/job/list/company/";
 
@@ -62,13 +62,68 @@ public class CompanyActivity extends AppCompatActivity {
         tvTypeCompany = findViewById(R.id.tv_type_company);
         tvPhone = findViewById(R.id.tv_phone_company);
         tvAmountEmployer = findViewById(R.id.tv_amount_employer);
+        pbLoading = findViewById(R.id.idLoadingPB);
 
         jobList = new ArrayList<>();
     }
 
     private void setEvent() {
         back();
+        getInforCompany();
         getListJobOfCompany(url);
+    }
+
+    private void getInforCompany() {
+        pbLoading.setVisibility(View.VISIBLE);
+        Bundle bundle = getIntent().getExtras();
+        String urlCompany = "https://job-seeker-smy5.onrender.com/company/detail?id=" + bundle.getString("idCompany");
+
+        RequestQueue queue = Volley.newRequestQueue(CompanyActivity.this);
+
+        JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
+                urlCompany,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject jsonObject = response.getJSONObject("data");
+                            tvNameCompany.setText(jsonObject.getString("name"));
+                            tvAboutCompany.setText(jsonObject.getString("about"));
+                            tvLocationOfCompany.setText(jsonObject.getString("location"));
+                            tvTypeCompany.setText(jsonObject.getString("type"));
+                            tvPhone.setText(jsonObject.getString("phone"));
+                            tvAmountEmployer.setText(String.valueOf(jsonObject.getInt("totalEmployee")));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        pbLoading.setVisibility(View.GONE);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error);
+                    }
+                }
+        );
+        data.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+
+            }
+        });
+        queue.add(data);
     }
 
     private void back() {
@@ -87,16 +142,13 @@ public class CompanyActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-//                Intent i = new Intent(ListJobByCompany.this, JobDetailActivity.class);
-//                i.putExtra("id", jobList.get(position).getId());
-//                i.putExtra("isApply", true);
-//                startActivity(i);
+                Intent i = new Intent(CompanyActivity.this, JobDetailActivity.class);
+                i.putExtra("id", jobList.get(position).getId());
+                i.putExtra("isApply", true);
+                i.putExtra("isLinkCompany", false);
+                startActivity(i);
             }
         });
-    }
-
-    private void getInforCompany(String url){
-
     }
 
     private void getListJobOfCompany(String url) {

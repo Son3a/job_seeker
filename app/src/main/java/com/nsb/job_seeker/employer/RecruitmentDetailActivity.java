@@ -187,12 +187,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
         icDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    deleteRecruitmentAPI();
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-//                showDialogDelete("Bạn có muốn xóa tin tuyển dụng này không ?");
+                showDialogDelete("Bạn có muốn xóa tin tuyển dụng này không ?");
             }
         });
     }

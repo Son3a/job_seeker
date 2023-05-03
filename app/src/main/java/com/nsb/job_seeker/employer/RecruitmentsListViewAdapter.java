@@ -46,20 +46,20 @@ public class RecruitmentsListViewAdapter extends ArrayAdapter {
         holder.tvNameJob = (TextView) row.findViewById(R.id.tv_name_job);
         holder.tvPlace = (TextView) row.findViewById(R.id.tv_place);
         holder.tvDeadline = (TextView) row.findViewById(R.id.tv_deadline);
-        holder.tvAmountCV = (TextView) row.findViewById(R.id.tv_amount_cv);
+
 
         row.setTag(holder);
         holder.tvNameJob.setText(holder.recruitment.getNameJob());
         holder.tvTimeCreated.setText(holder.recruitment.getTimeCreated());
         holder.tvPlace.setText(holder.recruitment.getPlace());
         holder.tvDeadline.setText(holder.recruitment.getDeadline());
-        holder.tvAmountCV.setText(holder.recruitment.getAmountCV());
+
 
         return row;
     }
 
     public static class JobHolder{
         Recruitment recruitment;
-        TextView tvNameJob,tvPlace,tvTimeCreated,tvDeadline,tvAmountCV;
+        TextView tvNameJob,tvPlace,tvTimeCreated,tvDeadline;
     }
 }
