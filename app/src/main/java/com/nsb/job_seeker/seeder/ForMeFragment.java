@@ -103,15 +103,6 @@ public class ForMeFragment extends Fragment {
                                         ));
                                     }
                                 }
-
-                                jobList.add(new Job(
-                                        job.getString("_id"),
-                                        job.getString("name"),
-                                        idCompany,
-                                        job.getString("locationWorking"),
-                                        job.getString("salary"),
-                                        Program.setTime(job.getString("postingDate"))
-                                ));
                             }
                             pbLoading.setVisibility(View.GONE);
                             setListViewAdapter();

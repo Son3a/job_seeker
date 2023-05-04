@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String base_url = Program.url_product+"/auth";
+    private String base_url = Program.url_dev+"/auth";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
     @Override
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         this.loadingDialog = new LoadingDialog(MainActivity.this);
+        Log.d("ABC", base_url);
         setControl();
         setEvent();
     }
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
 
                     String accessToken = convertedObject.get("accessToken").toString();
-                    Program.token = "bearer " + accessToken.replace("\"","");
+                    Program.token = "Bearer " + accessToken.replace("\"","");
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
 
@@ -140,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 String body;
                 //get status code here
-                String statusCode = String.valueOf(error.networkResponse.statusCode);
                 if(error.networkResponse.data!=null) {
                     try {
                         body = new String(error.networkResponse.data,"UTF-8");
@@ -175,10 +175,12 @@ public class MainActivity extends AppCompatActivity {
                     String name = response.getString("name");
                     String email = response.getString("email");
                     String phone = response.getString("phone");
-                    String avatar = response.getString("avatar");
-                    
+//                    String avatar = response.getString("avatar");
+
                     Program.idUser = response.getString("_id");
-                    Program.idCompany = response.getJSONObject("company").getString("_id");
+                    if (role.equals("admin")) {
+                        Program.idCompany = response.getJSONObject("company").getString("_id");
+                    }
                     Program.role = role;
                     
                     SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
@@ -200,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Log.d("ABC", e.toString());
+                    Log.d("ABC","LOI 1 : " + e.toString());
                 }
             }
         }, new Response.ErrorListener() {
@@ -214,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                         body = new String(error.networkResponse.data,"UTF-8");
                         Log.d("ABC", body);
                     } catch (UnsupportedEncodingException e) {
-                        Log.d("ABC", e.toString());
+                        Log.d("ABC","LOI 2 : " + e.toString());
                         e.printStackTrace();
                     }
                     loadingDialog.dismissDialog();
