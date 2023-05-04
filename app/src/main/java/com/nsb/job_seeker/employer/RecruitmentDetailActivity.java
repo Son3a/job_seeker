@@ -3,6 +3,7 @@ package com.nsb.job_seeker.employer;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -32,6 +33,7 @@ import com.nsb.job_seeker.seeder.JobDetailActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -193,27 +195,43 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
     }
 
     private void deleteRecruitmentAPI() throws JSONException {
-        String urlDeleteRecruitment = "https://job-seeker-smy5.onrender.com/job/delete";
+        String urlDeleteRecruitment ="http://10.156.28.201:8000/job/delete";
         String access_token = Program.token;
+        Log.d("ABC", "check token : " + access_token);
         RequestQueue queue = Volley.newRequestQueue(RecruitmentDetailActivity.this);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("_id", "64168513a8922acf0dfc7a8e");
+        jsonObject.put("_id", idJob);
+        Log.d("ABC", "idJOb "+idJob);
 
-        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.DELETE, urlDeleteRecruitment, jsonObject, new Response.Listener<JSONObject>() {
+        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.PATCH, urlDeleteRecruitment, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Toast.makeText(RecruitmentDetailActivity.this, "Xóa thành công!!!", Toast.LENGTH_SHORT).show();
-//                Intent i = new Intent(RecruitmentDetailActivity.this, EmployerMainActivity.class);
-//                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(i);
-//                finish();
+                Intent i = new Intent(RecruitmentDetailActivity.this, EmployerMainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+                finish();
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                System.out.println(error);
+//                System.out.println(error);
+//                Log.d("ABC","check error : " + error.toString());
+                String body;
+                //get status code here
+//                String statusCode = String.valueOf(error.networkResponse.statusCode);
+                if(error.networkResponse.data!=null) {
+                    try {
+                        body = new String(error.networkResponse.data,"UTF-8");
+                        Log.d("ABC", body);
+                    } catch (UnsupportedEncodingException e) {
+                        Log.d("ABC","LOI 2 : " + e.toString());
+                        e.printStackTrace();
+                    }
+//                    loadingDialog.dismissDialog();
+                }
             }
         }) {
             @Override
