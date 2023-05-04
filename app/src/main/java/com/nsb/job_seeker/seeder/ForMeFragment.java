@@ -2,6 +2,7 @@ package com.nsb.job_seeker.seeder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,6 +103,15 @@ public class ForMeFragment extends Fragment {
                                         ));
                                     }
                                 }
+
+                                jobList.add(new Job(
+                                        job.getString("_id"),
+                                        job.getString("name"),
+                                        idCompany,
+                                        job.getString("locationWorking"),
+                                        job.getString("salary"),
+                                        Program.setTime(job.getString("postingDate"))
+                                ));
                             }
                             pbLoading.setVisibility(View.GONE);
                             setListViewAdapter();

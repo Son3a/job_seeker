@@ -20,6 +20,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 
 import org.json.JSONException;
@@ -32,7 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private TextView txtError;
     private RequestQueue mRequestQueue;
-    private String base_url = "http://192.168.1.10:8000/auth";
+    private String base_url = Program.url_dev+"/auth";
     private RegisterTask registerTask;
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;

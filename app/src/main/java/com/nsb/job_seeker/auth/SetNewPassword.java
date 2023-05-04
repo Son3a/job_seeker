@@ -23,6 +23,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 
 import org.json.JSONException;
@@ -38,7 +39,7 @@ public class SetNewPassword extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
     private TextView txtWarningResetPassword;
-    private String base_url = "http://192.168.1.10:8000/auth";
+    private String base_url = Program.url_dev+"/auth";
     private String sharedPreferencesName = "JobSharedPreference";
     private LoadingDialog loadingDialog;
 
