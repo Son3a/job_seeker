@@ -92,7 +92,7 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/txt_salary_detail"
+                android:id="@+id/tv_location_company"
                 style="@style/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
                 android:textSize="15sp" />
 
             <TextView
-                android:id="@+id/tv_amount_company"
+                android:id="@+id/tv_amount_employer"
                 style="@style/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

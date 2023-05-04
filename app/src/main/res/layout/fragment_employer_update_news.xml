@@ -22,7 +22,7 @@
             android:focusable="true"
             android:paddingLeft="-0dp"
             android:src="@drawable/ic_cancel"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/txt_title"
@@ -95,7 +95,8 @@
                     android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_salary_black"
                     android:drawablePadding="20dp"
-                    android:hint="Lương" />
+                    android:hint="Lương"
+                    android:inputType="number"/>
 
                 <EditText
                     android:id="@+id/edt_work_time"
@@ -109,17 +110,15 @@
                     android:drawablePadding="20dp"
                     android:hint="Thời gian làm việc" />
 
-                <EditText
-                    android:id="@+id/edt_field_job"
+                <Spinner
+                    android:id="@+id/spn_type_job"
                     style="@style/text"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
-                    android:background="@drawable/custom_edittext_cre_news"
-                    android:drawableLeft="@drawable/ic_field_job"
-                    android:drawablePadding="20dp"
-                    android:hint="Lĩnh vực" />
+                    android:background="@drawable/custom_spinner_type_job"
+                    android:paddingLeft="50dp"/>
 
                 <TextView
                     android:id="@+id/tv_time_create_new"
@@ -142,7 +141,8 @@
                     android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_deadline"
                     android:drawablePadding="20dp"
-                    android:hint="Hạn nộp hồ sơ" />
+                    android:hint="Hạn nộp hồ sơ"
+                    android:inputType="date"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -195,35 +195,6 @@
                         android:inputType="textMultiLine" />
 
                 </LinearLayout>
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="15dp"
-                    android:background="#D4D4D4" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        style="@style/text_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Kỹ năng yêu cầu" />
-
-                    <EditText
-                        android:id="@+id/edt_skill"
-                        style="@style/text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:background="@drawable/custom_edittext_cre_news"
-                        android:inputType="textMultiLine" />
-                </LinearLayout>
-
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
@@ -234,4 +205,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_save_id_jobs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 </LinearLayout>

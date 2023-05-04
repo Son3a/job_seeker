@@ -1,12 +1,10 @@
 package com.nsb.job_seeker.seeder;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -26,26 +24,19 @@ import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Pattern;
 
 public class JobDetailActivity extends AppCompatActivity {
     private ImageView imgBack;
     private Button btnApply, btnCancel;
-    private TextView tvSalary, tvTypeJob, tvTimeJob, tvExperience, tvTimeUpdated, tvAddress, tvDescJob, tvNameJob, tvCompany, tvPlace;
-    private GridView gridViewSkill;
+    private TextView tvSalary, tvTypeJob, tvTimeJob, tvExperience, tvTimeUpdated, tvAddress, tvDescJob, tvNameJob, tvCompany, tvPlace, tvReqSkill;
     private ProgressBar pbLoading;
     private RelativeLayout body;
+    private String IDCompany = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,19 +46,9 @@ public class JobDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_seeker_job_detail);
 
         setControl();
-        Bundle bundle = getIntent().getExtras();
-        String id = bundle.getString("id");
-        boolean isApply = bundle.getBoolean("isApply");
-        if (isApply) {
-            btnApply.setVisibility(View.VISIBLE);
-            btnCancel.setVisibility(View.GONE);
-        } else {
-            btnApply.setVisibility(View.GONE);
-            btnCancel.setVisibility(View.VISIBLE);
-        }
-        String url = "https://job-seeker-smy5.onrender.com/job/detail?id=" + id;
 
-        callAPI(url);
+
+        getJobDetail();
         setEvent();
     }
 
@@ -75,7 +56,6 @@ public class JobDetailActivity extends AppCompatActivity {
         imgBack = findViewById(R.id.ic_back);
         btnApply = findViewById(R.id.btn_apply);
         btnCancel = findViewById(R.id.btn_cancel);
-        gridViewSkill = findViewById(R.id.gv_skill);
 
         tvSalary = findViewById(R.id.txt_salary_detail);
         tvTypeJob = findViewById(R.id.txt_type_job_detail);
@@ -88,17 +68,35 @@ public class JobDetailActivity extends AppCompatActivity {
         tvCompany = findViewById(R.id.txt_company_detail);
         tvPlace = findViewById(R.id.txt_place_detail);
         body = findViewById(R.id.body_layout);
+        tvReqSkill = findViewById(R.id.tv_request_skill);
         pbLoading = findViewById(R.id.idLoadingPB);
+
+        Bundle bundle = getIntent().getExtras();
+        if(bundle.containsKey("isLinkCompany")){
+            tvCompany.setEnabled(false);
+        }
     }
 
     private void setEvent() {
+        back();
+
+        changeBtnSubmit();
+
+        applyJob();
+
+        directToListJobByCompany();
+    }
+
+    private void back() {
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
+    }
 
+    private void applyJob() {
         btnApply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,18 +104,36 @@ public class JobDetailActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-        directToListJobByCompany();
     }
 
-    private void callAPI(String url) {
+    private void changeBtnSubmit() {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle.containsKey("isApply")) {
+            boolean isApply = bundle.getBoolean("isApply");
+            if (isApply) {
+                btnApply.setVisibility(View.VISIBLE);
+                btnCancel.setVisibility(View.GONE);
+            } else {
+                btnApply.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.VISIBLE);
+            }
+        }else{
+            btnApply.setVisibility(View.GONE);
+            btnCancel.setVisibility(View.GONE);
+        }
+    }
+
+    private void getJobDetail() {
         RequestQueue requestQueue = Volley.newRequestQueue(JobDetailActivity.this);
+
+        Bundle bundle = getIntent().getExtras();
+
+        String url = "https://job-seeker-smy5.onrender.com/job/detail?id=" + bundle.getString("id");
         pbLoading.setVisibility(View.VISIBLE);
-        System.out.println("Logggggggggggggggggggggggggggggggggg");
+
         JsonObjectRequest data = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                System.out.println("Loggggggggggggggggggggggggggggggggg2");
                 try {
                     JSONObject job = response.getJSONObject("data");
 
@@ -125,6 +141,7 @@ public class JobDetailActivity extends AppCompatActivity {
                     if (!job.isNull("idCompany")) {
                         idCompany = job.getJSONObject("idCompany").getString("name");
                         place = job.getJSONObject("idCompany").getString("location");
+                        IDCompany = job.getJSONObject("idCompany").getString("_id");
                     }
 
                     String typeJob = "";
@@ -133,11 +150,15 @@ public class JobDetailActivity extends AppCompatActivity {
                     }
 
                     String salary = job.getString("salary");
-                    if (Pattern.matches("[a-zA-Z]+", salary) == false && salary.length() > 2) {
-                        salary = Program.formatSalary(salary);
+                    if (Pattern.matches("[a-zA-Z]+", salary) == false) {
+                        salary = "VND " + Program.formatSalary(salary);
                     }
-                    String[] listSkill = job.getString("requirement").split(",");
-                    setViewSkillReq(listSkill);
+
+                    String time = Program.setTime(job.getString("updateDate"));
+                    if (time.equals(null))
+                        time = "Vừa mới cập nhật";
+                    else
+                        time = "Cập nhật " + time + " trước";
 
                     tvNameJob.setText(job.getString("name"));
                     tvCompany.setText(idCompany);
@@ -146,9 +167,10 @@ public class JobDetailActivity extends AppCompatActivity {
                     tvTypeJob.setText(typeJob);
                     tvTimeJob.setText(job.getString("hourWorking"));
                     tvExperience.setText("Không cần kinh nghiệm");
-                    tvTimeUpdated.setText(Program.setTime(job.getString("postingDate")));
-                    tvAddress.setText("\u25CF    " + job.getString("locationWorking"));
-                    tvDescJob.setText("\u25CF    " + job.getString("description"));
+                    tvTimeUpdated.setText(time);
+                    tvAddress.setText("\u25CF " + job.getString("locationWorking"));
+                    tvDescJob.setText( Program.formatStringToBullet(job.getString("description")));
+                    tvReqSkill.setText(Program.formatStringToBullet(job.getString("requirement")));
 
                     pbLoading.setVisibility(View.GONE);
                     body.setVisibility(View.VISIBLE);
@@ -186,19 +208,16 @@ public class JobDetailActivity extends AppCompatActivity {
         requestQueue.add(data);
     }
 
-    private void setViewSkillReq(String[] skillList) {
-        ListViewSkillApdapter listViewSkillApdapter = new ListViewSkillApdapter(JobDetailActivity.this, R.layout.list_view_skill, skillList);
-        gridViewSkill.setAdapter(listViewSkillApdapter);
-    }
 
 
     private void directToListJobByCompany() {
         tvCompany.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(JobDetailActivity.this, ListJobByCompany.class);
+//                Toast.makeText(JobDetailActivity.this, IDCompany, Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(JobDetailActivity.this, CompanyActivity.class);
+                i.putExtra("idCompany", IDCompany);
                 startActivity(i);
-//                Toast.makeText(JobDetailActivity.this, "hihi", Toast.LENGTH_SHORT).show();
             }
         });
     }

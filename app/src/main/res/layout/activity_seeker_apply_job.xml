@@ -88,7 +88,7 @@
             android:text="GỬI HỒ SƠ"
             android:textSize="16sp"
             android:textStyle="bold" />
-        <ImageView
+        <TextView
             android:id="@+id/img_upload"
             android:layout_width="match_parent"
             android:layout_height="200dp"/>

@@ -21,10 +21,11 @@
             android:background="@drawable/custom_spinner_statistical_job" />
 
         <TextView
+            android:id="@+id/tv_amount_job"
             style="@style/text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tìm thấy 50 việc làm"
+            android:text=""
             android:layout_marginTop="20dp"/>
     </LinearLayout>
 

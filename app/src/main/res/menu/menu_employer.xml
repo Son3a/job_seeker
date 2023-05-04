@@ -8,6 +8,6 @@
         android:title="Đăng tin"
         android:icon="@drawable/ic_add"/>
     <item android:id="@+id/menu_account"
-        android:title="Tài khoàn"
+        android:title="Tài khoản"
         android:icon="@drawable/ic_baseline_account"/>
 </menu>

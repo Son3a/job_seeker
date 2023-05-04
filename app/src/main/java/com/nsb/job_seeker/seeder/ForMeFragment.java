@@ -1,6 +1,5 @@
 package com.nsb.job_seeker.seeder;
 
-import android.app.DownloadManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,10 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +22,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,10 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ForMeFragment extends Fragment {
-
-    private ListViewApdapter listViewApdapter;
     private ListView listViewJob;
-    private String url = "https://job-seeker-smy5.onrender.com/job/list";
+    private String url = "https://job-seeker-smy5.onrender.com/job/list/sort-by-date";
     private View homeView;
     private ProgressBar pbLoading;
 
@@ -50,9 +46,7 @@ public class ForMeFragment extends Fragment {
         homeView = inflater.inflate(R.layout.fragment_seeker_for_me, container, false);
 
         setControl();
-        if (ForMeFragment.jobList.isEmpty()) {
-            callAPI(url);
-        }
+        setEvent();
 
         return homeView;
     }
@@ -60,10 +54,16 @@ public class ForMeFragment extends Fragment {
     private void setControl() {
         jobList = new ArrayList<Job>();
         listViewJob = homeView.findViewById(R.id.lv_job);
-        pbLoading=homeView.findViewById(R.id.idLoadingPB);
+        pbLoading = homeView.findViewById(R.id.idLoadingPB);
     }
 
-    private void callAPI(String url) {
+    private void setEvent() {
+        if (ForMeFragment.jobList.isEmpty()) {
+            getNewJobs(url);
+        }
+    }
+
+    private void getNewJobs(String url) {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         pbLoading.setVisibility(View.VISIBLE);
@@ -74,13 +74,34 @@ public class ForMeFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         try {
                             String idCompany = "";
-                            JSONArray jobsList = response.getJSONObject("data").getJSONArray("data");
-                            for (int i = 0; i < jobsList.length(); i++) {
-                                JSONObject job = jobsList.getJSONObject(i);
-                                if (!job.isNull("idCompany")) {
-                                    idCompany = job.getJSONObject("idCompany").getString("name");
-                                } else {
-                                    idCompany = "";
+                            JSONArray jobsList = response.getJSONArray("data");
+                            int lenghJobs = jobsList.length();
+                            if (Program.calculateTime(jobsList.getJSONObject(0).getString("updateDate")) >= (7 * 24 * 60 * 60 * 1000)) {      //check time update job if it > 1 week to show on news
+                                lenghJobs = 10;
+                            } else {
+                                for (int i = 0; i < lenghJobs; i++) {
+                                    JSONObject job = jobsList.getJSONObject(i);
+                                    if (Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000) && job.getString("status").equals("true")) {
+                                        if (!job.isNull("idCompany")) {
+                                            idCompany = job.getJSONObject("idCompany").getString("name");
+                                        } else {
+                                            idCompany = "";
+                                        }
+
+                                        String time = Program.setTime(job.getString("updateDate"));
+                                        if (time.equals(null))
+                                            time = "Vừa mới cập nhật";
+                                        else
+                                            time = "Cập nhật " + time + " trước";
+                                        jobList.add(new Job(
+                                                job.getString("_id"),
+                                                job.getString("name"),
+                                                idCompany,
+                                                job.getString("locationWorking"),
+                                                job.getString("salary"),
+                                                time
+                                        ));
+                                    }
                                 }
 
                                 jobList.add(new Job(
@@ -91,10 +112,9 @@ public class ForMeFragment extends Fragment {
                                         job.getString("salary"),
                                         Program.setTime(job.getString("postingDate"))
                                 ));
-
                             }
                             pbLoading.setVisibility(View.GONE);
-                            setEvent();
+                            setListViewAdapter();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
@@ -128,8 +148,8 @@ public class ForMeFragment extends Fragment {
         queue.add(data);
     }
 
-    private void setEvent() {
-        listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList);
+    private void setListViewAdapter() {
+        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList, true);
         listViewJob.setAdapter(listViewApdapter);
         listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

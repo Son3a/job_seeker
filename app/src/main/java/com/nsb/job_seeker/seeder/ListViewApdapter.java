@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +33,7 @@ import com.nsb.job_seeker.auth.RegisterActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.nsb.job_seeker.model.Job;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -45,15 +45,18 @@ public class ListViewApdapter extends ArrayAdapter {
     private Context context;
     private int layoutId;
     private List<Job> jobList;
+
     private RequestQueue mRequestQueue;
     private String base_url = Program.url_dev+"/job";
     private DialogNotification dialogNotification = null;
+    private boolean isVisibleBtnSave;
 
-    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList) {
+    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList, boolean isVisibleBtnSave) {
         super(context, layoutId);
         this.context = context;
         this.layoutId = layoutId;
         this.jobList = jobList;
+        this.isVisibleBtnSave = isVisibleBtnSave;
     }
 
     @Override
@@ -83,6 +86,21 @@ public class ListViewApdapter extends ArrayAdapter {
         holder.tvSalary.setText(holder.job.getSalary());
         holder.tvTimeUpdated.setText(holder.job.getTime_update());
 
+        hideBtnSave(row,position);
+
+        saveJob(row,position);
+
+        return row;
+    }
+
+    private void hideBtnSave(View row, int position){
+        ImageView imgSaveButton = (ImageView) row.findViewById(R.id.img_save_job);
+        if(isVisibleBtnSave == false){
+            imgSaveButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void saveJob(View row, int position){
         ImageView imgSaveButton = (ImageView) row.findViewById(R.id.img_save_job);
         boolean check = true;
         imgSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +115,6 @@ public class ListViewApdapter extends ArrayAdapter {
                 }
             }
         });
-        return row;
     }
 
     private void toggleJobFavourite(String jobId) throws JSONException {

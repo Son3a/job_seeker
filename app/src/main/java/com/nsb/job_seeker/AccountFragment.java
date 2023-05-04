@@ -49,6 +49,10 @@ public class AccountFragment extends Fragment {
     }
 
     private void setEvent() {
+        if(Program.role.equals("user")){
+            tvStatistical.setVisibility(View.GONE);
+        }
+
         tvStatistical.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

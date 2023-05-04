@@ -43,13 +43,6 @@
             android:drawableLeft="@drawable/ic_time_created"
             android:drawablePadding="15dp"
             android:text="12/02/2023" />
-        <TextView
-            android:id="@+id/tv_amount_cv"
-            style="@style/text_view_job"
-            android:layout_marginTop="15dp"
-            android:drawableLeft="@drawable/ic_cv"
-            android:drawablePadding="15dp"
-            android:text="Số lượng hồ sơ: 5" />
 
 
         <TextView
