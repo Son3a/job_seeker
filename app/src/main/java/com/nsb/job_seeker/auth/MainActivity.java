@@ -107,8 +107,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendAndRequestResponse(String email, String password) throws JSONException {
-        //RequestQueue initialized
-////            1.Tạo request
         mRequestQueue = Volley.newRequestQueue(MainActivity.this);
         //post data
         JSONObject jsonObject = new JSONObject();
@@ -142,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
-
                 if(error.networkResponse.data!=null) {
                     try {
                         body = new String(error.networkResponse.data,"UTF-8");
@@ -152,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
 
                         dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), MainActivity.this);
                     } catch (UnsupportedEncodingException e) {
+                        Log.d("ABC", e.toString());
                         e.printStackTrace();
                     }
                 }
@@ -176,25 +174,27 @@ public class MainActivity extends AppCompatActivity {
                     String name = response.getString("name");
                     String email = response.getString("email");
                     String phone = response.getString("phone");
-                    String avatar = response.getString("avatar");
 
                     SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("name", name);
                     editor.putString("email", email);
                     editor.putString("phone", phone);
-                    editor.putString("avatar", avatar);
 
                     editor.commit();
                     loadingDialog.dismissDialog();
+
                     if(role.trim().equals("user")){
+                        Log.d("ABC", "user");
                         startActivity(new Intent(MainActivity.this, SeekerMainActivity.class));
                     }
                     else{
+                        Log.d("ABC", "admin");
                         startActivity(new Intent(MainActivity.this, EmployerMainActivity.class));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.d("ABC", e.toString());
                 }
             }
         }, new Response.ErrorListener() {
@@ -208,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
                         body = new String(error.networkResponse.data,"UTF-8");
                         Log.d("ABC", body);
                     } catch (UnsupportedEncodingException e) {
+                        Log.d("ABC", e.toString());
                         e.printStackTrace();
                     }
                     loadingDialog.dismissDialog();

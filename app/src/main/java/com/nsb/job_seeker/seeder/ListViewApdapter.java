@@ -1,8 +1,12 @@
 package com.nsb.job_seeker.seeder;
 
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +18,36 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.auth.DialogNotification;
+import com.nsb.job_seeker.auth.RegisterActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ListViewApdapter extends ArrayAdapter {
 
     private Context context;
     private int layoutId;
     private List<Job> jobList;
+    private RequestQueue mRequestQueue;
+    private String base_url = Program.url_dev+"/job";
+    private DialogNotification dialogNotification = null;
 
     public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList) {
         super(context, layoutId);
@@ -64,13 +89,68 @@ public class ListViewApdapter extends ArrayAdapter {
             @Override
             public void onClick(View v) {
                 System.out.println("CLick on job " + position);
-//                if (check == true) {
-//                    imgSaveButton.setImageResource(R.drawable.ic_save_job1);
-//                    check = false;
-//                }
+                Log.d("ABC", String.valueOf(jobList.get(position).getId()));
+                try {
+                    toggleJobFavourite(jobList.get(position).getId());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
         return row;
+    }
+
+    private void toggleJobFavourite(String jobId) throws JSONException {
+        mRequestQueue = Volley.newRequestQueue(getContext());
+        //post data
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("jobId", jobId);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PATCH, base_url + "/list-job-favourite", jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
+                    Log.d("ABC", convertedObject.toString());
+                    String message = response.getString("message");
+                    dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
+
+                } catch (JSONException e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String body;
+                //get status code here
+                String statusCode = String.valueOf(error.networkResponse.statusCode);
+                if(error.networkResponse.data!=null) {
+                    try {
+                        body = new String(error.networkResponse.data,"UTF-8");
+                        JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
+                        String message = convertedObject.get("message").toString();
+
+                        dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), getContext());
+                        Log.d("ABC", body);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                SharedPreferences sharedPreferences = getContext().getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
+                String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length() - 1));
+                return params;
+            };
+        };
+        mRequestQueue.add(jsonObjectRequest);
     }
 
     public static class JobHolder {

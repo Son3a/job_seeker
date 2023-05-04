@@ -3,6 +3,7 @@ package com.nsb.job_seeker.seeder;
 import android.app.DownloadManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,7 @@ public class ForMeFragment extends Fragment {
                                 } else {
                                     idCompany = "";
                                 }
+
                                 jobList.add(new Job(
                                         job.getString("_id"),
                                         job.getString("name"),

@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class Program {
     public static String token = "";
-    public static String url_dev = "http://192.168.1.10:8000";
+    public static String url_dev = "https://job-seeker-smy5.onrender.com";
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";
 
