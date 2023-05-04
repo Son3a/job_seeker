@@ -303,7 +303,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void setListView() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobResultList);
+        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobResultList, true);
         listView.setAdapter(listViewApdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

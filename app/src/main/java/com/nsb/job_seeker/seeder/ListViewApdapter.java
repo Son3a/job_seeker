@@ -12,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,11 +33,13 @@ import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.DialogNotification;
 import com.nsb.job_seeker.auth.RegisterActivity;
+import com.nsb.job_seeker.employer.CVListViewAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,14 +50,29 @@ public class ListViewApdapter extends ArrayAdapter {
     private int layoutId;
     private List<Job> jobList;
     private RequestQueue mRequestQueue;
-    private String base_url = Program.url_dev+"/job";
+    private String base_url = Program.url_dev + "/job";
     private DialogNotification dialogNotification = null;
+    private ProgressBar pbLoading;
+    private ImageView btnSaveJob;
 
-    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList) {
+    private boolean isVisibleBtnSave;
+    private boolean isSaveView = false;
+
+    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList, boolean isVisibleBtnSave) {
         super(context, layoutId);
         this.context = context;
         this.layoutId = layoutId;
         this.jobList = jobList;
+        this.isVisibleBtnSave = isVisibleBtnSave;
+    }
+
+    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList, boolean isVisibleBtnSave, boolean isSaveView) {
+        super(context, layoutId);
+        this.context = context;
+        this.layoutId = layoutId;
+        this.jobList = jobList;
+        this.isVisibleBtnSave = isVisibleBtnSave;
+        this.isSaveView = isSaveView;
     }
 
     @Override
@@ -75,6 +94,7 @@ public class ListViewApdapter extends ArrayAdapter {
         holder.tvPlace = (TextView) row.findViewById(R.id.tv_place);
         holder.tvSalary = (TextView) row.findViewById(R.id.tv_salary);
         holder.tvTimeUpdated = (TextView) row.findViewById(R.id.tv_time_updated);
+        holder.btnSave = row.findViewById(R.id.img_save_job);
 
         row.setTag(holder);
         holder.tvNameJob.setText(holder.job.getNameJob());
@@ -83,40 +103,54 @@ public class ListViewApdapter extends ArrayAdapter {
         holder.tvSalary.setText(holder.job.getSalary());
         holder.tvTimeUpdated.setText(holder.job.getTime_update());
 
-        ImageView imgSaveButton = (ImageView) row.findViewById(R.id.img_save_job);
-        boolean check = true;
-        imgSaveButton.setOnClickListener(new View.OnClickListener() {
+        pbLoading = ((Activity) context).findViewById(R.id.idLoadingPB);
+
+        hideBtnSave(row, position);
+
+        holder.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("CLick on job " + position);
-                Log.d("ABC", String.valueOf(jobList.get(position).getId()));
                 try {
-                    toggleJobFavourite(jobList.get(position).getId());
+                    toggleJobFavourite(jobList.get(position).getId(), position, holder.btnSave);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
+
         return row;
     }
 
-    private void toggleJobFavourite(String jobId) throws JSONException {
+    private void hideBtnSave(View row, int position) {
+        ImageView imgSaveButton = (ImageView) row.findViewById(R.id.img_save_job);
+        if (isVisibleBtnSave == false) {
+            imgSaveButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void toggleJobFavourite(String jobId, int position, ImageView imgSave) throws JSONException {
         mRequestQueue = Volley.newRequestQueue(getContext());
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("jobId", jobId);
+        pbLoading.setVisibility(View.VISIBLE);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PATCH, base_url + "/list-job-favourite", jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
-                    Log.d("ABC", convertedObject.toString());
                     String message = response.getString("message");
                     dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
-
+                    pbLoading.setVisibility(View.GONE);
+                    if (isSaveView) {
+                        jobList.remove(position);
+                        notifyDataSetChanged();
+                    }else{
+                        imgSave.setImageResource(R.drawable.ic_save_job1);
+                    }
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    pbLoading.setVisibility(View.GONE);
                     e.printStackTrace();
                 }
             }
@@ -126,15 +160,17 @@ public class ListViewApdapter extends ArrayAdapter {
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
-                if(error.networkResponse.data!=null) {
+                if (error.networkResponse.data != null) {
                     try {
-                        body = new String(error.networkResponse.data,"UTF-8");
+                        body = new String(error.networkResponse.data, "UTF-8");
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), getContext());
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), getContext());
+                        pbLoading.setVisibility(View.GONE);
                         Log.d("ABC", body);
                     } catch (UnsupportedEncodingException e) {
+                        pbLoading.setVisibility(View.GONE);
                         e.printStackTrace();
                     }
                 }
@@ -148,7 +184,9 @@ public class ListViewApdapter extends ArrayAdapter {
                 params.put("Content-Type", "application/json; charset=UTF-8");
                 params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length() - 1));
                 return params;
-            };
+            }
+
+            ;
         };
         mRequestQueue.add(jsonObjectRequest);
     }
@@ -156,6 +194,7 @@ public class ListViewApdapter extends ArrayAdapter {
     public static class JobHolder {
         Job job;
         TextView tvCompany, tvNameJob, tvPlace, tvSalary, tvTimeUpdated;
+        ImageView btnSave;
     }
 
 }

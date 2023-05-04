@@ -129,7 +129,7 @@ public class ForMeFragment extends Fragment {
     }
 
     private void setEvent() {
-        listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList);
+        listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList,true);
         listViewJob.setAdapter(listViewApdapter);
         listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -1,8 +1,13 @@
 package com.nsb.job_seeker;
 
-import android.content.SharedPreferences;
+import static java.lang.Math.abs;
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.app.Activity;
+import android.content.Context;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -13,12 +18,16 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Program {
-    public static String token = "";
+    public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRmYzZiODU4MjVjMGQzMDlmNjJmY2EiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MzExODIyMiwiZXhwIjoxNjgzMTIxODIyfQ.TbAUWlP9fpkibjoB0a1udA1yOOMqCeE39vkcFtxo_sk";
+    public static String idUser;
+    public static String idCompany;
+    public static String role;
     public static String url_dev = "https://job-seeker-smy5.onrender.com";
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";
 
     public static String formatSalary(String salary) {
+        if (!salary.matches(".*\\d.*")) return salary;
         NumberFormat df = NumberFormat.getCurrencyInstance();
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setGroupingSeparator('.');
@@ -32,8 +41,7 @@ public class Program {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date timeNow = new Date(System.currentTimeMillis());
         Date create = format.parse(timeCreate);
-        long difference = timeNow.getTime() - create.getTime();
-        System.out.println("Time difference: " + difference);
+        long difference = abs(timeNow.getTime() - create.getTime());
         return difference;
     }
 
@@ -48,27 +56,91 @@ public class Program {
         month = date / 30;
         year = month / 365;
 
-        if (year != 0) return "Cập nhật " + year + " năm trước";
-        if (month != 0) return "Cập nhật " + month + " tháng trước";
-        if (date != 0) return "Cập nhật " + date + " ngày trước";
-        if (h != 0) return "Cập nhật " + h + " giờ trước";
-        if (m != 0) return "Cập nhật " + m + " phút trước";
-        return "Vừa mới cập nhật";
+        if (year != 0) return year + " năm";
+        if (month != 0) return month + " tháng";
+        if (date != 0) return date + " ngày";
+        if (h != 0) return h + " giờ";
+        if (m != 0) return m + " phút";
+        return null;
+    }
+
+    public static String formatTimeDDMMYYYY(String time) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat output = new SimpleDateFormat("dd-MM-yyyy");
+
+        String newTime = output.format(sdf.parse(time));
+        return newTime;
     }
 
     public static boolean checkValidDeadline(int day, int month, int year) {
-        LocalDate currentdate = LocalDate.now();
-        int currentDay = currentdate.getDayOfMonth();
+        LocalDate currentdate = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentdate = LocalDate.now();
+        }
+        int currentDay = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentDay = currentdate.getDayOfMonth();
+        }
         //Getting the current month
-        int currentMonth = currentdate.getMonthValue();
+        int currentMonth = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentMonth = currentdate.getMonthValue();
+        }
         //getting the current year
-        int currentYear = currentdate.getYear();
-        System.out.println(currentDay + '/' + currentMonth + '/' + currentYear);
+        int currentYear = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            currentYear = currentdate.getYear();
+        }
 
-        if (year < currentYear) return false;
-        if (month < currentMonth) return false;
-        if (day < currentDay) return false;
+        if(year > currentYear) return true;
+        if (year == currentYear && month > currentMonth) return true;
+        if (year == currentYear && month == currentMonth && day > currentDay) return true;
 
-        return true;
+        return false;
+    }
+
+    public static void addNewLine(CharSequence text, int lengthBefore, int lengthAfter, EditText edtText) {
+        if (lengthAfter > lengthBefore) {
+            if (text.toString().length() == 1) {
+                text = "\u25CF " + text;
+                edtText.setText(text);
+                edtText.setSelection(edtText.getText().length());
+            }
+
+            if (text.toString().endsWith("\n")) {
+                text = text.toString().replace("\n", "\n\u25CF ");
+                text = text.toString().replace("\u25CF \u25CF", "\u25CF");
+                text = text.toString().replace("\n\u25CF \n\u25CF ", "\n\u25CF ");
+                text = text.toString().replace("\u25CF \n\u25CF ", "\u25CF ");
+                edtText.setText(text);
+                edtText.setSelection(edtText.getText().length());
+            }
+        }
+    }
+
+    public static String formatStringFromBullet(String oldString) {
+        String newString = "";
+        String temp = "";
+        String[] listString = oldString.substring(1).split("\u25CF");
+        for (int i = 0; i < listString.length; i++) {
+            temp = listString[i].trim().replace(".", "");
+            newString = newString + temp + ".";
+        }
+        return newString;
+    }
+
+    public static String formatStringToBullet(String string){
+        String newString = "";
+        String[] listString = string.split("\\.");
+        for (int i = 0; i < listString.length; i++) {
+            newString = newString + "\u25CF " + listString[i] + "\n";
+        }
+
+        return newString.substring(0,newString.length()-1);
+    }
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

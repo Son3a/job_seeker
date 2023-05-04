@@ -62,7 +62,7 @@ public class ListJobByCompany extends AppCompatActivity {
     }
 
     private void setListView() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(ListJobByCompany.this, R.layout.list_view_item_job, jobList);
+        ListViewApdapter listViewApdapter = new ListViewApdapter(ListJobByCompany.this, R.layout.list_view_item_job, jobList, true);
         listView.setAdapter(listViewApdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

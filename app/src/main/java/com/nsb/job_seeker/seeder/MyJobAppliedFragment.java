@@ -153,7 +153,7 @@ public class MyJobAppliedFragment extends Fragment {
     }
 
     private void setListView() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobListApplied);
+        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobListApplied,false);
         listView.setAdapter(listViewApdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

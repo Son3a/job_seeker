@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
-                    Program.token = convertedObject.get("accessToken").toString();
+                    Program.token = "Bearer " + convertedObject.get("accessToken").toString().replace("\"","");
                     String accessToken = convertedObject.get("accessToken").toString();
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
