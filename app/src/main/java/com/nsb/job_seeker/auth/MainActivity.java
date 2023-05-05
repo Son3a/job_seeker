@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         this.loadingDialog = new LoadingDialog(MainActivity.this);
+        Log.d("ABC", base_url);
         setControl();
         setEvent();
     }
@@ -118,8 +119,9 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 try {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
-                    Program.token = "Bearer " + convertedObject.get("accessToken").toString().replace("\"","");
+
                     String accessToken = convertedObject.get("accessToken").toString();
+                    Program.token = "Bearer " + accessToken.replace("\"","");
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
 
@@ -139,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 String body;
                 //get status code here
-                String statusCode = String.valueOf(error.networkResponse.statusCode);
                 if(error.networkResponse.data!=null) {
                     try {
                         body = new String(error.networkResponse.data,"UTF-8");
@@ -174,7 +175,14 @@ public class MainActivity extends AppCompatActivity {
                     String name = response.getString("name");
                     String email = response.getString("email");
                     String phone = response.getString("phone");
+//                    String avatar = response.getString("avatar");
 
+                    Program.idUser = response.getString("_id");
+                    if (role.equals("admin")) {
+                        Program.idCompany = response.getJSONObject("company").getString("_id");
+                    }
+                    Program.role = role;
+                    
                     SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("name", name);
@@ -194,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Log.d("ABC", e.toString());
+                    Log.d("ABC","LOI 1 : " + e.toString());
                 }
             }
         }, new Response.ErrorListener() {
@@ -208,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                         body = new String(error.networkResponse.data,"UTF-8");
                         Log.d("ABC", body);
                     } catch (UnsupportedEncodingException e) {
-                        Log.d("ABC", e.toString());
+                        Log.d("ABC","LOI 2 : " + e.toString());
                         e.printStackTrace();
                     }
                     loadingDialog.dismissDialog();

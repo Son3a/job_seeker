@@ -34,6 +34,7 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.DialogNotification;
 import com.nsb.job_seeker.auth.RegisterActivity;
 import com.nsb.job_seeker.employer.CVListViewAdapter;
+import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONException;
 import org.json.JSONObject;

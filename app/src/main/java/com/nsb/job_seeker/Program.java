@@ -18,11 +18,11 @@ import java.time.LocalDate;
 import java.util.Date;
 
 public class Program {
-    public static String token = "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDRmYzZiODU4MjVjMGQzMDlmNjJmY2EiLCJyb2xlIjoidXNlciIsImlhdCI6MTY4MzExODIyMiwiZXhwIjoxNjgzMTIxODIyfQ.TbAUWlP9fpkibjoB0a1udA1yOOMqCeE39vkcFtxo_sk";
+    public static String token = "";
+    public static String url_dev = "https://job-seeker-smy5.onrender.com";
     public static String idUser;
     public static String idCompany;
     public static String role;
-    public static String url_dev = "https://job-seeker-smy5.onrender.com";
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";
 
