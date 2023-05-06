@@ -195,7 +195,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
     }
 
     private void deleteRecruitmentAPI() throws JSONException {
-        String urlDeleteRecruitment ="http://10.156.28.201:8000/job/delete";
+        String urlDeleteRecruitment ="https://job-seeker-smy5.onrender.com/job/delete";
         String access_token = Program.token;
         Log.d("ABC", "check token : " + access_token);
         RequestQueue queue = Volley.newRequestQueue(RecruitmentDetailActivity.this);
