@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical"
     android:paddingHorizontal="16dp"
-    tools:context=".MainActivity">
+    >
 
     <include layout="@layout/toolbar" />
 
@@ -15,14 +15,23 @@
         android:layout_width="wrap_content"
         android:layout_height="160dp"
         android:layout_alignParentLeft="true"
-        android:src="@drawable/logo" />
-
+        android:src="@drawable/findjob" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login JobSeeker"
+        android:textSize="26sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:id="@+id/login"
+        android:layout_below="@+id/ivLogo"
+        android:textColor="@color/black"
+        />
     <TextView
         android:id="@+id/txtEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ivLogo"
-        android:layout_marginTop="20dp"
+        android:layout_below="@+id/login"
         android:layout_marginBottom="12dp"
         android:text="Email" />
 
