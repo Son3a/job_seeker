@@ -29,11 +29,14 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.employer.EmployerMainActivity;
 import com.nsb.job_seeker.seeder.SeekerMainActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,9 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String base_url = Program.url_dev+"/auth";
+    private String base_url = Program.url_dev + "/auth";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         txtWarning = findViewById(R.id.txtWarning);
-        txtRedirectRegister= findViewById(R.id.txtRedirectRegister);
+        txtRedirectRegister = findViewById(R.id.txtRedirectRegister);
         toolbar = findViewById(R.id.myToolbar);
         txtForgotPassword = findViewById(R.id.txtForgotPassword);
 //        setSupportActionBar(toolbar);
@@ -121,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
 
                     String accessToken = convertedObject.get("accessToken").toString();
-                    Program.token = "Bearer " + accessToken.replace("\"","");
+                    Program.token = "Bearer " + accessToken.replace("\"", "");
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     Log.d("ABC", accessToken);
 
@@ -141,14 +145,14 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 String body;
                 //get status code here
-                if(error.networkResponse.data!=null) {
+                if (error.networkResponse.data != null) {
                     try {
-                        body = new String(error.networkResponse.data,"UTF-8");
+                        body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), MainActivity.this);
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), MainActivity.this);
                     } catch (UnsupportedEncodingException e) {
                         Log.d("ABC", e.toString());
                         e.printStackTrace();
@@ -180,9 +184,17 @@ public class MainActivity extends AppCompatActivity {
                     Program.idUser = response.getString("_id");
                     if (role.equals("admin")) {
                         Program.idCompany = response.getJSONObject("company").getString("_id");
+                    } else {
+                        Program.idListJobSaved = new ArrayList<>();
+                        JSONArray listJobFavorite = response.getJSONArray("jobFavourite");
+                        for (int i = 0; i < listJobFavorite.length(); i++) {
+                            JSONObject job = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
+                            Program.idListJobSaved.add(job.getString("_id"));
+                            Log.d("ABC",Program.idListJobSaved.get(i));
+                        }
                     }
                     Program.role = role;
-                    
+
                     SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("name", name);
@@ -192,17 +204,16 @@ public class MainActivity extends AppCompatActivity {
                     editor.commit();
                     loadingDialog.dismissDialog();
 
-                    if(role.trim().equals("user")){
+                    if (role.trim().equals("user")) {
                         Log.d("ABC", "user");
                         startActivity(new Intent(MainActivity.this, SeekerMainActivity.class));
-                    }
-                    else{
+                    } else {
                         Log.d("ABC", "admin");
                         startActivity(new Intent(MainActivity.this, EmployerMainActivity.class));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Log.d("ABC","LOI 1 : " + e.toString());
+                    Log.d("ABC", "LOI 1 : " + e.toString());
                 }
             }
         }, new Response.ErrorListener() {
@@ -211,12 +222,12 @@ public class MainActivity extends AppCompatActivity {
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
-                if(error.networkResponse.data!=null) {
+                if (error.networkResponse.data != null) {
                     try {
-                        body = new String(error.networkResponse.data,"UTF-8");
+                        body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                     } catch (UnsupportedEncodingException e) {
-                        Log.d("ABC","LOI 2 : " + e.toString());
+                        Log.d("ABC", "LOI 2 : " + e.toString());
                         e.printStackTrace();
                     }
                     loadingDialog.dismissDialog();
@@ -227,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", "Bearer "+ACCESSTOKEN);
+                params.put("Authorization", "Bearer " + ACCESSTOKEN);
                 return params;
             }
         };

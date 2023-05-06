@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/blue_main"
@@ -33,6 +33,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/header"
         android:orientation="vertical"
         android:padding="10dp">
 
@@ -60,23 +61,23 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/custom_textview_cv"
             android:gravity="center"
+            android:onClick="openFileChooser"
             android:paddingLeft="30dp"
             android:paddingTop="20dp"
             android:paddingRight="30dp"
             android:paddingBottom="20dp"
             android:text="Upload CV (địng dạng PDF, tối đa 5MB)"
             android:textColor="@color/blue_main"
-            android:textSize="20sp"
-            android:onClick="openFileChooser"/>
+            android:textSize="20sp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:padding="10dp"
             android:text="Để sử dụng CV cho đơn ứng tuyển khác mà không cần phải upload, hãy cập nhật CV trong mục Tài khoản nhé."
-            android:textSize="20sp"
             android:textColor="@color/black"
-            android:layout_marginTop="10dp"/>
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/btn_send_cv"
@@ -88,11 +89,17 @@
             android:text="GỬI HỒ SƠ"
             android:textSize="16sp"
             android:textStyle="bold" />
+
         <TextView
             android:id="@+id/img_upload"
             android:layout_width="match_parent"
-            android:layout_height="200dp"/>
+            android:layout_height="200dp" />
     </LinearLayout>
 
-
-</LinearLayout>
+    <ProgressBar
+        android:id="@+id/idLoadingPB"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+</RelativeLayout>

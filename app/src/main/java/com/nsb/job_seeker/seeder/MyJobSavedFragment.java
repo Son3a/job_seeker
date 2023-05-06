@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,6 +52,7 @@ public class MyJobSavedFragment extends Fragment {
     private View savedJobView;
     private ListView listViewJobSaved;
     private ProgressBar pbLoading;
+    private TextView tvNotify;
 
     private List<Job> jobList;
 
@@ -69,6 +71,7 @@ public class MyJobSavedFragment extends Fragment {
     private void setControl() {
         listViewJobSaved = savedJobView.findViewById(R.id.lv_job_saved);
         pbLoading = savedJobView.findViewById(R.id.idLoadingPB);
+        tvNotify = savedJobView.findViewById(R.id.tv_notify);
 
         jobList = new ArrayList<>();
     }
@@ -120,7 +123,11 @@ public class MyJobSavedFragment extends Fragment {
                             }
 
                             pbLoading.setVisibility(View.GONE);
-                            setListViewAdapter();
+                            if (jobsList.length() == 0) {
+                                tvNotify.setVisibility(View.VISIBLE);
+                            } else {
+                                setListViewAdapter();
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
@@ -134,7 +141,7 @@ public class MyJobSavedFragment extends Fragment {
                         System.out.println(error);
                     }
                 }
-        ){
+        ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,7 @@ public class MyJobAppliedFragment extends Fragment {
     private ProgressBar pbLoading;
     private List<Job> jobListApplied;
     private ListView listView;
+    private TextView tvNotify;
 
     @Nullable
     @Override
@@ -56,6 +58,7 @@ public class MyJobAppliedFragment extends Fragment {
         pbLoading = appliedJobView.findViewById(R.id.idLoadingPB);
         jobListApplied = new ArrayList<>();
         listView = appliedJobView.findViewById(R.id.lv_job_applied);
+        tvNotify = appliedJobView.findViewById(R.id.tv_notify);
     }
 
     private void setEvent() {
@@ -95,7 +98,11 @@ public class MyJobAppliedFragment extends Fragment {
                                 ));
 
                             }
-                            setListView();
+                            if (jobsList.length() == 0) {
+                                tvNotify.setVisibility(View.VISIBLE);
+                            } else {
+                                setListViewAdapter();
+                            }
                             pbLoading.setVisibility(View.GONE);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -147,7 +154,7 @@ public class MyJobAppliedFragment extends Fragment {
         return create;
     }
 
-    private void setListView() {
+    private void setListViewAdapter() {
         ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobListApplied, false);
         listView.setAdapter(listViewApdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
