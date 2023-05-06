@@ -81,7 +81,8 @@ public class ForMeFragment extends Fragment {
                             } else {
                                 for (int i = 0; i < lenghJobs; i++) {
                                     JSONObject job = jobsList.getJSONObject(i);
-                                    if (Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000) && job.getString("status").equals("true")) {
+                                    if (Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000) && job.getString("status").equals("true")
+                                    && !Program.idListJobSaved.contains(job.getString("_id"))) {
                                         if (!job.isNull("idCompany")) {
                                             idCompany = job.getJSONObject("idCompany").getString("name");
                                         } else {

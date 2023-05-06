@@ -37,6 +37,7 @@ public class JobDetailActivity extends AppCompatActivity {
     private ProgressBar pbLoading;
     private RelativeLayout body;
     private String IDCompany = "";
+    private String IDJob = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,9 +73,10 @@ public class JobDetailActivity extends AppCompatActivity {
         pbLoading = findViewById(R.id.idLoadingPB);
 
         Bundle bundle = getIntent().getExtras();
-        if(bundle.containsKey("isLinkCompany")){
+        if (bundle.containsKey("isLinkCompany")) {
             tvCompany.setEnabled(false);
         }
+        IDJob = bundle.getString("id");
     }
 
     private void setEvent() {
@@ -101,6 +103,7 @@ public class JobDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(JobDetailActivity.this, ApplyJobActivity.class);
+                i.putExtra("idJob",IDJob);
                 startActivity(i);
             }
         });
@@ -117,7 +120,7 @@ public class JobDetailActivity extends AppCompatActivity {
                 btnApply.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.VISIBLE);
             }
-        }else{
+        } else {
             btnApply.setVisibility(View.GONE);
             btnCancel.setVisibility(View.GONE);
         }
@@ -126,9 +129,7 @@ public class JobDetailActivity extends AppCompatActivity {
     private void getJobDetail() {
         RequestQueue requestQueue = Volley.newRequestQueue(JobDetailActivity.this);
 
-        Bundle bundle = getIntent().getExtras();
-
-        String url = "https://job-seeker-smy5.onrender.com/job/detail?id=" + bundle.getString("id");
+        String url = "https://job-seeker-smy5.onrender.com/job/detail?id=" + IDJob;
         pbLoading.setVisibility(View.VISIBLE);
 
         JsonObjectRequest data = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
@@ -163,13 +164,13 @@ public class JobDetailActivity extends AppCompatActivity {
                     tvNameJob.setText(job.getString("name"));
                     tvCompany.setText(idCompany);
                     tvPlace.setText(place);
-                    tvSalary.setText("VND " + salary);
+                    tvSalary.setText(salary);
                     tvTypeJob.setText(typeJob);
                     tvTimeJob.setText(job.getString("hourWorking"));
                     tvExperience.setText("Không cần kinh nghiệm");
                     tvTimeUpdated.setText(time);
                     tvAddress.setText("\u25CF " + job.getString("locationWorking"));
-                    tvDescJob.setText( Program.formatStringToBullet(job.getString("description")));
+                    tvDescJob.setText(Program.formatStringToBullet(job.getString("description")));
                     tvReqSkill.setText(Program.formatStringToBullet(job.getString("requirement")));
 
                     pbLoading.setVisibility(View.GONE);
@@ -207,7 +208,6 @@ public class JobDetailActivity extends AppCompatActivity {
         });
         requestQueue.add(data);
     }
-
 
 
     private void directToListJobByCompany() {
