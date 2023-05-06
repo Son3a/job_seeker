@@ -144,10 +144,12 @@ public class ListViewApdapter extends ArrayAdapter {
                     dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
                     pbLoading.setVisibility(View.GONE);
                     if (isSaveView) {
+                        Program.idListJobSaved.remove(position);
                         jobList.remove(position);
                         notifyDataSetChanged();
                     }else{
                         imgSave.setImageResource(R.drawable.ic_save_job1);
+                        Program.idListJobSaved.add(jobId);
                     }
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();

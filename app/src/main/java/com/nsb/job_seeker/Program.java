@@ -16,6 +16,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 public class Program {
     public static String token = "";
@@ -25,6 +26,7 @@ public class Program {
     public static String role;
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";
+    public static List<String> idListJobSaved;
 
     public static String formatSalary(String salary) {
         if (!salary.matches(".*\\d.*")) return salary;
