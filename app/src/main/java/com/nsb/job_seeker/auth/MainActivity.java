@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtEmail, edtPassword;
     private Button btnLogin;
     private TextView txtWarning, txtRedirectRegister, txtForgotPassword;
-    private Toolbar toolbar;
+    private CheckBox cbxRemeberPassword;
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
@@ -61,15 +62,31 @@ public class MainActivity extends AppCompatActivity {
         setEvent();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
+        String isRemember = sharedPreferences.getString("isRememberPassword", "false");
+
+        if (isRemember.equals("true")) {
+            String email = sharedPreferences.getString("email", "");
+            String pw = sharedPreferences.getString("password", "");
+            edtEmail.setText(email);
+            edtPassword.setText(pw);
+            cbxRemeberPassword.setChecked(true);
+        } else {
+            cbxRemeberPassword.setChecked(false);
+        }
+    }
+
     private void setControl() {
         edtEmail = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         txtWarning = findViewById(R.id.txtWarning);
         txtRedirectRegister = findViewById(R.id.txtRedirectRegister);
-        toolbar = findViewById(R.id.myToolbar);
         txtForgotPassword = findViewById(R.id.txtForgotPassword);
-//        setSupportActionBar(toolbar);
+        cbxRemeberPassword = findViewById(R.id.cbxRemember);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
     }
@@ -133,6 +150,15 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("accessToken", accessToken);
                     editor.putString("refreshToken", refreshToken);
+                    if (cbxRemeberPassword.isChecked()) {
+                        editor.putString("isRememberPassword", "true");
+                        editor.putString("email", edtEmail.getText().toString());
+                        editor.putString("password", edtPassword.getText().toString());
+                    } else {
+                        editor.putString("isRememberPassword", "false");
+                        editor.putString("email", "");
+                        editor.putString("password", "");
+                    }
                     editor.commit();
                     getInfoUser(accessToken);
                 } catch (JSONException e) {
@@ -206,10 +232,14 @@ public class MainActivity extends AppCompatActivity {
 
                     if (role.trim().equals("user")) {
                         Log.d("ABC", "user");
-                        startActivity(new Intent(MainActivity.this, SeekerMainActivity.class));
+                        Intent i = new Intent(MainActivity.this, SeekerMainActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
                     } else {
                         Log.d("ABC", "admin");
-                        startActivity(new Intent(MainActivity.this, EmployerMainActivity.class));
+                        Intent i = new Intent(MainActivity.this, EmployerMainActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

@@ -46,7 +46,7 @@
         android:ems="10"
         android:hint="Nhập email"
         android:paddingHorizontal="8dp"
-        android:text="thudatdl123@gmail.com"/>
+        />
 
     <TextView
         android:id="@+id/txtPassword"
@@ -82,7 +82,7 @@
             android:paddingBottom="4dp"
             android:textSize="18sp"
             app:hintEnabled="false"
-            android:text="Thudat123@"/>
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,12 +98,22 @@
         android:textColor="#FFEB3B"
         android:textSize="16sp"
         android:visibility="gone" />
-
+    <RelativeLayout android:layout_height="wrap_content"  android:layout_width="match_parent" android:id="@+id/rlForgot" android:layout_below="@+id/edtPasswordContainer">
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nhớ mật khẩu"
+            android:textSize="16dp"
+            android:id="@+id/cbxRemember"
+            android:layout_marginBottom="-12dp"
+            android:textColor="#727371"
+            />
+    </RelativeLayout>
     <TextView
         android:id="@+id/txtForgotPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/edtPasswordContainer"
+        android:layout_below="@+id/rlForgot"
         android:layout_marginVertical="10dp"
         android:gravity="right"
         android:text="Quên mật khẩu"
@@ -133,7 +143,6 @@
             android:layout_height="wrap_content"
             android:text="Bạn chưa có tài khoản ? "
             android:textSize="16sp"
-
             />
 
         <TextView
