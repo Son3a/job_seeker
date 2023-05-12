@@ -2,6 +2,8 @@ package com.nsb.job_seeker.auth;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -32,7 +34,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 public class ForgotActivity extends AppCompatActivity {
-    private ImageView backArrow;
     private Button btnSendCode;
     private EditText edtEmailForgot;
     private RequestQueue mRequestQueue;
@@ -46,7 +47,9 @@ public class ForgotActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        actionBar.setTitle("Khôi phục mật khẩu");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#DB3AA1F6")));
         setContentView(R.layout.activity_forgot);
         this.loadingDialog = new LoadingDialog(ForgotActivity.this);
         setControl();
@@ -54,20 +57,12 @@ public class ForgotActivity extends AppCompatActivity {
     }
 
     private void setControl() {
-        backArrow = findViewById(R.id.backArrow);
         btnSendCode = findViewById(R.id.btnSendCode);
         edtEmailForgot = findViewById(R.id.edtEmailForgot);
         txtWarningForgot = findViewById(R.id.txtWarningForgot);
     }
 
     private void setEvent() {
-        backArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(ForgotActivity.this, MainActivity.class);
-                startActivity(i);
-            }
-        });
 
         btnSendCode.setOnClickListener(new View.OnClickListener() {
             @Override

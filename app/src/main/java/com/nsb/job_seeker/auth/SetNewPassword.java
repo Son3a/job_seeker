@@ -2,6 +2,8 @@ package com.nsb.job_seeker.auth;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -32,7 +34,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 public class SetNewPassword extends AppCompatActivity {
-    private ImageView backArrow;
     private String code;
     private TextInputEditText edtPassword, edtPasswordConfirm;
     private Button btnConfirm;
@@ -47,7 +48,9 @@ public class SetNewPassword extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        actionBar.setTitle("Đặt lại mật khẩu");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#DB3AA1F6")));
         setContentView(R.layout.activity_set_new_password);
         this.loadingDialog = new LoadingDialog(SetNewPassword.this);
         Intent i = getIntent();
@@ -58,7 +61,6 @@ public class SetNewPassword extends AppCompatActivity {
     }
 
     private void setControl() {
-        backArrow = findViewById(R.id.backArrow);
         edtPassword = findViewById(R.id.tiePassword);
         edtPasswordConfirm = findViewById(R.id.tieConfirmPassword);
         btnConfirm = findViewById(R.id.btnConfirmResetPassword);
@@ -66,14 +68,6 @@ public class SetNewPassword extends AppCompatActivity {
     }
 
     private void setEvent() {
-        backArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(SetNewPassword.this, ConfirmOTP.class);
-                startActivity(i);
-            }
-        });
-
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -43,21 +43,27 @@
         <activity android:name=".seeder.CompanyActivity" />
         <activity
             android:name=".auth.SetNewPassword"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".auth.ConfirmOTP"
+            >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".auth.ConfirmOTP"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".auth.ForgotActivity"
+            >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
             android:name=".auth.ForgotActivity"
-            android:exported="false">
+            android:exported="false"
+            android:parentActivityName=".auth.MainActivity"
+            >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -65,7 +71,9 @@
         <activity
             android:name=".auth.RegisterActivity"
             android:exported="false"
-            android:label="Đăng Ký">
+            android:label="Đăng Ký"
+            android:parentActivityName=".auth.MainActivity"
+            >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

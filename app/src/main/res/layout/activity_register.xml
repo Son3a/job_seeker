@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:paddingHorizontal="16dp"
     android:gravity="center_horizontal"
-    android:paddingTop="20dp"
     >
 
     <TextView
