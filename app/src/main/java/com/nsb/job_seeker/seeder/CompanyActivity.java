@@ -144,7 +144,7 @@ public class CompanyActivity extends AppCompatActivity {
 
                 Intent i = new Intent(CompanyActivity.this, JobDetailActivity.class);
                 i.putExtra("id", jobList.get(position).getId());
-                i.putExtra("isApply", true);
+                i.putExtra("isApplied", true);
                 i.putExtra("isLinkCompany", false);
                 startActivity(i);
             }

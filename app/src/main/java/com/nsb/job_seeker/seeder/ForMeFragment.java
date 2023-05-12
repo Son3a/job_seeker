@@ -149,7 +149,7 @@ public class ForMeFragment extends Fragment {
 
                 Intent i = new Intent(getActivity(), JobDetailActivity.class);
                 i.putExtra("id", jobList.get(position).getId());
-                i.putExtra("isApply", true);
+                i.putExtra("isApplied", true);
                 startActivity(i);
             }
         });
