@@ -163,7 +163,7 @@ public class MyJobAppliedFragment extends Fragment {
 
                 Intent i = new Intent(getActivity(), JobDetailActivity.class);
                 i.putExtra("id", jobListApplied.get(position).getId());
-                i.putExtra("isApply", false);
+                i.putExtra("isApplied", false);
                 startActivity(i);
 
 

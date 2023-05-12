@@ -178,7 +178,7 @@ public class MyJobSavedFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getActivity(), JobDetailActivity.class);
                 i.putExtra("id", jobList.get(position).getId());
-                i.putExtra("isApply", true);
+                i.putExtra("isApplied", true);
                 startActivity(i);
             }
         });

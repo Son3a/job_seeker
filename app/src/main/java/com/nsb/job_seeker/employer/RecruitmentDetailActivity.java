@@ -132,9 +132,10 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                     }
 
                     String salary = job.getString("salary");
-                    if (Pattern.matches("[a-zA-Z]+", salary) == false) {
-                        salary = "VND " + Program.formatSalary(salary);
-                    }
+//                    if (Pattern.matches("[a-zA-Z]+", salary) == false) {
+//                        salary = "VND " + Program.formatSalary(salary);
+//                    }
+                    salary = Program.formatSalary(salary.replaceAll("\\D+", ""));
 
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                     SimpleDateFormat output = new SimpleDateFormat("dd-MM-yyyy");
@@ -149,8 +150,8 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                     tvTypeJob.setText(typeJob);
                     tvTimeUpdated.setText("Cập nhật ngày " + timeUpdated);
                     tvDeadLine.setText(deadLine);
-                    tvDescJob.setText("\u25CF    " + job.getString("description"));
-                    tvJobReq.setText("\u25CF    " + job.getString("requirement"));
+                    tvDescJob.setText("•    " + job.getString("description"));
+                    tvJobReq.setText("•    " + job.getString("requirement"));
 
                     pbLoading.setVisibility(View.GONE);
                     layoutBody.setVisibility(View.VISIBLE);

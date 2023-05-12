@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 
 public class JobDetailActivity extends AppCompatActivity {
     private ImageView imgBack;
-    private Button btnApply, btnCancel;
+    private Button btnApply;
     private TextView tvSalary, tvTypeJob, tvTimeJob, tvExperience, tvTimeUpdated, tvAddress, tvDescJob, tvNameJob, tvCompany, tvPlace, tvReqSkill;
     private ProgressBar pbLoading;
     private RelativeLayout body;
@@ -56,7 +56,6 @@ public class JobDetailActivity extends AppCompatActivity {
     private void setControl() {
         imgBack = findViewById(R.id.ic_back);
         btnApply = findViewById(R.id.btn_apply);
-        btnCancel = findViewById(R.id.btn_cancel);
 
         tvSalary = findViewById(R.id.txt_salary_detail);
         tvTypeJob = findViewById(R.id.txt_type_job_detail);
@@ -111,18 +110,15 @@ public class JobDetailActivity extends AppCompatActivity {
 
     private void changeBtnSubmit() {
         Bundle bundle = getIntent().getExtras();
-        if (bundle.containsKey("isApply")) {
-            boolean isApply = bundle.getBoolean("isApply");
-            if (isApply) {
-                btnApply.setVisibility(View.VISIBLE);
-                btnCancel.setVisibility(View.GONE);
+        if (bundle.containsKey("isApplied")) {
+            boolean isApplied = bundle.getBoolean("isApplied");
+            if (!isApplied) {
+                btnApply.setText("ỨNG TUYỂN NGAY");
             } else {
-                btnApply.setVisibility(View.GONE);
-                btnCancel.setVisibility(View.VISIBLE);
+                btnApply.setText("ĐÃ ỨNG TUYỂN");
             }
         } else {
             btnApply.setVisibility(View.GONE);
-            btnCancel.setVisibility(View.GONE);
         }
     }
 
@@ -151,9 +147,8 @@ public class JobDetailActivity extends AppCompatActivity {
                     }
 
                     String salary = job.getString("salary");
-                    if (Pattern.matches("[a-zA-Z]+", salary) == false) {
-                        salary = "VND " + Program.formatSalary(salary);
-                    }
+
+                    salary = Program.formatSalary(salary.replaceAll("\\D+", ""));
 
                     String time = Program.setTime(job.getString("updateDate"));
                     if (time.equals(null))
@@ -169,7 +164,7 @@ public class JobDetailActivity extends AppCompatActivity {
                     tvTimeJob.setText(job.getString("hourWorking"));
                     tvExperience.setText("Không cần kinh nghiệm");
                     tvTimeUpdated.setText(time);
-                    tvAddress.setText("\u25CF " + job.getString("locationWorking"));
+                    tvAddress.setText("• " + job.getString("locationWorking"));
                     tvDescJob.setText(Program.formatStringToBullet(job.getString("description")));
                     tvReqSkill.setText(Program.formatStringToBullet(job.getString("requirement")));
 
