@@ -84,17 +84,17 @@ public class StatisticalAmountJobFragment extends Fragment {
     }
 
     private void getTypeJob() {
-        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
+        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list/sort-by-day";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray listTypeJob = response.getJSONObject("data").getJSONArray("data");
+                    JSONArray listTypeJob = response.getJSONArray("data");
                     for (int i = 0; i < listTypeJob.length(); i++) {
                         JSONObject typeJob = listTypeJob.getJSONObject(i);
-                        if (typeJob.getString("isDelete").equals("false")) {
+                        if (typeJob.getString("status").equals("true")) {
                             nameTypeJobs.add(typeJob.getString("name"));
                             idTypeJobs.add(typeJob.getString("_id"));
                         }

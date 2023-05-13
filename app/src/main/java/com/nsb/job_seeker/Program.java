@@ -54,7 +54,7 @@ public class Program {
         s = (int) (time / 1000);
         m = s / 60;
         h = m / 60;
-        date = h / 60;
+        date = h / 24;
         month = date / 30;
         year = month / 365;
 
