@@ -78,33 +78,33 @@ public class ForMeFragment extends Fragment {
                             int lenghJobs = jobsList.length();
                             if (Program.calculateTime(jobsList.getJSONObject(0).getString("updateDate")) >= (7 * 24 * 60 * 60 * 1000)) {      //check time update job if it > 1 week to show on news
                                 lenghJobs = 10;
-                            } else {
-                                for (int i = 0; i < lenghJobs; i++) {
-                                    JSONObject job = jobsList.getJSONObject(i);
-                                    if (Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000) && job.getString("status").equals("true")
-                                    && !Program.idListJobSaved.contains(job.getString("_id"))) {
-                                        if (!job.isNull("idCompany")) {
-                                            idCompany = job.getJSONObject("idCompany").getString("name");
-                                        } else {
-                                            idCompany = "";
-                                        }
-
-                                        String time = Program.setTime(job.getString("updateDate"));
-                                        if (time.equals(null))
-                                            time = "Vừa mới cập nhật";
-                                        else
-                                            time = "Cập nhật " + time + " trước";
-                                        jobList.add(new Job(
-                                                job.getString("_id"),
-                                                job.getString("name"),
-                                                idCompany,
-                                                job.getString("locationWorking"),
-                                                job.getString("salary"),
-                                                time
-                                        ));
+                            }
+                            for (int i = 0; i < lenghJobs; i++) {
+                                JSONObject job = jobsList.getJSONObject(i);
+                                if (Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000) && job.getString("status").equals("true")
+                                        && !Program.idListJobSaved.contains(job.getString("_id"))) {
+                                    if (!job.isNull("idCompany")) {
+                                        idCompany = job.getJSONObject("idCompany").getString("name");
+                                    } else {
+                                        idCompany = "";
                                     }
+
+                                    String time = Program.setTime(job.getString("updateDate"));
+                                    if (time.equals(null))
+                                        time = "Vừa mới cập nhật";
+                                    else
+                                        time = "Cập nhật " + time + " trước";
+                                    jobList.add(new Job(
+                                            job.getString("_id"),
+                                            job.getString("name"),
+                                            idCompany,
+                                            job.getString("locationWorking"),
+                                            job.getString("salary"),
+                                            time
+                                    ));
                                 }
                             }
+
                             pbLoading.setVisibility(View.GONE);
                             setListViewAdapter();
                         } catch (JSONException e) {
@@ -149,7 +149,7 @@ public class ForMeFragment extends Fragment {
 
                 Intent i = new Intent(getActivity(), JobDetailActivity.class);
                 i.putExtra("id", jobList.get(position).getId());
-                i.putExtra("isApplied", true);
+                i.putExtra("isApply", true);
                 startActivity(i);
             }
         });

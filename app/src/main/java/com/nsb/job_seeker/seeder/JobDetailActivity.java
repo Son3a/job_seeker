@@ -110,12 +110,13 @@ public class JobDetailActivity extends AppCompatActivity {
 
     private void changeBtnSubmit() {
         Bundle bundle = getIntent().getExtras();
-        if (bundle.containsKey("isApplied")) {
-            boolean isApplied = bundle.getBoolean("isApplied");
-            if (!isApplied) {
-                btnApply.setText("ỨNG TUYỂN NGAY");
-            } else {
+        if (bundle.containsKey("isApply")) {
+            boolean isApply = bundle.getBoolean("isApply");
+            if (!isApply) {
                 btnApply.setText("ĐÃ ỨNG TUYỂN");
+                btnApply.setEnabled(false);
+            } else {
+                btnApply.setText("ỨNG TUYỂN NGAY");
             }
         } else {
             btnApply.setVisibility(View.GONE);
