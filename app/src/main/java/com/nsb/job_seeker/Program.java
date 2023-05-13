@@ -20,10 +20,12 @@ import java.util.List;
 
 public class Program {
     public static String token = "";
-    public static String url_dev = "https://job-seeker-smy5.onrender.com";
+    public static String url_dev = "http://192.168.1.10:8000";
+    public static String url_dev_img = url_dev+"/images";
     public static String idUser;
     public static String idCompany;
     public static String role;
+    public static String avatar;
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";
     public static List<String> idListJobSaved;

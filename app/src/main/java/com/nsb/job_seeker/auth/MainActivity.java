@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     String name = response.getString("name");
                     String email = response.getString("email");
                     String phone = response.getString("phone");
-//                    String avatar = response.getString("avatar");
+                    String avatar = response.getString("avatar");
 
                     Program.idUser = response.getString("_id");
                     if (role.equals("admin")) {
@@ -229,6 +229,8 @@ public class MainActivity extends AppCompatActivity {
 
                     editor.commit();
                     loadingDialog.dismissDialog();
+
+                    Program.avatar = avatar;
 
                     if (role.trim().equals("user")) {
                         Log.d("ABC", "user");

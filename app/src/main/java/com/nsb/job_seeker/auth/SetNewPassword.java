@@ -43,6 +43,7 @@ public class SetNewPassword extends AppCompatActivity {
     private String base_url = Program.url_dev+"/auth";
     private String sharedPreferencesName = "JobSharedPreference";
     private LoadingDialog loadingDialog;
+    private DialogNotification dialogNotification = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +73,12 @@ public class SetNewPassword extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    loadingDialog.startLoadingDialog();
-                    confirmResetPassword();
+                    if (edtPassword.getText().toString().equals(edtPasswordConfirm.getText().toString())) {
+                        loadingDialog.startLoadingDialog();
+                        confirmResetPassword();
+                    } else {
+                        dialogNotification.openDialogNotification("Mật khẩu xác nhận không khớp !", SetNewPassword.this);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -99,6 +104,7 @@ public class SetNewPassword extends AppCompatActivity {
                 try {
                     txtWarningResetPassword.setVisibility(View.GONE);
                     String message = response.getString("message");
+                    dialogNotification.openDialogNotification(message, SetNewPassword.this);
                     Log.d("ABC", message);
                 } catch (JSONException e) {
                     Toast.makeText(SetNewPassword.this, e.toString(), Toast.LENGTH_SHORT).show();
@@ -116,9 +122,9 @@ public class SetNewPassword extends AppCompatActivity {
                     try {
                         body = new String(error.networkResponse.data,"UTF-8");
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
-
+                        String message = convertedObject.get("message").toString();
                         txtWarningResetPassword.setVisibility(View.VISIBLE);
-                        txtWarningResetPassword.setText(convertedObject.get("message").toString());
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), SetNewPassword.this);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
