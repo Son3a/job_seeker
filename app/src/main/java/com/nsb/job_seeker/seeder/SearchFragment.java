@@ -289,7 +289,7 @@ public class SearchFragment extends Fragment {
 
                 Intent i = new Intent(getActivity(), JobDetailActivity.class);
                 i.putExtra("id", jobResultList.get(position).getId());
-                i.putExtra("isApplied", true);
+                i.putExtra("isApply", true);
                 startActivity(i);
 
 
