@@ -150,8 +150,8 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                     tvTypeJob.setText(typeJob);
                     tvTimeUpdated.setText("Cập nhật ngày " + timeUpdated);
                     tvDeadLine.setText(deadLine);
-                    tvDescJob.setText("•    " + job.getString("description"));
-                    tvJobReq.setText("•    " + job.getString("requirement"));
+                    tvDescJob.setText(Program.formatStringToBullet(job.getString("description")));
+                    tvJobReq.setText(Program.formatStringToBullet(job.getString("requirement")));
 
                     pbLoading.setVisibility(View.GONE);
                     layoutBody.setVisibility(View.VISIBLE);
