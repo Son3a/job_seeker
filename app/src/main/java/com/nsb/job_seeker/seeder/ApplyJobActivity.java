@@ -47,7 +47,11 @@ import com.nsb.job_seeker.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -65,6 +69,7 @@ public class ApplyJobActivity extends AppCompatActivity {
     private ProgressBar pbLoading;
     private Uri mUri;
     private File fileCV;
+    private final String boundary = String.valueOf(System.currentTimeMillis());
 
     private ActivityResultLauncher<Intent> mActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -167,8 +172,10 @@ public class ApplyJobActivity extends AppCompatActivity {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
                 headers.put("Authorization", access_token);
+                headers.put("Content-Type","multipart/form-data;boundary=----WebKitFormBoundarydMIgtiA2YeB1Z0kl");
                 return headers;
             }
+
         };
         data.setRetryPolicy(new DefaultRetryPolicy(
                 0,
@@ -198,8 +205,7 @@ public class ApplyJobActivity extends AppCompatActivity {
         tvUploadCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                onClickRequestPermision();
-                openStorge();
+                onClickRequestPermision();
             }
         });
     }
