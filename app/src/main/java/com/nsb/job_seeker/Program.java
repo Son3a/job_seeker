@@ -23,7 +23,7 @@ public class Program {
     public static String url_dev = "https://job-seeker-smy5.onrender.com";
     public static String idUser;
     public static String idCompany;
-    public static String role;
+    public static String role = "user";
     public static String url_product = "https://job-seeker-smy5.onrender.com";
     public static String sharedPreferencesName = "JobSharedPreference";
     public static List<String> idListJobSaved;
@@ -36,7 +36,7 @@ public class Program {
         dfs.setMonetaryDecimalSeparator('.');
         df.setMaximumFractionDigits(0);
         ((DecimalFormat) df).setDecimalFormatSymbols(dfs);
-        return df.format(Integer.parseInt(salary)).substring(1);
+        return df.format(Integer.parseInt(salary));
     }
 
     public static long calculateTime(String timeCreate) throws ParseException {
@@ -104,16 +104,16 @@ public class Program {
     public static void addNewLine(CharSequence text, int lengthBefore, int lengthAfter, EditText edtText) {
         if (lengthAfter > lengthBefore) {
             if (text.toString().length() == 1) {
-                text = "\u25CF " + text;
+                text = "• " + text;
                 edtText.setText(text);
                 edtText.setSelection(edtText.getText().length());
             }
 
             if (text.toString().endsWith("\n")) {
-                text = text.toString().replace("\n", "\n\u25CF ");
-                text = text.toString().replace("\u25CF \u25CF", "\u25CF");
-                text = text.toString().replace("\n\u25CF \n\u25CF ", "\n\u25CF ");
-                text = text.toString().replace("\u25CF \n\u25CF ", "\u25CF ");
+                text = text.toString().replace("\n", "\n• ");
+                text = text.toString().replace("• •", "•");
+                text = text.toString().replace("\n• \n• ", "\n• ");
+                text = text.toString().replace("• \n• ", "• ");
                 edtText.setText(text);
                 edtText.setSelection(edtText.getText().length());
             }
@@ -123,7 +123,7 @@ public class Program {
     public static String formatStringFromBullet(String oldString) {
         String newString = "";
         String temp = "";
-        String[] listString = oldString.substring(1).split("\u25CF");
+        String[] listString = oldString.substring(1).split("•");
         for (int i = 0; i < listString.length; i++) {
             temp = listString[i].trim().replace(".", "");
             newString = newString + temp + ".";
@@ -135,7 +135,7 @@ public class Program {
         String newString = "";
         String[] listString = string.split("\\.");
         for (int i = 0; i < listString.length; i++) {
-            newString = newString + "\u25CF " + listString[i] + "\n";
+            newString = newString + "• " + listString[i] + "\n";
         }
 
         return newString.substring(0,newString.length()-1);

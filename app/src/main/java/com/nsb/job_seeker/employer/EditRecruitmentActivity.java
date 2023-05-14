@@ -194,7 +194,7 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         idJob = bundle.getString("id");
         edtNameJob.setText(bundle.getString("nameJob"));
         edtPlace.setText(bundle.getString("place"));
-        edtSalary.setText(bundle.getString("salary").split(" ")[1].replace(".", ""));
+        edtSalary.setText(bundle.getString("salary").split(" ")[0].replace(".", ""));
         edtTimeWork.setText(bundle.getString("timeWork"));
         edtDeadLine.setText(bundle.getString("deadline"));
         edtDescJob.setText(Program.formatStringToBullet(bundle.getString("detailJob")));
