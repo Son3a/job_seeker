@@ -12,7 +12,7 @@
             android:id="@+id/body_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/header"
@@ -210,7 +210,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="10dp"
-                    android:text="\u25CF    Hà Nội: 647 Lý Thường Kiệt, Phường 11, Tân Bình" />
+                    android:text="•    Hà Nội: 647 Lý Thường Kiệt, Phường 11, Tân Bình" />
 
                 <TextView
                     style="@style/text"
@@ -227,7 +227,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="10dp"
                     android:inputType="textMultiLine"
-                    android:text="\u25CF    Phân tích yêu cầu, thiết kế cơ sở dữ liệu\n\u25CF    Tìm hiểu, ứng dụng các công nghệ mới" />
+                    android:text="•    Phân tích yêu cầu, thiết kế cơ sở dữ liệu\n•    Tìm hiểu, ứng dụng các công nghệ mới" />
             </LinearLayout>
 
             <FrameLayout
@@ -263,7 +263,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="10dp"
                     android:inputType="textMultiLine"
-                    android:text="\u25CF    Phân tích yêu cầu, thiết kế cơ sở dữ liệu\n\u25CF    Tìm hiểu, ứng dụng các công nghệ mới" />
+                    android:text="•    Phân tích yêu cầu, thiết kế cơ sở dữ liệu\n•    Tìm hiểu, ứng dụng các công nghệ mới" />
 
 
             </LinearLayout>
@@ -285,18 +285,6 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <Button
-                    android:id="@+id/btn_cancel"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-
-                    android:layout_gravity="center"
-                    android:layout_margin="30dp"
-                    android:backgroundTint="@color/blue_main"
-                    android:text="HỦY ỨNG TUYỂN"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
             </FrameLayout>
 
         </RelativeLayout>
