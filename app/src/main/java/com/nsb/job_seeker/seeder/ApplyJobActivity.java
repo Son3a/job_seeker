@@ -33,6 +33,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -43,18 +44,25 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.VolleyMultipartRequest;
+import com.nsb.job_seeker.model.DataPart;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -65,11 +73,12 @@ public class ApplyJobActivity extends AppCompatActivity {
     private static final String TAG = ApplyJobActivity.class.getName();
     private ImageView imgBack;
     private Button btnSendCv;
-    private TextView tvUploadCV, imgUpload;
+    private TextView tvUploadCV;
     private ProgressBar pbLoading;
     private Uri mUri;
-    private File fileCV;
-    private final String boundary = String.valueOf(System.currentTimeMillis());
+    private String fileName;
+    private String url = "https://job-seeker-smy5.onrender.com/application/create";
+    private ArrayList<HashMap<String, String>> arraylist;
 
     private ActivityResultLauncher<Intent> mActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -84,18 +93,8 @@ public class ApplyJobActivity extends AppCompatActivity {
                         }
                         Uri uri = data.getData();
                         mUri = uri;
-                        tvUploadCV.setText(getFileName(uri));
-                        Cursor cursor = null;
-                        cursor = ApplyJobActivity.this.getContentResolver().query(mUri, new String[]{MediaStore.MediaColumns.DISPLAY_NAME}, null, null, null);
-                        if (cursor != null && cursor.moveToFirst()) {
-                            String fileName = cursor.getString(0);
-                            String path = Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName;
-
-                            if (!TextUtils.isEmpty(path)) {
-                                imgUpload.setText(path);
-                            }
-                            fileCV = new File(path);
-                        }
+                        String path = RealPathUtil.getPath(ApplyJobActivity.this,uri);
+                        fileName = path.substring(path.lastIndexOf("/")+1);
                     }
                 }
             });
@@ -119,7 +118,6 @@ public class ApplyJobActivity extends AppCompatActivity {
         tvUploadCV = findViewById(R.id.tv_upload_cv);
         imgBack = findViewById(R.id.ic_back);
         btnSendCv = findViewById(R.id.btn_send_cv);
-        imgUpload = findViewById(R.id.img_upload);
         pbLoading = findViewById(R.id.idLoadingPB);
     }
 
@@ -140,65 +138,101 @@ public class ApplyJobActivity extends AppCompatActivity {
         });
     }
 
-    private void createApplication() throws URISyntaxException, JSONException {
-//        String strRealPath = RealPathUtil.getPath(ApplyJobActivity.this, Uri.parse("content://com.android.providers.downloads.documents/document/document/msf%3A1000000034"));
-//        String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
-//        File file = new File(baseDir +  File.separator + "Download" + File.separator + tvUploadCV.getText().toString());
-
-        String access_token = Program.token;
-        RequestQueue requestQueue = Volley.newRequestQueue(ApplyJobActivity.this);
-
-        String idJob = getIntent().getExtras().getString("idJob");
-        JSONObject params = new JSONObject();
-        params.put("idJob", idJob);
-        params.put("cv", fileCV);
-
-        String url = "https://job-seeker-smy5.onrender.com/application/create";
-        pbLoading.setVisibility(View.VISIBLE);
-
-        JsonObjectRequest data = new JsonObjectRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                pbLoading.setVisibility(View.GONE);
-                Toast.makeText(ApplyJobActivity.this, "Apply thành công!", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                System.out.println(error);
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", access_token);
-                headers.put("Content-Type","multipart/form-data;boundary=----WebKitFormBoundarydMIgtiA2YeB1Z0kl");
-                return headers;
-            }
-
-        };
-        data.setRetryPolicy(new DefaultRetryPolicy(
-                0,
-                -1,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        requestQueue.add(data);
-    }
-
-    private void clickCreateApplication(){
+    private void clickCreateApplication() {
         btnSendCv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ApplyJobActivity.this, getIntent().getExtras().getString("idJob"), Toast.LENGTH_SHORT).show();
-                try {
-                    createApplication();
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-
+//                uploadPDF(fileName, mUri);
             }
         });
+    }
+
+    private void uploadPDF(final String pdfname, Uri pdffile) {
+        String access_token = Program.token;
+        String idJob = getIntent().getExtras().getString("idJob");
+        pbLoading.setVisibility(View.VISIBLE);
+        RequestQueue rQueue = Volley.newRequestQueue(ApplyJobActivity.this);
+
+        InputStream iStream = null;
+        try {
+
+            iStream = getContentResolver().openInputStream(pdffile);
+            final byte[] inputData = getBytes(iStream);
+
+            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, url,
+                    new Response.Listener<NetworkResponse>() {
+                        @Override
+                        public void onResponse(NetworkResponse response) {
+                            pbLoading.setVisibility(View.GONE);
+                            Toast.makeText(ApplyJobActivity.this, "Apply thành công!", Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+
+                /*
+                 * If you want to add more parameters with the image
+                 * you can do it here
+                 * here we have only one parameter with the image
+                 * which is tags
+                 * */
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Authorization", access_token);
+                    return headers;
+                }
+
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("idJob", idJob);
+                    return params;
+                }
+
+                /*
+                 *pass files using below method
+                 * */
+                @Override
+                protected Map<String, DataPart> getByteData() {
+                    Map<String, DataPart> params = new HashMap<>();
+
+                    params.put("cv", new DataPart(pdfname, inputData));
+                    return params;
+                }
+            };
+
+
+            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    0,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+            rQueue.add(volleyMultipartRequest);
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        return byteBuffer.toByteArray();
     }
 
     private void clickOpenFile() {
