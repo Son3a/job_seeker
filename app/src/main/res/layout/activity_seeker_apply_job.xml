@@ -90,10 +90,6 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/img_upload"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
     </LinearLayout>
 
     <ProgressBar
