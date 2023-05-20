@@ -62,7 +62,7 @@
             android:scaleType="fitXY"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:id="@+id/ivAvatar"
+            android:id="@+id/ivChooseAvatar"
             android:background="@drawable/rounded_outline"
             />
         <TextView
@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:text="Tên"
             android:layout_marginVertical="8dp"
-            android:layout_below="@+id/ivAvatar"
+            android:layout_below="@+id/ivChooseAvatar"
             />
 
         <EditText

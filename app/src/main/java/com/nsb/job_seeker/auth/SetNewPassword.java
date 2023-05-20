@@ -2,6 +2,8 @@ package com.nsb.job_seeker.auth;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -32,7 +34,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 public class SetNewPassword extends AppCompatActivity {
-    private ImageView backArrow;
     private String code;
     private TextInputEditText edtPassword, edtPasswordConfirm;
     private Button btnConfirm;
@@ -42,12 +43,15 @@ public class SetNewPassword extends AppCompatActivity {
     private String base_url = Program.url_dev+"/auth";
     private String sharedPreferencesName = "JobSharedPreference";
     private LoadingDialog loadingDialog;
+    private DialogNotification dialogNotification = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        actionBar.setTitle("Đặt lại mật khẩu");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#DB3AA1F6")));
         setContentView(R.layout.activity_set_new_password);
         this.loadingDialog = new LoadingDialog(SetNewPassword.this);
         Intent i = getIntent();
@@ -58,7 +62,6 @@ public class SetNewPassword extends AppCompatActivity {
     }
 
     private void setControl() {
-        backArrow = findViewById(R.id.backArrow);
         edtPassword = findViewById(R.id.tiePassword);
         edtPasswordConfirm = findViewById(R.id.tieConfirmPassword);
         btnConfirm = findViewById(R.id.btnConfirmResetPassword);
@@ -66,20 +69,16 @@ public class SetNewPassword extends AppCompatActivity {
     }
 
     private void setEvent() {
-        backArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(SetNewPassword.this, ConfirmOTP.class);
-                startActivity(i);
-            }
-        });
-
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    loadingDialog.startLoadingDialog();
-                    confirmResetPassword();
+                    if (edtPassword.getText().toString().equals(edtPasswordConfirm.getText().toString())) {
+                        loadingDialog.startLoadingDialog();
+                        confirmResetPassword();
+                    } else {
+                        dialogNotification.openDialogNotification("Mật khẩu xác nhận không khớp !", SetNewPassword.this);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -105,6 +104,7 @@ public class SetNewPassword extends AppCompatActivity {
                 try {
                     txtWarningResetPassword.setVisibility(View.GONE);
                     String message = response.getString("message");
+                    dialogNotification.openDialogNotification(message, SetNewPassword.this);
                     Log.d("ABC", message);
                 } catch (JSONException e) {
                     Toast.makeText(SetNewPassword.this, e.toString(), Toast.LENGTH_SHORT).show();
@@ -122,9 +122,9 @@ public class SetNewPassword extends AppCompatActivity {
                     try {
                         body = new String(error.networkResponse.data,"UTF-8");
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
-
+                        String message = convertedObject.get("message").toString();
                         txtWarningResetPassword.setVisibility(View.VISIBLE);
-                        txtWarningResetPassword.setText(convertedObject.get("message").toString());
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), SetNewPassword.this);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }

@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -22,6 +24,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
@@ -43,22 +48,58 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtEmail, edtPassword;
     private Button btnLogin;
     private TextView txtWarning, txtRedirectRegister, txtForgotPassword;
-    private Toolbar toolbar;
+    private CheckBox cbxRemeberPassword;
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
     private String base_url = Program.url_dev + "/auth";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
+    private String tokenDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("ABC", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        // Get new FCM registration token
+                        String token = task.getResult();
+
+                        tokenDevice = token;
+                        // Log and toast
+                        Log.d("ABC", token);
+                    }
+                });
+
         this.loadingDialog = new LoadingDialog(MainActivity.this);
-        Log.d("ABC", base_url);
         setControl();
         setEvent();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
+        String isRemember = sharedPreferences.getString("isRememberPassword", "false");
+
+        if (isRemember.equals("true")) {
+            String email = sharedPreferences.getString("email", "");
+            String pw = sharedPreferences.getString("password", "");
+            edtEmail.setText(email);
+            edtPassword.setText(pw);
+            cbxRemeberPassword.setChecked(true);
+        } else {
+            cbxRemeberPassword.setChecked(false);
+        }
     }
 
     private void setControl() {
@@ -67,9 +108,8 @@ public class MainActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         txtWarning = findViewById(R.id.txtWarning);
         txtRedirectRegister = findViewById(R.id.txtRedirectRegister);
-        toolbar = findViewById(R.id.myToolbar);
         txtForgotPassword = findViewById(R.id.txtForgotPassword);
-//        setSupportActionBar(toolbar);
+        cbxRemeberPassword = findViewById(R.id.cbxRemember);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
     }
@@ -117,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("username", email);
         jsonObject.put("password", password);
+        jsonObject.put("tokenDevice", tokenDevice);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, base_url + "/login", jsonObject, new Response.Listener<JSONObject>() {
             @Override
@@ -133,6 +174,15 @@ public class MainActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("accessToken", accessToken);
                     editor.putString("refreshToken", refreshToken);
+                    if (cbxRemeberPassword.isChecked()) {
+                        editor.putString("isRememberPassword", "true");
+                        editor.putString("email", edtEmail.getText().toString());
+                        editor.putString("password", edtPassword.getText().toString());
+                    } else {
+                        editor.putString("isRememberPassword", "false");
+                        editor.putString("email", "");
+                        editor.putString("password", "");
+                    }
                     editor.commit();
                     getInfoUser(accessToken);
                 } catch (JSONException e) {
@@ -179,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     String name = response.getString("name");
                     String email = response.getString("email");
                     String phone = response.getString("phone");
-//                    String avatar = response.getString("avatar");
+                    String avatar = response.getString("avatar");
 
                     Program.idUser = response.getString("_id");
                     if (role.equals("admin")) {
@@ -204,16 +254,18 @@ public class MainActivity extends AppCompatActivity {
                     editor.commit();
                     loadingDialog.dismissDialog();
 
+                    Program.avatar = avatar;
+
                     if (role.trim().equals("user")) {
                         Log.d("ABC", "user");
-                        Intent intent = new Intent(MainActivity.this, SeekerMainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                        Intent i = new Intent(MainActivity.this, SeekerMainActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
                     } else {
                         Log.d("ABC", "admin");
-                        Intent intent = new Intent(MainActivity.this, EmployerMainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                        Intent i = new Intent(MainActivity.this, EmployerMainActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(i);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
