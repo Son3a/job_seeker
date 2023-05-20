@@ -206,10 +206,14 @@ public class MainActivity extends AppCompatActivity {
 
                     if (role.trim().equals("user")) {
                         Log.d("ABC", "user");
-                        startActivity(new Intent(MainActivity.this, SeekerMainActivity.class));
+                        Intent intent = new Intent(MainActivity.this, SeekerMainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
                     } else {
                         Log.d("ABC", "admin");
-                        startActivity(new Intent(MainActivity.this, EmployerMainActivity.class));
+                        Intent intent = new Intent(MainActivity.this, EmployerMainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

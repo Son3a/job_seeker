@@ -142,7 +142,7 @@ public class ApplyJobActivity extends AppCompatActivity {
         btnSendCv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                uploadPDF(fileName, mUri);
+                uploadPDF(fileName, mUri);
             }
         });
     }
