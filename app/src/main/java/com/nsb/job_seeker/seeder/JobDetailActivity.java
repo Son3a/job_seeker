@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public class JobDetailActivity extends AppCompatActivity {
     private ImageView imgBack;
     private Button btnApply;
-    private TextView tvSalary, tvTypeJob, tvTimeJob, tvExperience, tvTimeUpdated, tvAddress, tvDescJob, tvNameJob, tvCompany, tvPlace, tvReqSkill;
+    private TextView tvSalary, tvTypeJob, tvTimeJob, tvExperience, tvTimeUpdated, tvAddress, tvDescJob, tvNameJob, tvCompany, tvPlace, tvReqSkill, tvNameJobTitle;
     private ProgressBar pbLoading;
     private RelativeLayout body;
     private String IDCompany = "";
@@ -56,7 +56,7 @@ public class JobDetailActivity extends AppCompatActivity {
     private void setControl() {
         imgBack = findViewById(R.id.ic_back);
         btnApply = findViewById(R.id.btn_apply);
-
+        tvNameJobTitle = findViewById(R.id.tv_name_job);
         tvSalary = findViewById(R.id.txt_salary_detail);
         tvTypeJob = findViewById(R.id.txt_type_job_detail);
         tvTimeJob = findViewById(R.id.txt_type_job_time_detail);
@@ -149,7 +149,7 @@ public class JobDetailActivity extends AppCompatActivity {
 
                     String salary = job.getString("salary");
 
-                    salary = Program.formatSalary(salary.replaceAll("\\D+", ""));
+                    salary = Program.formatSalary(salary);
 
                     String time = Program.setTime(job.getString("updateDate"));
                     if (time.equals(null))
@@ -157,6 +157,7 @@ public class JobDetailActivity extends AppCompatActivity {
                     else
                         time = "Cập nhật " + time + " trước";
 
+                    tvNameJobTitle.setText(job.getString("name"));
                     tvNameJob.setText(job.getString("name"));
                     tvCompany.setText(idCompany);
                     tvPlace.setText(place);

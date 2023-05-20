@@ -4,6 +4,8 @@ import static java.lang.Math.abs;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -29,14 +31,28 @@ public class Program {
     public static List<String> idListJobSaved;
 
     public static String formatSalary(String salary) {
+        Log.d("salary", salary);
         if (!salary.matches(".*\\d.*")) return salary;
+
+        String listStr[] = salary.split(" ");
+        String money = "", moneySign = "";
+
+        for (int i = 0; i < listStr.length; i++) {
+            if (!listStr[i].matches(".*\\d.*")) {
+                moneySign = listStr[i];
+            } else {
+                money = listStr[i];
+            }
+        }
+
         NumberFormat df = NumberFormat.getCurrencyInstance();
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setGroupingSeparator('.');
-        dfs.setMonetaryDecimalSeparator('.');
         df.setMaximumFractionDigits(0);
+        dfs.setCurrencySymbol("");
         ((DecimalFormat) df).setDecimalFormatSymbols(dfs);
-        return df.format(Integer.parseInt(salary));
+        Log.d("salary", df.format(Integer.parseInt(money)));
+        return df.format(Integer.parseInt(money)) + moneySign;
     }
 
     public static long calculateTime(String timeCreate) throws ParseException {
@@ -94,7 +110,7 @@ public class Program {
             currentYear = currentdate.getYear();
         }
 
-        if(year > currentYear) return true;
+        if (year > currentYear) return true;
         if (year == currentYear && month > currentMonth) return true;
         if (year == currentYear && month == currentMonth && day > currentDay) return true;
 
@@ -131,14 +147,18 @@ public class Program {
         return newString;
     }
 
-    public static String formatStringToBullet(String string){
+
+
+    public static String formatStringToBullet(String string) {
         String newString = "";
         String[] listString = string.split("\\.");
         for (int i = 0; i < listString.length; i++) {
-            newString = newString + "• " + listString[i] + "\n";
+//            String term = String.valueOf(Html.fromHtml(listString[i],Html.FROM_HTML_MODE_LEGACY));
+            String term = listString[i];
+            newString = newString + "• " + term + "\n";
         }
 
-        return newString.substring(0,newString.length()-1);
+        return newString.substring(0, newString.length() - 1);
     }
 
     public static void hideKeyboardFrom(Context context, View view) {
