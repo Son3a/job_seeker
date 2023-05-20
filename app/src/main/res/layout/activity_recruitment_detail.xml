@@ -202,7 +202,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textMultiLine"
-                        android:text="\u25CF Tìm kiếm công việc, sàng lọc hồ sơ ứng viên\n\u25CF Thực hiện liên hệ ứng viên mời phỏng vấn  và hỗ trợ công tác phỏng vấn với đơn vị" />
+                        android:text="• Tìm kiếm công việc, sàng lọc hồ sơ ứng viên\n• Thực hiện liên hệ ứng viên mời phỏng vấn  và hỗ trợ công tác phỏng vấn với đơn vị" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -218,7 +218,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textMultiLine"
-                        android:text="\u25CF Nam/nữ, tuổi 20-24\n\u25CF Tốt nghiệp cao đảng trở lên chuyên ngành quản trị nhân lực, kinh tế,...\n\u25CF Khả năng giao tiếp tốt, giọng nói dễ nghe." />
+                        android:text="• Nam/nữ, tuổi 20-24\n• Tốt nghiệp cao đảng trở lên chuyên ngành quản trị nhân lực, kinh tế,...\n• Khả năng giao tiếp tốt, giọng nói dễ nghe." />
 
                 </LinearLayout>
             </LinearLayout>

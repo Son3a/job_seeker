@@ -3,9 +3,12 @@ package com.nsb.job_seeker.seeder;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,15 +35,12 @@ import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.DialogNotification;
-import com.nsb.job_seeker.auth.RegisterActivity;
-import com.nsb.job_seeker.employer.CVListViewAdapter;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +106,7 @@ public class ListViewApdapter extends ArrayAdapter {
 
         pbLoading = ((Activity) context).findViewById(R.id.idLoadingPB);
 
-        hideBtnSave(row, position);
+        hideBtnSave(holder.btnSave, position);
 
         holder.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,10 +122,15 @@ public class ListViewApdapter extends ArrayAdapter {
         return row;
     }
 
-    private void hideBtnSave(View row, int position) {
-        ImageView imgSaveButton = (ImageView) row.findViewById(R.id.img_save_job);
+    private void hideBtnSave(ImageView imgSaveButton, int position) {
         if (isVisibleBtnSave == false) {
             imgSaveButton.setVisibility(View.GONE);
+        }else{
+            //kiem tra job được lưu hay chưa để sử dụng đúng icon
+            if (Program.idListJobSaved.contains(jobList.get(position).getId())) {
+                imgSaveButton.setImageResource(R.drawable.ic_save_job1);
+                imgSaveButton.setTag("save");
+            }
         }
     }
 
@@ -141,16 +146,24 @@ public class ListViewApdapter extends ArrayAdapter {
             public void onResponse(JSONObject response) {
                 try {
                     String message = response.getString("message");
-                    dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
+//                    dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
                     pbLoading.setVisibility(View.GONE);
                     if (isSaveView) {
                         Program.idListJobSaved.remove(position);
                         jobList.remove(position);
                         notifyDataSetChanged();
-                    }else{
-                        imgSave.setImageResource(R.drawable.ic_save_job1);
-                        Program.idListJobSaved.add(jobId);
+                    } else {
+                        if (imgSave.getTag().equals("not save")) {
+                            imgSave.setImageResource(R.drawable.ic_save_job1);
+                            imgSave.setTag("save");
+                            Program.idListJobSaved.add(jobId);
+                        } else {
+                            imgSave.setImageResource(R.drawable.ic_save_job);
+                            Program.idListJobSaved.remove(Program.idListJobSaved.size() - 1);
+                            imgSave.setTag("not save");
+                        }
                     }
+
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                     pbLoading.setVisibility(View.GONE);
