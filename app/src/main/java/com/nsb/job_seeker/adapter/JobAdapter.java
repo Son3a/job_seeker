@@ -1,21 +1,20 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.adapter;
 
 
 import static android.content.Context.MODE_PRIVATE;
 
-import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
-
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,17 +34,20 @@ import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.DialogNotification;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ListViewApdapter extends ArrayAdapter {
+public class JobAdapter extends ArrayAdapter {
 
     private Context context;
     private int layoutId;
@@ -54,12 +56,13 @@ public class ListViewApdapter extends ArrayAdapter {
     private String base_url = Program.url_dev + "/job";
     private DialogNotification dialogNotification = null;
     private ProgressBar pbLoading;
-    private ImageView btnSaveJob;
+    private PreferenceManager preferenceManager;
+    private List<String> listSavedJob;
 
     private boolean isVisibleBtnSave;
     private boolean isSaveView = false;
 
-    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList, boolean isVisibleBtnSave) {
+    public JobAdapter(@NonNull Context context, int layoutId, List<Job> jobList, boolean isVisibleBtnSave) {
         super(context, layoutId);
         this.context = context;
         this.layoutId = layoutId;
@@ -67,7 +70,7 @@ public class ListViewApdapter extends ArrayAdapter {
         this.isVisibleBtnSave = isVisibleBtnSave;
     }
 
-    public ListViewApdapter(@NonNull Context context, int layoutId, List<Job> jobList, boolean isVisibleBtnSave, boolean isSaveView) {
+    public JobAdapter(@NonNull Context context, int layoutId, List<Job> jobList, boolean isVisibleBtnSave, boolean isSaveView) {
         super(context, layoutId);
         this.context = context;
         this.layoutId = layoutId;
@@ -87,6 +90,9 @@ public class ListViewApdapter extends ArrayAdapter {
         View row = convertView;
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         row = inflater.inflate(layoutId, parent, false);
+        LinearLayout layoutItemJob = row.findViewById(R.id.layout_item_job);
+        preferenceManager = new PreferenceManager(context);
+        listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
 
         JobHolder holder = new JobHolder();
         holder.job = jobList.get(position);
@@ -96,6 +102,7 @@ public class ListViewApdapter extends ArrayAdapter {
         holder.tvSalary = (TextView) row.findViewById(R.id.tv_salary);
         holder.tvTimeUpdated = (TextView) row.findViewById(R.id.tv_time_updated);
         holder.btnSave = row.findViewById(R.id.img_save_job);
+        holder.layoutItemJob = row.findViewById(R.id.layout_item_job);
 
         row.setTag(holder);
         holder.tvNameJob.setText(holder.job.getNameJob());
@@ -112,7 +119,7 @@ public class ListViewApdapter extends ArrayAdapter {
             @Override
             public void onClick(View v) {
                 try {
-                    toggleJobFavourite(jobList.get(position).getId(), position, holder.btnSave);
+                    toggleJobFavourite(jobList.get(position).getId(), position, holder.btnSave, holder.layoutItemJob);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -125,16 +132,26 @@ public class ListViewApdapter extends ArrayAdapter {
     private void hideBtnSave(ImageView imgSaveButton, int position) {
         if (isVisibleBtnSave == false) {
             imgSaveButton.setVisibility(View.GONE);
-        }else{
-            //kiem tra job được lưu hay chưa để sử dụng đúng icon
-            if (Program.idListJobSaved.contains(jobList.get(position).getId())) {
-                imgSaveButton.setImageResource(R.drawable.ic_save_job1);
-                imgSaveButton.setTag("save");
-            }
+        }
+        if (isSaveView) {
+            imgSaveButton.setImageResource(R.drawable.ic_save_job1);
+            imgSaveButton.setTag("save");
         }
     }
 
-    private void toggleJobFavourite(String jobId, int position, ImageView imgSave) throws JSONException {
+    private void toggleJobFavourite(String jobId, int position, ImageView imgSave, LinearLayout layoutItem) throws JSONException {
+
+        layoutItem.animate()
+                .setDuration(300)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        layoutItem.setVisibility(View.INVISIBLE);
+                    }
+                });
+
+//        layoutItem.setVisibility(View.INVISIBLE);
         mRequestQueue = Volley.newRequestQueue(getContext());
         //post data
         JSONObject jsonObject = new JSONObject();
@@ -149,20 +166,23 @@ public class ListViewApdapter extends ArrayAdapter {
 //                    dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
                     pbLoading.setVisibility(View.GONE);
                     if (isSaveView) {
-                        Program.idListJobSaved.remove(position);
+                        listSavedJob.remove(position);
                         jobList.remove(position);
+                        imgSave.setTag("not save");
                         notifyDataSetChanged();
                     } else {
                         if (imgSave.getTag().equals("not save")) {
                             imgSave.setImageResource(R.drawable.ic_save_job1);
                             imgSave.setTag("save");
-                            Program.idListJobSaved.add(jobId);
+                            listSavedJob.add(jobId);
                         } else {
                             imgSave.setImageResource(R.drawable.ic_save_job);
-                            Program.idListJobSaved.remove(Program.idListJobSaved.size() - 1);
+                            listSavedJob.remove(listSavedJob.size() - 1);
                             imgSave.setTag("not save");
                         }
+                        layoutItem.setVisibility(View.VISIBLE);
                     }
+                    preferenceManager.putArray(listSavedJob);
 
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -194,11 +214,10 @@ public class ListViewApdapter extends ArrayAdapter {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                SharedPreferences sharedPreferences = getContext().getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
-                String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
+
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length() - 1));
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
 
@@ -211,6 +230,7 @@ public class ListViewApdapter extends ArrayAdapter {
         Job job;
         TextView tvCompany, tvNameJob, tvPlace, tvSalary, tvTimeUpdated;
         ImageView btnSave;
+        LinearLayout layoutItemJob;
     }
 
 }

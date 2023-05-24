@@ -36,6 +36,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.PreferenceManager;
 
 
 import org.json.JSONArray;
@@ -64,6 +65,7 @@ public class UpdateNewsFragment extends Fragment {
     private String urlCreate = "https://job-seeker-smy5.onrender.com/job/create";
     private List<String> nameTypeJobs;
     private List<String> idTypeJobs;
+    private PreferenceManager preferenceManager;
 
     @Nullable
     @Override
@@ -91,6 +93,8 @@ public class UpdateNewsFragment extends Fragment {
         idTypeJobs = new ArrayList<>();
         nameTypeJobs = new ArrayList<>();
         nameTypeJobs.add("Lĩnh vực");
+
+        preferenceManager = new PreferenceManager(getActivity());
     }
 
 
@@ -189,7 +193,7 @@ public class UpdateNewsFragment extends Fragment {
                     String descJob = Program.formatStringFromBullet(edtDetailJob.getText().toString());
                     String jobReq = Program.formatStringFromBullet(edtJobReq.getText().toString());
                     String idTypeJob = idTypeJobs.get(spnTypeJob.getSelectedItemPosition() - 1);
-                    String idCompany = Program.idCompany;
+                    String idCompany = preferenceManager.getString(Program.COMPANY_ID);
 
 
                     try {
@@ -205,7 +209,7 @@ public class UpdateNewsFragment extends Fragment {
 
     private void createRecruitment(String nameJob, String place, String salary, String timeWork,
                                    String deadline, String descJob, String jobReq, String idTypeJob, String idCompany) throws JSONException {
-        String access_token = Program.token;
+        String access_token = preferenceManager.getString(Program.TOKEN);
 //        loadingPB.setVisibility(View.VISIBLE);
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 

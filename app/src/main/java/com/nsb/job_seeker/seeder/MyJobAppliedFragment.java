@@ -23,6 +23,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.JobAdapter;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
@@ -43,6 +45,7 @@ public class MyJobAppliedFragment extends Fragment {
     private List<Job> jobListApplied;
     private ListView listView;
     private TextView tvNotify;
+    private PreferenceManager preferenceManager;
 
     @Nullable
     @Override
@@ -59,6 +62,8 @@ public class MyJobAppliedFragment extends Fragment {
         jobListApplied = new ArrayList<>();
         listView = appliedJobView.findViewById(R.id.lv_job_applied);
         tvNotify = appliedJobView.findViewById(R.id.tv_notify);
+
+        preferenceManager = new PreferenceManager(getActivity());
     }
 
     private void setEvent() {
@@ -67,7 +72,7 @@ public class MyJobAppliedFragment extends Fragment {
 
     private void getJobApplied() {
         String url = "https://job-seeker-smy5.onrender.com/application/get-by-userid";
-        String token = Program.token;
+        String token = preferenceManager.getString(Program.TOKEN);
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         pbLoading.setVisibility(View.VISIBLE);
@@ -155,8 +160,8 @@ public class MyJobAppliedFragment extends Fragment {
     }
 
     private void setListViewAdapter() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobListApplied, false);
-        listView.setAdapter(listViewApdapter);
+        JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobListApplied, false);
+        listView.setAdapter(jobAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

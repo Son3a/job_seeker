@@ -11,7 +11,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,12 +25,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.model.Job;
 import com.nsb.job_seeker.seeder.JobDetailActivity;
-import com.nsb.job_seeker.seeder.ListViewApdapter;
+import com.nsb.job_seeker.adapter.JobAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +37,6 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -259,8 +256,8 @@ public class StatisticalAmountJobFragment extends Fragment {
     }
 
     private void setListView() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobResultList, false);
-        listView.setAdapter(listViewApdapter);
+        JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobResultList, false);
+        listView.setAdapter(jobAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

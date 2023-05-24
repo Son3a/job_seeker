@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.employer;
+package com.nsb.job_seeker.adapter;
 
 import static java.lang.String.format;
 

@@ -5,7 +5,9 @@
     android:background="@drawable/shadow"
     android:orientation="horizontal"
     android:paddingLeft="30dp"
-    android:paddingRight="50dp">
+    android:paddingRight="50dp"
+    android:id="@+id/layout_item_job"
+    android:animateLayoutChanges="true">
 
     <ImageView
         android:id="@+id/img_job"

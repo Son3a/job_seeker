@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.common;
 
 import android.annotation.SuppressLint;
 import android.content.ContentUris;

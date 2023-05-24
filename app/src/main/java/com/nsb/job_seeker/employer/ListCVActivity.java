@@ -1,6 +1,5 @@
 package com.nsb.job_seeker.employer;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -10,7 +9,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
@@ -23,7 +21,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.model.Recruitment;
+import com.nsb.job_seeker.adapter.CVAdapter;
+import com.nsb.job_seeker.common.PreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,12 +40,12 @@ public class ListCVActivity extends AppCompatActivity {
     private ImageView icBack;
     private TextView tvNotifyEmpty, tvAmountJob;
     private String url = "https://job-seeker-smy5.onrender.com/application/get-by-jobid?jobid=";
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_employer_list_cv);
 
         setControl();
@@ -61,6 +60,8 @@ public class ListCVActivity extends AppCompatActivity {
 
         listTimeApply = new ArrayList<String>();
         listFile = new ArrayList<>();
+
+        preferenceManager = new PreferenceManager(this);
     }
 
     private void setEvent() {
@@ -77,8 +78,8 @@ public class ListCVActivity extends AppCompatActivity {
     }
 
     private void setListAdapter() {
-        CVListViewAdapter cvListViewAdapter = new CVListViewAdapter(ListCVActivity.this, R.layout.list_view_item_cv, listTimeApply, listFile);
-        listViewCV.setAdapter(cvListViewAdapter);
+        CVAdapter cvAdapter = new CVAdapter(ListCVActivity.this, R.layout.list_view_item_cv, listTimeApply, listFile);
+        listViewCV.setAdapter(cvAdapter);
         listViewCV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -131,7 +132,7 @@ public class ListCVActivity extends AppCompatActivity {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/json");
-                headers.put("Authorization", Program.token);
+                headers.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return headers;
             }
         };

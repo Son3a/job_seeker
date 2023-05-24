@@ -22,6 +22,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
@@ -45,7 +46,6 @@ public class CompanyActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_seeker_list_job_by_company);
 
         setControl();
@@ -136,8 +136,8 @@ public class CompanyActivity extends AppCompatActivity {
     }
 
     private void setListViewAdapter() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(CompanyActivity.this, R.layout.list_view_item_job, jobList, true);
-        listView.setAdapter(listViewApdapter);
+        JobAdapter jobAdapter = new JobAdapter(CompanyActivity.this, R.layout.list_view_item_job, jobList, true);
+        listView.setAdapter(jobAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

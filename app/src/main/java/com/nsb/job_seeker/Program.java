@@ -18,32 +18,72 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class Program {
-    public static String token = "";
-    public static String url_dev = "https://job-seeker-smy5.onrender.com";
-    public static String idUser;
-    public static String idCompany;
-    public static String role = "user";
-    public static String url_product = "https://job-seeker-smy5.onrender.com";
-    public static String sharedPreferencesName = "JobSharedPreference";
-    public static List<String> idListJobSaved;
+    public static final String url_dev = "https://job-seeker-smy5.onrender.com";
+    public static final String url_product = "https://job-seeker-smy5.onrender.com";
+
+    public static final String USER_ID = "userId";
+    public static final String ROLE = "role";
+    public static final String TOKEN = "token";
+    public static final String REFRESH_TOKEN = "refreshToken";
+    public static final String COMPANY_ID = "companyId";
+    public static final String sharedPreferencesName = "JobSharedPreference";
+    public static final String LIST_SAVED_JOB = "listSavedJob";
+    public static final String KEY_IS_SIGNED_IN = "is_signed_in";
+    public static final String USER_ROLE = "user";
+    public static final String ADMIN_ROLE = "admin";
+    public static final String KEY_COLLECTION_USERS = "users";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_EMAIL = "email";
+    public static final String KEY_PASSWORD = "password";
+    public static final String KEY_PREFERENCE_NAME = "chatAppPreference";
+    public static final String KE_USER_ID = "userId";
+    public static final String KEY_IMAGE = "image";
+    public static final String KEY_FCM_TOKEN = "fcmToken";
+    public static final String KEY_USER = "user";
+    public static final String KEY_COLLECTION_CHAT = "chat";
+    public static final String KEY_SENDER_ID = "senderId";
+    public static final String KEY_RECEIVER_ID = "receiverId";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_TIMESTAMP = "timestamp";
+    public static final String KEY_COLLECTION_CONVERSATIONS = "conversations";
+    public static final String KEY_SENDER_NAME = "senderName";
+    public static final String KEU_RECEIVER_NAME = "receiverName";
+    public static final String KEY_SENDER_IMAGE = "senderImage";
+    public static final String KEU_RECEIVER_IMAGE = "receiverImage";
+    public static final String KEY_LAST_MESSAGE = "lastMessage";
+    public static final String KEY_AVAILABILITY = "availability";
+    public static final String REMOTE_MSG_AUTHORIZATION = "Authorization";
+    public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
+    public static final String REMOTE_MSG_DATA = "data";
+    public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
+
+    public static HashMap<String,String> remoteMsgHeaders = null;
+    public  static HashMap<String,String> getRemoteMsgHeaders(){
+        if (remoteMsgHeaders == null){
+            remoteMsgHeaders = new HashMap<>();
+            remoteMsgHeaders.put(
+                    REMOTE_MSG_AUTHORIZATION,
+                    "key=AAAApmSiZK0:APA91bHPvzSMi7ykwF7MJd5pWzs-2tAFJ6iWbFJGFtAp4TmN5XB9fhFvLprCI7Dwy-7XuQyzC4binn91MjhIa_NEs-i2AQW6uPMvygHjEXUm-VOe4V72Pxc1jXQ7wZsW2oYFj-WhgWZF"
+            );
+            remoteMsgHeaders.put(
+                    REMOTE_MSG_CONTENT_TYPE,
+                    "application/json"
+            );
+
+        }
+        return remoteMsgHeaders;
+    }
 
     public static String formatSalary(String salary) {
         Log.d("salary", salary);
         if (!salary.matches(".*\\d.*")) return salary;
 
-        String listStr[] = salary.split(" ");
-        String money = "", moneySign = "";
-
-        for (int i = 0; i < listStr.length; i++) {
-            if (!listStr[i].matches(".*\\d.*")) {
-                moneySign = listStr[i];
-            } else {
-                money = listStr[i];
-            }
-        }
+        String money = salary.replaceAll("[^0-9]", "");
+        String moneySign = salary.replaceAll("[0-9]","").trim();
 
         NumberFormat df = NumberFormat.getCurrencyInstance();
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
@@ -146,7 +186,6 @@ public class Program {
         }
         return newString;
     }
-
 
 
     public static String formatStringToBullet(String string) {

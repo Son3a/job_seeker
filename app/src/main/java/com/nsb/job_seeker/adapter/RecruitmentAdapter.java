@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.employer;
+package com.nsb.job_seeker.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,12 +16,12 @@ import com.nsb.job_seeker.model.Recruitment;
 
 import java.util.List;
 
-public class RecruitmentsListViewAdapter extends ArrayAdapter {
+public class RecruitmentAdapter extends ArrayAdapter {
     private Context context;
     private int layoutId;
     private List<Recruitment> recruitmentList;
 
-    public RecruitmentsListViewAdapter(@NonNull Context context, int layoutId, List<Recruitment> recruitmentList) {
+    public RecruitmentAdapter(@NonNull Context context, int layoutId, List<Recruitment> recruitmentList) {
         super(context, layoutId);
         this.context = context;
         this.layoutId = layoutId;
@@ -40,7 +40,7 @@ public class RecruitmentsListViewAdapter extends ArrayAdapter {
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         row = inflater.inflate(layoutId, parent,false);
 
-        RecruitmentsListViewAdapter.JobHolder holder = new RecruitmentsListViewAdapter.JobHolder();
+        RecruitmentAdapter.JobHolder holder = new RecruitmentAdapter.JobHolder();
         holder.recruitment = recruitmentList.get(position);
         holder.tvTimeCreated = (TextView) row.findViewById(R.id.tv_time_created);
         holder.tvNameJob = (TextView) row.findViewById(R.id.tv_name_job);

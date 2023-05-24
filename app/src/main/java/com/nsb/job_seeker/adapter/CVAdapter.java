@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.employer;
+package com.nsb.job_seeker.adapter;
 
 
 import android.app.Activity;
@@ -22,13 +22,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 
-public class CVListViewAdapter extends ArrayAdapter {
+public class CVAdapter extends ArrayAdapter {
     private Context context;
     private int layoutId;
     private List<String> timeAppliedList;
     private List<String> listFile;
 
-    public CVListViewAdapter(@NonNull Context context, int layoutId, List<String> timeAppliedList, List<String> listFile) {
+    public CVAdapter(@NonNull Context context, int layoutId, List<String> timeAppliedList, List<String> listFile) {
         super(context, layoutId);
         this.context = context;
         this.layoutId = layoutId;
@@ -48,7 +48,7 @@ public class CVListViewAdapter extends ArrayAdapter {
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         row = inflater.inflate(layoutId, parent, false);
 
-        CVListViewAdapter.Holder holder = new CVListViewAdapter.Holder();
+        CVAdapter.Holder holder = new CVAdapter.Holder();
         holder.timeApplied = timeAppliedList.get(position);
         holder.tvTimeApplied = (TextView) row.findViewById(R.id.tv_time_applied);
         holder.tvSTT = (TextView) row.findViewById(R.id.tv_stt);
