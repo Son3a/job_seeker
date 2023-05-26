@@ -28,6 +28,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.seeder.JobDetailActivity;
 
 import org.json.JSONException;
@@ -49,12 +50,13 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
     private String url = "https://job-seeker-smy5.onrender.com/job/detail?id=";
     private String idJob = "";
 
+    private PreferenceManager preferenceManager;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_recruitment_detail);
 
 
@@ -79,6 +81,8 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
         tvDescJob = findViewById(R.id.tv_detail_job);
         tvJobReq = findViewById(R.id.tv_job_req);
         layoutBody = findViewById(R.id.layout_recruitment_detail);
+
+        preferenceManager = new PreferenceManager(this);
     }
 
     private void setEvent() {
@@ -197,7 +201,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
 
     private void deleteRecruitmentAPI() throws JSONException {
         String urlDeleteRecruitment ="https://job-seeker-smy5.onrender.com/job/delete";
-        String access_token = Program.token;
+        String access_token = preferenceManager.getString(Program.TOKEN);
         Log.d("ABC", "check token : " + access_token);
         RequestQueue queue = Volley.newRequestQueue(RecruitmentDetailActivity.this);
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_messenger"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_messenger"
+        android:layout_marginRight="35dp"
+        android:backgroundTint="@color/white"
+        android:elevation="10dp"
+        app:tint="#4B90C6"
+        app:maxImageSize="56dp"
+        android:scaleType="center"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="5dp"/>
+
+    <io.github.florent37.shapeofview.shapes.BubbleView
+        android:id="@+id/layout_chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:shape_bubble_arrowHeight="10dp"
+        app:shape_bubble_arrowWidth="10dp"
+        app:shape_bubble_arrowPosition="top"
+        app:arrow_posititon_percent="0.8"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/fab_messenger">
+
+        <FrameLayout
+            android:id="@+id/layout_container_chat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/custom_background_message" />
+
+    </io.github.florent37.shapeofview.shapes.BubbleView>
+    
+</RelativeLayout>

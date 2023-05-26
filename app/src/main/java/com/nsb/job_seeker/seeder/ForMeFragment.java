@@ -22,6 +22,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.JobAdapter;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
@@ -37,6 +39,7 @@ public class ForMeFragment extends Fragment {
     private String url = "https://job-seeker-smy5.onrender.com/job/list/sort-by-date";
     private View homeView;
     private ProgressBar pbLoading;
+    private PreferenceManager preferenceManager;
 
     public static List<Job> jobList;
 
@@ -55,6 +58,8 @@ public class ForMeFragment extends Fragment {
         jobList = new ArrayList<Job>();
         listViewJob = homeView.findViewById(R.id.lv_job);
         pbLoading = homeView.findViewById(R.id.idLoadingPB);
+
+        preferenceManager = new PreferenceManager(getActivity());
     }
 
     private void setEvent() {
@@ -65,6 +70,8 @@ public class ForMeFragment extends Fragment {
 
     private void getNewJobs(String url) {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
+        List<String> listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
+        Log.d("itemSave", listSavedJob.toString());
 
         pbLoading.setVisibility(View.VISIBLE);
         JsonObjectRequest data = new JsonObjectRequest(
@@ -81,8 +88,10 @@ public class ForMeFragment extends Fragment {
                             }
                             for (int i = 0; i < lenghJobs; i++) {
                                 JSONObject job = jobsList.getJSONObject(i);
-                                if (Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000) && job.getString("status").equals("true")
-                                        && !Program.idListJobSaved.contains(job.getString("_id"))) {
+                                if ((Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000)) &&
+                                        job.getString("status").equals("true") &&
+                                        !preferenceManager.getArray(Program.LIST_SAVED_JOB).contains(job.getString("_id"))) {
+
                                     if (!job.isNull("idCompany")) {
                                         idCompany = job.getJSONObject("idCompany").getString("name");
                                     } else {
@@ -140,18 +149,21 @@ public class ForMeFragment extends Fragment {
         queue.add(data);
     }
 
-    private void setListViewAdapter() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList, true);
-        listViewJob.setAdapter(listViewApdapter);
-        listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                i.putExtra("id", jobList.get(position).getId());
-                i.putExtra("isApply", true);
-                startActivity(i);
-            }
-        });
+    private void setListViewAdapter() {
+        if (getActivity() != null) {
+            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobList, true);
+            listViewJob.setAdapter(jobAdapter);
+            listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
+                    i.putExtra("id", jobList.get(position).getId());
+                    i.putExtra("isApply", true);
+                    startActivity(i);
+                }
+            });
+        }
     }
 }

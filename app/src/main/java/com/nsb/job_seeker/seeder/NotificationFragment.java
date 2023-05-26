@@ -11,13 +11,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.model.Job;
 
 import java.util.List;
 
 public class NotificationFragment extends Fragment {
 
-    private ListViewApdapter listViewApdapter;
+    private JobAdapter jobAdapter;
     private ListView listViewJob;
     private List<Job> jobList;
     @Nullable

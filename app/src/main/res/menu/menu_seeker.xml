@@ -13,9 +13,9 @@
         android:icon="@drawable/ic_baseline_myjob"
         android:title="Việc của tôi"/>
     <item
-        android:id="@+id/menu_notifiation"
-        android:icon="@drawable/ic_baseline_notifications"
-        android:title="Thông báo"/>
+        android:id="@+id/menu_message"
+        android:icon="@drawable/ic_chat"
+        android:title="Tin nhắn"/>
     <item
         android:id="@+id/menu_account"
         android:icon="@drawable/ic_baseline_account"

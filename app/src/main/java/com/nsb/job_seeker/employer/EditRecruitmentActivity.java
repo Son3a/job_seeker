@@ -35,6 +35,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.PreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,12 +60,12 @@ public class EditRecruitmentActivity extends AppCompatActivity {
     private String idJob = "";
     private List<String> nameTypeJobs;
     private List<String> idTypeJobs;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getSupportActionBar().hide();
         setContentView(R.layout.fragment_employer_update_news);
 
         setControl();
@@ -90,6 +91,8 @@ public class EditRecruitmentActivity extends AppCompatActivity {
         idTypeJobs = new ArrayList<>();
         nameTypeJobs = new ArrayList<>();
         nameTypeJobs.add("Lĩnh vực");
+
+        preferenceManager = new PreferenceManager(this);
     }
 
     private void setEvent() {
@@ -140,7 +143,7 @@ public class EditRecruitmentActivity extends AppCompatActivity {
 
     private void updateRecruitmentApi(String id, String nameJob, String place, String salary, String timeWork,
                                       String deadline, String descJob, String jobReq, String idTypeJob) throws JSONException {
-        String access_token = Program.token;
+        String access_token = preferenceManager.getString(Program.TOKEN);
         System.out.println(access_token);
 //        loadingPB.setVisibility(View.VISIBLE);
         RequestQueue queue = Volley.newRequestQueue(EditRecruitmentActivity.this);

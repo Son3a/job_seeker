@@ -8,11 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -37,35 +33,23 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.common.RealPathUtil;
 import com.nsb.job_seeker.common.VolleyMultipartRequest;
 import com.nsb.job_seeker.model.DataPart;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 
 public class ApplyJobActivity extends AppCompatActivity {
@@ -78,7 +62,7 @@ public class ApplyJobActivity extends AppCompatActivity {
     private Uri mUri;
     private String fileName;
     private String url = "https://job-seeker-smy5.onrender.com/application/create";
-    private ArrayList<HashMap<String, String>> arraylist;
+    private PreferenceManager preferenceManager;
 
     private ActivityResultLauncher<Intent> mActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -93,8 +77,9 @@ public class ApplyJobActivity extends AppCompatActivity {
                         }
                         Uri uri = data.getData();
                         mUri = uri;
-                        String path = RealPathUtil.getPath(ApplyJobActivity.this,uri);
-                        fileName = path.substring(path.lastIndexOf("/")+1);
+                        String path = RealPathUtil.getPath(ApplyJobActivity.this, uri);
+                        fileName = path.substring(path.lastIndexOf("/") + 1);
+                        tvUploadCV.setText(fileName);
                     }
                 }
             });
@@ -103,7 +88,6 @@ public class ApplyJobActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_seeker_apply_job);
 
         setControl();
@@ -119,6 +103,8 @@ public class ApplyJobActivity extends AppCompatActivity {
         imgBack = findViewById(R.id.ic_back);
         btnSendCv = findViewById(R.id.btn_send_cv);
         pbLoading = findViewById(R.id.idLoadingPB);
+
+        preferenceManager = new PreferenceManager(this);
     }
 
     private void setEvent() throws URISyntaxException {
@@ -142,13 +128,14 @@ public class ApplyJobActivity extends AppCompatActivity {
         btnSendCv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Toast.makeText(ApplyJobActivity.this, fileName + "\n" + mUri, Toast.LENGTH_SHORT).show();
                 uploadPDF(fileName, mUri);
             }
         });
     }
 
     private void uploadPDF(final String pdfname, Uri pdffile) {
-        String access_token = Program.token;
+        String access_token = preferenceManager.getString(Program.TOKEN);
         String idJob = getIntent().getExtras().getString("idJob");
         pbLoading.setVisibility(View.VISIBLE);
         RequestQueue rQueue = Volley.newRequestQueue(ApplyJobActivity.this);
@@ -170,6 +157,7 @@ public class ApplyJobActivity extends AppCompatActivity {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            pbLoading.setVisibility(View.GONE);
                             Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }) {
@@ -199,7 +187,6 @@ public class ApplyJobActivity extends AppCompatActivity {
                 @Override
                 protected Map<String, DataPart> getByteData() {
                     Map<String, DataPart> params = new HashMap<>();
-
                     params.put("cv", new DataPart(pdfname, inputData));
                     return params;
                 }

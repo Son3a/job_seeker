@@ -2,6 +2,7 @@ package com.nsb.job_seeker.seeder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,8 +22,14 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.JobAdapter;
+import com.nsb.job_seeker.message.activity.ChatActivity;
+import com.nsb.job_seeker.message.model.User;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
@@ -40,13 +48,15 @@ public class CompanyActivity extends AppCompatActivity {
     private TextView tvNameCompany, tvAboutCompany, tvLocationOfCompany, tvTypeCompany, tvPhone, tvAmountEmployer;
     private String IDCompany = "";
     private String url = "https://job-seeker-smy5.onrender.com/job/list/company/";
+    private FloatingActionButton fabMessage;
+    private String emailReceiver;
+    private User userReceive;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getSupportActionBar().hide();
-        setContentView(R.layout.activity_seeker_list_job_by_company);
+        setContentView(R.layout.activity_seeker_company);
 
         setControl();
         setEvent();
@@ -63,17 +73,21 @@ public class CompanyActivity extends AppCompatActivity {
         tvPhone = findViewById(R.id.tv_phone_company);
         tvAmountEmployer = findViewById(R.id.tv_amount_employer);
         pbLoading = findViewById(R.id.idLoadingPB);
+        fabMessage = findViewById(R.id.fab_messenger);
 
         jobList = new ArrayList<>();
+        userReceive = new User();
     }
 
     private void setEvent() {
         back();
-        getInforCompany();
+        getInfoCompany();
         getListJobOfCompany(url);
+
+        openChatBox();
     }
 
-    private void getInforCompany() {
+    private void getInfoCompany() {
         pbLoading.setVisibility(View.VISIBLE);
         Bundle bundle = getIntent().getExtras();
         String urlCompany = "https://job-seeker-smy5.onrender.com/company/detail?id=" + bundle.getString("idCompany");
@@ -94,6 +108,8 @@ public class CompanyActivity extends AppCompatActivity {
                             tvTypeCompany.setText(jsonObject.getString("type"));
                             tvPhone.setText(jsonObject.getString("phone"));
                             tvAmountEmployer.setText(String.valueOf(jsonObject.getInt("totalEmployee")));
+                            emailReceiver = jsonObject.getJSONObject("idUser").getString("email");
+                            getInfoUserFirebase();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -136,8 +152,8 @@ public class CompanyActivity extends AppCompatActivity {
     }
 
     private void setListViewAdapter() {
-        ListViewApdapter listViewApdapter = new ListViewApdapter(CompanyActivity.this, R.layout.list_view_item_job, jobList, true);
-        listView.setAdapter(listViewApdapter);
+        JobAdapter jobAdapter = new JobAdapter(CompanyActivity.this, R.layout.list_view_item_job, jobList, true);
+        listView.setAdapter(jobAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -220,5 +236,30 @@ public class CompanyActivity extends AppCompatActivity {
             }
         });
         queue.add(data);
+    }
+
+    private void openChatBox() {
+        fabMessage.setOnClickListener(v->{
+            Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+            intent.putExtra(Program.KEY_USER, userReceive);
+            startActivity(intent);
+        });
+    }
+
+    private void getInfoUserFirebase() {
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        database.collection(Program.KEY_COLLECTION_USERS)
+                .whereEqualTo(Program.KEY_EMAIL, emailReceiver)
+                .get()
+                .addOnCompleteListener(task ->{
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot queryDocumentSnapshot = task.getResult().getDocuments().get(0);
+                        userReceive.name = queryDocumentSnapshot.getString(Program.KEY_NAME);
+                        userReceive.email = queryDocumentSnapshot.getString(Program.KEY_EMAIL);
+                        userReceive.image = queryDocumentSnapshot.getString(Program.KEY_IMAGE);
+                        userReceive.token = queryDocumentSnapshot.getString(Program.KEY_FCM_TOKEN);
+                        userReceive.id = queryDocumentSnapshot.getId();
+                    }
+                });
     }
 }

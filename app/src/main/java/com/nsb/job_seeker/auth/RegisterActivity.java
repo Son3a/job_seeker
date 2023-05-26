@@ -1,5 +1,11 @@
 package com.nsb.job_seeker.auth;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Base64;
+
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -7,6 +13,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,34 +28,41 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.PreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
-    private EditText edtName, edtEmail, edtUsername, edtPassword, edtPasswordConfirm,edtPhone;
+    private EditText edtName, edtEmail, edtUsername, edtPassword, edtPasswordConfirm, edtPhone;
     private Button btnRegister;
     private TextView txtError;
     private RequestQueue mRequestQueue;
-    private String base_url = Program.url_dev+"/auth";
+    private String base_url = Program.url_dev + "/auth";
     private RegisterTask registerTask;
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
+    private PreferenceManager preferenceManager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle("Đăng Ký");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#DB3AA1F6")));
+
         setContentView(R.layout.activity_register);
         this.loadingDialog = new LoadingDialog(RegisterActivity.this);
 
@@ -65,13 +79,15 @@ public class RegisterActivity extends AppCompatActivity {
         edtUsername = findViewById(R.id.edtUsername);
         btnRegister = findViewById(R.id.btnRegister);
         txtError = findViewById(R.id.txtError);
+
+        preferenceManager = new PreferenceManager(this);
     }
 
     private void setEvent() {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(edtEmail.getText().toString().equals("") || edtName.getText().toString().equals("") || edtUsername.getText().toString().equals("") || edtPassword.getText().toString().equals("") || edtPasswordConfirm.getText().toString().equals("")|| edtPhone.getText().toString().equals("")) {
+                if (edtEmail.getText().toString().equals("") || edtName.getText().toString().equals("") || edtUsername.getText().toString().equals("") || edtPassword.getText().toString().equals("") || edtPasswordConfirm.getText().toString().equals("") || edtPhone.getText().toString().equals("")) {
                     dialogNotification.openDialogNotification("Không được để trống bất kỳ ô nào !", RegisterActivity.this);
 
                 } else if (!edtPassword.getText().toString().equals(edtPasswordConfirm.getText().toString())) {
@@ -131,7 +147,10 @@ public class RegisterActivity extends AppCompatActivity {
                         JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
                         Log.d("ABC", convertedObject.toString());
                         String message = response.getString("message");
-                        dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), RegisterActivity.this);
+
+                        signUp(); // sign up on firebase
+
+                        dialogNotification.openDialogNotification(message.substring(0, message.length() - 1), RegisterActivity.this);
 
                     } catch (JSONException e) {
                         Toast.makeText(RegisterActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
@@ -144,13 +163,13 @@ public class RegisterActivity extends AppCompatActivity {
                     String body;
                     //get status code here
 //                    String statusCode = String.valueOf(error.networkResponse.statusCode);
-                    if(error.networkResponse.data!=null) {
+                    if (error.networkResponse.data != null) {
                         try {
-                            body = new String(error.networkResponse.data,"UTF-8");
+                            body = new String(error.networkResponse.data, "UTF-8");
                             JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                             String message = convertedObject.get("message").toString();
 
-                            dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), RegisterActivity.this);
+                            dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), RegisterActivity.this);
                             Log.d("ABC", message);
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
@@ -171,6 +190,33 @@ public class RegisterActivity extends AppCompatActivity {
             return null;
         }
 
+
+        private void signUp() {
+            FirebaseFirestore database = FirebaseFirestore.getInstance();
+            HashMap<String, Object> user = new HashMap<>();
+            user.put(Program.KEY_NAME, edtName.getText().toString());
+            user.put(Program.KEY_EMAIL, edtEmail.getText().toString());
+            user.put(Program.KEY_PASSWORD, edtPassword.getText().toString());
+//            user.put(Program.KEY_IMAGE, encodeImage);
+            database.collection(Program.KEY_COLLECTION_USERS)
+                    .add(user)
+                    .addOnSuccessListener(documentReference -> {
+                        preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);
+                        preferenceManager.putString(Program.KE_USER_ID, documentReference.getId());
+                        preferenceManager.putString(Program.KEY_NAME, edtName.getText().toString());
+//                        preferenceManager.putString(Program.KEY_IMAGE, encodeImage);
+                    });
+        }
+
+        private String encodeImage(Bitmap bitmap) {
+            int previewWidth = 150;
+            int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
+            Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+            byte[] bytes = byteArrayOutputStream.toByteArray();
+            return Base64.encodeToString(bytes, Base64.DEFAULT);
+        }
 
     }
 }

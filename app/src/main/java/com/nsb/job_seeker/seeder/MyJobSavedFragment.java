@@ -25,6 +25,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.JobAdapter;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
@@ -37,26 +39,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class MyJobSavedFragment extends Fragment {
-    private MyJobSavedFragment myJobSavedFragment;
     private View savedJobView;
     private ListView listViewJobSaved;
     private ProgressBar pbLoading;
     private TextView tvNotify;
-
     private List<Job> jobList;
-
-    private ListViewApdapter listViewApdapter;
+    private PreferenceManager preferenceManager;
 
     @Nullable
     @Override
@@ -74,6 +63,7 @@ public class MyJobSavedFragment extends Fragment {
         tvNotify = savedJobView.findViewById(R.id.tv_notify);
 
         jobList = new ArrayList<>();
+        preferenceManager = new PreferenceManager(getActivity());
     }
 
     private void setEvent() {
@@ -145,7 +135,7 @@ public class MyJobSavedFragment extends Fragment {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", Program.token);
+                headers.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 headers.put("Content-Type", "application/json");
                 return headers;
             }
@@ -171,17 +161,19 @@ public class MyJobSavedFragment extends Fragment {
 
 
     private void setListViewAdapter() {
-        listViewApdapter = new ListViewApdapter(getActivity(), R.layout.list_view_item_job, jobList, true, true);
-        listViewJobSaved.setAdapter(listViewApdapter);
-        listViewJobSaved.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                i.putExtra("id", jobList.get(position).getId());
-                i.putExtra("isApply", true);
-                startActivity(i);
-            }
-        });
+        if (getActivity() != null) {
+            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobList, true, true);
+            listViewJobSaved.setAdapter(jobAdapter);
+            listViewJobSaved.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
+                    i.putExtra("id", jobList.get(position).getId());
+                    i.putExtra("isApply", true);
+                    startActivity(i);
+                }
+            });
+        }
     }
 }
 

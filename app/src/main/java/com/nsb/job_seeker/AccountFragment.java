@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +32,7 @@ import com.nsb.job_seeker.auth.DialogNotification;
 import com.nsb.job_seeker.auth.LoadingDialog;
 import com.nsb.job_seeker.auth.MainActivity;
 import com.nsb.job_seeker.common.Activity_Profile;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.employer.StatisticalJobActivity;
 
 import org.json.JSONException;
@@ -47,9 +49,9 @@ public class AccountFragment extends Fragment {
 
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
-    private String base_url = Program.url_dev+"/auth";
+    private String base_url = Program.url_dev + "/auth";
     private RequestQueue mRequestQueue;
-    private StringRequest mStringRequest;
+    private PreferenceManager preferenceManager;
 
     @Nullable
     @Override
@@ -76,10 +78,11 @@ public class AccountFragment extends Fragment {
         tvMyFile = afterLoginView.findViewById(R.id.tv_my_file);
         tvDeleteAccount = afterLoginView.findViewById(R.id.tv_delete_account);
         tvStatistical = afterLoginView.findViewById(R.id.tv_statistical);
+        preferenceManager = new PreferenceManager(getActivity());
     }
 
     private void setEvent() {
-        if(Program.role.equals("user")){
+        if (preferenceManager.getString(Program.ROLE).equals(Program.USER_ROLE)) {
             tvStatistical.setVisibility(View.GONE);
         }
 
@@ -110,12 +113,13 @@ public class AccountFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 loadingDialog.startLoadingDialog();
-                handleLogout();
+                Log.d("Token", preferenceManager.getString(Program.TOKEN));
+                handleLogout(preferenceManager.getString(Program.REFRESH_TOKEN));
             }
         });
     }
 
-    private void handleLogout() {
+    private void handleLogout(String accessToken) {
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, Program.url_dev + "/auth/logout", null, new Response.Listener<JSONObject>() {
@@ -125,20 +129,12 @@ public class AccountFragment extends Fragment {
                     String message = response.getString("message");
                     Log.d("ABC", message);
 
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Program.sharedPreferencesName, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.clear();
-                    editor.commit();
-
-                    Program.idCompany = null;
-                    Program.idUser = null;
-                    Program.role = null;
-                    Program.token = null;
+                    preferenceManager.clear();
 
                     Intent i = new Intent(getContext(), MainActivity.class);
                     startActivity(i);
                 } catch (JSONException e) {
-                    Log.d("ABC",e.toString());
+                    Log.d("ABC", e.toString());
                     e.printStackTrace();
                 }
                 loadingDialog.dismissDialog();
@@ -149,14 +145,16 @@ public class AccountFragment extends Fragment {
                 String body;
                 //get status code here
 
-                if(error.networkResponse.data!=null) {
+                if (error.networkResponse.statusCode == 401) {
+                    handleLogout(preferenceManager.getString(Program.REFRESH_TOKEN));
+                } else if (error.networkResponse.data != null) {
                     try {
-                        body = new String(error.networkResponse.data,"UTF-8");
+                        body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), getActivity());
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), getActivity());
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -164,17 +162,15 @@ public class AccountFragment extends Fragment {
                 loadingDialog.dismissDialog();
 
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Program.sharedPreferencesName, Context.MODE_PRIVATE);
-                String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", "Bearer "+ACCESSTOKEN.substring(1, ACCESSTOKEN.length()-1));
+                params.put("Authorization", accessToken);
                 return params;
             }
-        };;
+        };
         mRequestQueue.add(jsonObjectRequest);
     }
 }

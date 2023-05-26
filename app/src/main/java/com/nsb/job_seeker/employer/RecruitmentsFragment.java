@@ -9,13 +9,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,6 +23,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.RecruitmentAdapter;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.model.Recruitment;
 
 import org.json.JSONArray;
@@ -42,7 +42,8 @@ public class RecruitmentsFragment extends Fragment {
     private TextView amountRec;
     private ProgressBar pbLoading;
     private String Url = "https://job-seeker-smy5.onrender.com/job/list/company/";
-    private String IDCompany = "";
+    private PreferenceManager preferenceManager;
+    private RecruitmentAdapter recruitmentAdapter;
 
     @Nullable
     @Override
@@ -60,6 +61,8 @@ public class RecruitmentsFragment extends Fragment {
         pbLoading = recruitmentView.findViewById(R.id.idLoadingPB);
 
         recruitmentList = new ArrayList<Recruitment>();
+
+        preferenceManager = new PreferenceManager(getActivity());
     }
 
 
@@ -71,20 +74,23 @@ public class RecruitmentsFragment extends Fragment {
 
     private void setListViewAdapter() {
         amountRec.setText("Tổng số lượng tin: " + String.valueOf(recruitmentList.size()));
-        RecruitmentsListViewAdapter recruitmentsListViewAdapter = new RecruitmentsListViewAdapter(getActivity(), R.layout.list_view_item_recruitment, recruitmentList);
-        listViewRecruitments.setAdapter(recruitmentsListViewAdapter);
-        listViewRecruitments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getActivity(), RecruitmentDetailActivity.class);
-                i.putExtra("id", recruitmentList.get(position).getId());
-                startActivity(i);
-            }
-        });
+        if (getActivity()!=null){
+            recruitmentAdapter = new RecruitmentAdapter(getActivity(), R.layout.list_view_item_recruitment, recruitmentList);
+            listViewRecruitments.setAdapter(recruitmentAdapter);
+            listViewRecruitments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent i = new Intent(getActivity(), RecruitmentDetailActivity.class);
+                    i.putExtra("id", recruitmentList.get(position).getId());
+                    startActivity(i);
+                }
+            });
+        }
+
     }
 
     private void getListJobOfCompany(String url) {
-        url += Program.idCompany;
+        url += preferenceManager.getString(Program.COMPANY_ID);
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         pbLoading.setVisibility(View.VISIBLE);
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
