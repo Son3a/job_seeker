@@ -4,44 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ForgotActivity"
     android:weightSum="10"
     android:orientation="vertical"
     >
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        >
-
-        <ImageView
-            android:id="@+id/backArrow"
-            android:layout_width="24dp"
-            android:layout_height="32dp"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="12dp"
-            android:src="@drawable/ic_baseline_arrow_back_24"
-            android:layout_centerInParent="true"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Khôi phục mật khẩu"
-            android:layout_toRightOf="@+id/backArrow"
-            android:layout_marginLeft="16dp"
-            android:textSize="24dp"
-            android:textStyle="bold"
-            android:layout_centerInParent="true"
-            android:textColor="@color/black"
-            />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="@color/notFocusd"
-            android:layout_alignParentBottom="true"
-            />
-    </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"

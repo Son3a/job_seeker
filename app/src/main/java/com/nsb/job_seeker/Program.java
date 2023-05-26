@@ -24,7 +24,7 @@ import java.util.List;
 public class Program {
     public static final String url_dev = "https://job-seeker-smy5.onrender.com";
     public static final String url_product = "https://job-seeker-smy5.onrender.com";
-
+    public static String url_dev_img = url_dev+"/images";
     public static final String USER_ID = "userId";
     public static final String ROLE = "role";
     public static final String TOKEN = "token";
@@ -60,6 +60,8 @@ public class Program {
     public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
     public static final String REMOTE_MSG_DATA = "data";
     public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
+  
+    public static String avatar;
 
     public static HashMap<String,String> remoteMsgHeaders = null;
     public  static HashMap<String,String> getRemoteMsgHeaders(){

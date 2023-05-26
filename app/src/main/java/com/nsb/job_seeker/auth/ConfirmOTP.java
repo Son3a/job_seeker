@@ -1,6 +1,8 @@
 package com.nsb.job_seeker.auth;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,14 +17,15 @@ import com.nsb.job_seeker.R;
 
 public class ConfirmOTP extends AppCompatActivity {
     private Button btnConfirmOTP;
-    private ImageView backArrow;
     private EditText edtOTP;
     private TextView txtWarning;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        actionBar.setTitle("Mã xác thực OTP");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#DB3AA1F6")));
         setContentView(R.layout.activity_confirm_otp);
         setControl();
         setEvent();
@@ -30,7 +33,6 @@ public class ConfirmOTP extends AppCompatActivity {
 
     private void setControl() {
         btnConfirmOTP = findViewById(R.id.btnConfirmOTP);
-        backArrow = findViewById(R.id.backArrow);
         edtOTP = findViewById(R.id.edtOTP);
         txtWarning = findViewById(R.id.txtWarningCodeOTP);
     }
@@ -48,14 +50,6 @@ public class ConfirmOTP extends AppCompatActivity {
                     i.putExtra("code", edtOTP.getText().toString());
                     startActivity(i);
                 }
-            }
-        });
-
-        backArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(ConfirmOTP.this, ForgotActivity.class);
-                startActivity(i);
             }
         });
     }
