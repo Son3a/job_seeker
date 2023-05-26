@@ -23,12 +23,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.employer.EmployerMainActivity;
+import com.nsb.job_seeker.message.activity.MessageFragment;
 import com.nsb.job_seeker.model.Job;
 import com.nsb.job_seeker.seeder.SeekerMainActivity;
 
@@ -132,9 +135,12 @@ public class MainActivity extends AppCompatActivity {
                     String accessToken = convertedObject.get("accessToken").toString();
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     preferenceManager.putString(Program.TOKEN, "Bearer " + accessToken.replace("\"", ""));
-                    preferenceManager.putString(Program.REFRESH_TOKEN,"Bearer " + refreshToken.replace("\"", ""));
-                    preferenceManager.putString("accessToken",accessToken);
-                    preferenceManager.putString("refreshToken",refreshToken);
+                    preferenceManager.putString(Program.REFRESH_TOKEN, "Bearer " + refreshToken.replace("\"", ""));
+                    preferenceManager.putString("accessToken", accessToken);
+                    preferenceManager.putString("refreshToken", refreshToken);
+
+                    signIn();   //login firebase
+
                     getInfoUser(accessToken);
                 } catch (JSONException e) {
                     Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
@@ -190,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                         JSONArray listJobFavorite = response.getJSONArray("jobFavourite");
                         for (int i = 0; i < listJobFavorite.length(); i++) {
                             JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
-                            if(jobObject.getString("status").equals("true")) {
+                            if (jobObject.getString("status").equals("true")) {
                                 idSavedJobs.add(jobObject.getString("_id"));
                             }
 //                            Log.d("ABC", listSavedJob.get(i));
@@ -258,6 +264,25 @@ public class MainActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
+    }
+
+
+    private void signIn() {
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        database.collection(Program.KEY_COLLECTION_USERS)
+                .whereEqualTo(Program.KEY_EMAIL, edtEmail.getText().toString())
+                .whereEqualTo(Program.KEY_PASSWORD, edtPassword.getText().toString())
+                .get()
+                .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null &&
+                                    task.getResult().getDocuments().size() > 0) {
+                                DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+                                preferenceManager.putString(Program.KE_USER_ID, documentSnapshot.getId());
+                                preferenceManager.putString(Program.KEY_NAME, documentSnapshot.getString(Program.KEY_NAME));
+                                preferenceManager.putString(Program.KEY_IMAGE, documentSnapshot.getString(Program.KEY_IMAGE));
+                            }
+                        }
+                );
     }
 
 }

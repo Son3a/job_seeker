@@ -3,17 +3,24 @@ package com.nsb.job_seeker.seeder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.nsb.job_seeker.AccountFragment;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.MovableFloatingActionButton;
+import com.nsb.job_seeker.message.activity.MessageFragment;
 
 public class SeekerMainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
@@ -21,9 +28,11 @@ public class SeekerMainActivity extends AppCompatActivity {
     private NewsJobFragment newsJobFragment;
     private SearchFragment searchFragment;
     private MyJobFragment myJobFragment;
-    private NotificationFragment notificationFragment;
+    private MessageFragment messageFragment;
     private AccountFragment accountFragment;
     private MovableFloatingActionButton fabMessenger;
+    private Dialog dialogMessage;
+    private FloatingActionButton fabMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,21 +46,29 @@ public class SeekerMainActivity extends AppCompatActivity {
 
     private void setControl() {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        fabMessenger = findViewById(R.id.fab_messenger);
+//        fabMessenger = findViewById(R.id.fab_messenger);
 
         newsJobFragment = new NewsJobFragment();
         searchFragment = new SearchFragment();
         myJobFragment = new MyJobFragment();
-        notificationFragment = new NotificationFragment();
+        messageFragment = new MessageFragment();
         accountFragment = new AccountFragment();
+
+        //setup dialog
+        dialogMessage = new Dialog(this);
+        dialogMessage.setContentView(R.layout.layout_message);
+        dialogMessage.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        fabMessage = dialogMessage.findViewById(R.id.fab_messenger);
+
+        myJobFragment = new MyJobFragment();
     }
 
     private void setEvent() {
         getSupportFragmentManager().beginTransaction().replace(R.id.container, newsJobFragment).commit();
 
-        BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.menu_notifiation);
-        badgeDrawable.setVisible(true);
-        badgeDrawable.setNumber(10);
+//        BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.menu_notifiation);
+//        badgeDrawable.setVisible(true);
+//        badgeDrawable.setNumber(10);
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -66,8 +83,8 @@ public class SeekerMainActivity extends AppCompatActivity {
                     case R.id.menu_myjob:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, myJobFragment).commit();
                         return true;
-                    case R.id.menu_notifiation:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, notificationFragment).commit();
+                    case R.id.menu_message:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.container, messageFragment).commit();
                         return true;
                     case R.id.menu_account:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, accountFragment).commit();
@@ -78,18 +95,27 @@ public class SeekerMainActivity extends AppCompatActivity {
         });
 
         openMessenger();
+        closeMessenger();
     }
 
     private void openMessenger() {
-        fabMessenger.setOnClickListener(v ->{
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//            int height = displayMetrics.heightPixels;
-            int width = displayMetrics.widthPixels;
-            fabMessenger.animate()
-                    .x(width-150)
-                    .y(30)
-                    .setDuration(500);
-        });
+//        fabMessenger.setOnClickListener(v -> {
+//            fabMessenger.setVisibility(View.GONE);
+//            dialogMessage.show();
+//            Window window = dialogMessage.getWindow();
+//            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.layout_container_chat, new MessageFragment()).commit();
+
+//            messageFragment.show(getSupportFragmentManager(),"MessageFragment");
+//        });
+    }
+
+    private void closeMessenger(){
+//        fabMessage.setOnClickListener(v->{
+//            if(dialogMessage.isShowing()){
+//                dialogMessage.dismiss();
+//                fabMessenger.setVisibility(View.VISIBLE);
+//            }
+//        });
     }
 }

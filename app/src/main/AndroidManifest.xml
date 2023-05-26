@@ -105,7 +105,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".message.activity.MessageActivity"
+            android:name=".message.activity.MessageFragment"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

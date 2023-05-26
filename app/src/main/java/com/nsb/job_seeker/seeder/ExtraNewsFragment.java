@@ -113,7 +113,7 @@ public class ExtraNewsFragment extends Fragment {
 
     private void setEvent() {
         toolbar.setTitle("Tin hot");
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         refreshNewsJob();
         pbLoading.setVisibility(View.VISIBLE);
         loadRSS();
@@ -130,9 +130,9 @@ public class ExtraNewsFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu,MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_extra_job, menu);
-        super.onCreateOptionsMenu(menu,inflater);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -246,18 +246,20 @@ public class ExtraNewsFragment extends Fragment {
     }
 
     private void setFeedAdapter() {
-        FeedAdapter adapter = new FeedAdapter(getActivity(), R.layout.item_listview_news, rssObject.getItems());
-        lvJob.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        if (getActivity() != null) {
+            FeedAdapter adapter = new FeedAdapter(getActivity(), R.layout.item_listview_news, rssObject.getItems());
+            lvJob.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
 
-        Log.d("ABC", rssObject.getItems().get(0).toString());
+            Log.d("ABC", rssObject.getItems().get(0).toString());
 
-        lvJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(rssObject.getItems().get(position).getLink()));
-                startActivity(i);
-            }
-        });
+            lvJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(rssObject.getItems().get(position).getLink()));
+                    startActivity(i);
+                }
+            });
+        }
     }
 }

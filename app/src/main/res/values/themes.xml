@@ -16,7 +16,7 @@
 
     <style name="text_view_job">
         <item name="android:textSize">15sp</item>
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/black</item>
     </style>
@@ -48,7 +48,7 @@
     </style>
 
     <style name="text_bottom_navigation">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="text_account">

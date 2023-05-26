@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray_main"
@@ -7,22 +8,23 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/blue_main"
-        android:padding="20dp">
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:padding="10dp">
 
         <ImageView
             android:id="@+id/ic_cancel"
-            android:layout_width="40dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:paddingLeft="-0dp"
+            android:layout_marginLeft="10dp"
             android:src="@drawable/ic_cancel"
-            android:visibility="gone" />
+            android:visibility="visible"
+            app:tint="@color/white" />
 
         <TextView
             android:id="@+id/txt_title"
@@ -31,16 +33,17 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Thêm tin tuyển dụng mới"
-            android:textSize="23sp" />
+            android:textColor="@color/white" />
 
         <ImageView
             android:id="@+id/ic_create_recruitment"
-            android:layout_width="40dp"
-            android:layout_height="50dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_save_recruiment" />
+            android:src="@drawable/ic_save_recruiment"
+            android:layout_marginRight="10dp"/>
     </RelativeLayout>
 
     <ScrollView
@@ -96,7 +99,7 @@
                     android:drawableLeft="@drawable/ic_salary_black"
                     android:drawablePadding="20dp"
                     android:hint="Lương"
-                    android:inputType="number"/>
+                    android:inputType="number" />
 
                 <EditText
                     android:id="@+id/edt_work_time"
@@ -118,7 +121,7 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:background="@drawable/custom_spinner_type_job"
-                    android:paddingLeft="50dp"/>
+                    android:paddingLeft="50dp" />
 
                 <TextView
                     android:id="@+id/tv_time_create_new"
@@ -142,7 +145,7 @@
                     android:drawableLeft="@drawable/ic_deadline"
                     android:drawablePadding="20dp"
                     android:hint="Hạn nộp hồ sơ"
-                    android:inputType="date"/>
+                    android:inputType="date" />
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -210,5 +213,5 @@
         android:id="@+id/tv_save_id_jobs"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 </LinearLayout>

@@ -107,7 +107,7 @@
         android:layout_marginVertical="10dp"
         android:gravity="right"
         android:text="Quên mật khẩu"
-        android:textColor="#1887DF"
+        android:textColor="@color/primary"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -116,7 +116,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtForgotPassword"
-        android:backgroundTint="#1887DF"
+        android:backgroundTint="@color/primary"
         android:text="Đăng nhập"
         android:textColor="#fff"
         android:textSize="18dp" />
@@ -141,7 +141,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Đăng ký ngay"
-            android:textColor="#1887DF"
+            android:textColor="@color/primary"
             android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>

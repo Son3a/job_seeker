@@ -122,7 +122,7 @@ public class SearchFragment extends Fragment {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         if (!edtSearch.getText().toString().trim().equals("")) {
                             Program.hideKeyboardFrom(getActivity(), getActivity().getCurrentFocus());
-                            findJob(edtSearch.getText().toString(), spinnerTypeJob.getSelectedItemPosition(),spinnerLocation.getSelectedItemPosition());
+                            findJob(edtSearch.getText().toString(), spinnerTypeJob.getSelectedItemPosition(), spinnerLocation.getSelectedItemPosition());
                         } else {
                             tvNote.setText("Kết quả tìm kiếm không có");
                             tvNote.setVisibility(View.VISIBLE);
@@ -143,7 +143,7 @@ public class SearchFragment extends Fragment {
 //                Toast.makeText(getActivity(), String.valueOf(positionSpnLocation), Toast.LENGTH_SHORT).show();
                 try {
                     bottomSheetDialog.dismiss();
-                    findJob(edtSearch.getText().toString(), spinnerTypeJob.getSelectedItemPosition(),spinnerLocation.getSelectedItemPosition());
+                    findJob(edtSearch.getText().toString(), spinnerTypeJob.getSelectedItemPosition(), spinnerLocation.getSelectedItemPosition());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -152,7 +152,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void setAdapterEditText() {
-        String[] data = new String[]{"Nodejs", "Python", "Java", "Reactjs", "C++", "SQL","C#","PHP","C","Javascript","Ruby"};
+        String[] data = new String[]{"Nodejs", "Python", "Java", "Reactjs", "C++", "SQL", "C#", "PHP", "C", "Javascript", "Ruby"};
         ArrayAdapter arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, data);
         edtSearch.setAdapter(arrayAdapter);
     }
@@ -275,20 +275,22 @@ public class SearchFragment extends Fragment {
     }
 
     private void setListView() {
-        JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobResultList, true);
-        listView.setAdapter(jobAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (getActivity() != null) {
+            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobResultList, true);
+            listView.setAdapter(jobAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                i.putExtra("id", jobResultList.get(position).getId());
-                i.putExtra("isApply", true);
-                startActivity(i);
+                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
+                    i.putExtra("id", jobResultList.get(position).getId());
+                    i.putExtra("isApply", true);
+                    startActivity(i);
 
 
-            }
-        });
+                }
+            });
+        }
     }
 
     private void getTypeJob() {
@@ -346,11 +348,13 @@ public class SearchFragment extends Fragment {
     }
 
     private void bindingDataToSpinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_style, locationList);
-        spinnerLocation.setAdapter(adapter);
+        if (getActivity() != null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_style, locationList);
+            spinnerLocation.setAdapter(adapter);
 
-        adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_style, typeJobList);
-        spinnerTypeJob.setAdapter(adapter);
+            adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_style, typeJobList);
+            spinnerTypeJob.setAdapter(adapter);
+        }
     }
 
     private void setDataFilter() {

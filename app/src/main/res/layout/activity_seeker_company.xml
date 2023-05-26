@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-     android:layout_height="match_parent" android:layout_width="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -10,7 +12,7 @@
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blue_main"
+            android:background="@color/primary"
             android:orientation="horizontal"
             android:padding="10dp">
 
@@ -20,7 +22,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/ic_back"
+                app:tint="@color/white" />
 
 
         </LinearLayout>
@@ -75,72 +78,90 @@
             android:background="@drawable/custom_shadow"
             android:rotationX="180" />
 
-        <LinearLayout
-            android:id="@+id/infor_company"
+        <RelativeLayout
+            android:id="@+id/info_company"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/layout_shadow"
-            android:orientation="vertical"
-            android:padding="10dp">
+            android:layout_below="@+id/layout_shadow">
 
-            <TextView
-                style="@style/text_title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="Thông tin"
-                android:textSize="16sp" />
+                android:orientation="vertical"
+                android:padding="10dp">
 
-            <TextView
-                android:id="@+id/tv_location_company"
-                style="@style/text"
-                android:layout_width="match_parent"
+                <TextView
+                    style="@style/text_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Thông tin"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_location_company"
+                    style="@style/text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_location"
+                    android:drawablePadding="15dp"
+                    android:text="Ho Chi Minh"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tv_type_company"
+                    style="@style/text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:drawableLeft="@drawable/ic_job"
+                    android:drawablePadding="15dp"
+                    android:text="Software, outsource"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tv_phone_company"
+                    style="@style/text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:drawableLeft="@drawable/ic_phone_company"
+                    android:drawablePadding="15dp"
+                    android:text="032568945"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tv_amount_employer"
+                    style="@style/text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:drawableLeft="@drawable/ic_amount_employer_company"
+                    android:drawablePadding="15dp"
+                    android:text="100"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_messenger"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_location"
-                android:drawablePadding="15dp"
-                android:text="Ho Chi Minh"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_type_company"
-                style="@style/text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:drawableLeft="@drawable/ic_job"
-                android:drawablePadding="15dp"
-                android:text="Software, outsource"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_phone_company"
-                style="@style/text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:drawableLeft="@drawable/ic_phone_company"
-                android:drawablePadding="15dp"
-                android:text="032568945"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tv_amount_employer"
-                style="@style/text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:drawableLeft="@drawable/ic_amount_employer_company"
-                android:drawablePadding="15dp"
-                android:text="100"
-                android:textSize="15sp" />
-
-        </LinearLayout>
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:backgroundTint="@color/white"
+                android:elevation="10dp"
+                android:scaleType="center"
+                android:src="@drawable/ic_messenger"
+                app:maxImageSize="56dp"
+                app:tint="#4B90C6" />
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/line"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/infor_company"
+            android:layout_below="@+id/info_company"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:background="#D4D4D4" />
@@ -166,9 +187,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
                 android:divider="@null"
+                android:nestedScrollingEnabled="true"
                 android:scrollingCache="true"
-                android:smoothScrollbar="true"
-                android:nestedScrollingEnabled="true"/>
+                android:smoothScrollbar="true" />
         </LinearLayout>
 
         <ProgressBar

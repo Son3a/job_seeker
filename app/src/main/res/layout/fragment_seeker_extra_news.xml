@@ -8,9 +8,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/blue_main"
+        android:background="@color/primary"
         android:minHeight="?attr/actionBarSize"
-        app:titleTextColor="@color/white" />
+        app:titleTextColor="@color/white"
+        app:subtitleTextColor="@color/white"/>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_content"
@@ -63,7 +64,7 @@
         android:elevation="10dp"
         android:src="@drawable/img"
         app:maxImageSize="35dp"
-        app:tint="#4B90C6" />
+        app:tint="@color/primary" />
 
     <com.github.ybq.android.spinkit.SpinKitView
         xmlns:app="http://schemas.android.com/apk/res-auto"

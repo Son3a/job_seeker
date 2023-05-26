@@ -35,7 +35,9 @@ public class NewsJobFragment extends Fragment {
     private void setControl() {
         tabLayout = newsJobView.findViewById(R.id.tab_layout);
         viewPager2 = newsJobView.findViewById(R.id.view_pager);
-        forMeAdapter = new ForMeAdapter(getActivity());
+        if (getActivity() != null) {
+            forMeAdapter = new ForMeAdapter(getActivity());
+        }
     }
 
     private void setEvent() {

@@ -5,9 +5,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
@@ -15,9 +27,10 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.nsb.job_seeker.Program;
+import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
-import com.nsb.job_seeker.databinding.ActivityMainBinding;
 import com.nsb.job_seeker.message.adapter.RecentConversionAdapter;
 import com.nsb.job_seeker.message.listener.ConversionListener;
 import com.nsb.job_seeker.message.model.ChatMessage;
@@ -29,50 +42,74 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-public class MessageActivity extends BaseActivity implements ConversionListener {
+public class MessageFragment extends Fragment implements ConversionListener {
 
-    private ActivityMainBinding binding;
+    private View messageView;
+
     private PreferenceManager preferenceManager;
     private List<ChatMessage> conversions;
     private RecentConversionAdapter conversionAdapter;
     private FirebaseFirestore database;
+    private RecyclerView conversionRecycleView;
+    private AppCompatImageView imageSignOut;
+    private RoundedImageView imageProfile;
+    private TextView textName,textNotify;
+    private ProgressBar progressBar;
+    private FloatingActionButton fabNewChat;
 
+
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        preferenceManager = new PreferenceManager(this);
-        setContentView(binding.getRoot());
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        messageView = inflater.inflate(R.layout.activity_main,container,false);
+
+        setControl();
         init();
         loadUserDetails();
         getToken();
         setEvent();
         listenConversions();
+
+
+
+        return messageView;
+    }
+
+    private void setControl(){
+        conversionRecycleView = messageView.findViewById(R.id.conversionRecycleView);
+        preferenceManager = new PreferenceManager(getActivity());
+        imageProfile = messageView.findViewById(R.id.image_profile);
+        textName = messageView.findViewById(R.id.textName);
+        progressBar = messageView.findViewById(R.id.progressBar);
+        textNotify = messageView.findViewById(R.id.text_notify_empty_chats);
+        fabNewChat = messageView.findViewById(R.id.fabNewChat);
+
+        fabNewChat.setVisibility(View.GONE);
     }
 
     private void init() {
         conversions = new ArrayList<>();
         conversionAdapter = new RecentConversionAdapter(conversions, this);
-        binding.conversionRecycleView.setAdapter(conversionAdapter);
+        conversionRecycleView.setAdapter(conversionAdapter);
         database = FirebaseFirestore.getInstance();
     }
 
     private void setEvent() {
-        binding.imageSignOut.setOnClickListener(v -> signOut());
-        binding.fabNewChat.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(), UserActivity.class));
+//        imageSignOut.setOnClickListener(v -> signOut());
+        fabNewChat.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity().getApplicationContext(), UserActivity.class));
         });
     }
 
     private void loadUserDetails() {
-        binding.textName.setText(preferenceManager.getString(Program.KEY_NAME));
-        byte[] bytes = Base64.decode(preferenceManager.getString(Program.KEY_IMAGE), Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        binding.imageProfile.setImageBitmap(bitmap);
+        textName.setText(preferenceManager.getString(Program.KEY_NAME));
+//        byte[] bytes = Base64.decode(preferenceManager.getString(Program.KEY_IMAGE), Base64.DEFAULT);
+//        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//        imageProfile.setImageBitmap(bitmap);
     }
 
     private void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
     }
 
     private void listenConversions(){
@@ -83,6 +120,7 @@ public class MessageActivity extends BaseActivity implements ConversionListener 
         database.collection(Program.KEY_COLLECTION_CONVERSATIONS)
                 .whereEqualTo(Program.KEY_RECEIVER_ID,preferenceManager.getString(Program.KE_USER_ID))
                 .addSnapshotListener(eventListener);
+
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
@@ -119,6 +157,9 @@ public class MessageActivity extends BaseActivity implements ConversionListener 
                             break;
                         }
                     }
+                    if(conversions.size() == 0){
+                        textNotify.setVisibility(View.VISIBLE);
+                    }
                 }
             }
 
@@ -126,9 +167,10 @@ public class MessageActivity extends BaseActivity implements ConversionListener 
                     new SortByDate().compare(o2, o1)
             );
             conversionAdapter.notifyDataSetChanged();
-            binding.conversionRecycleView.smoothScrollToPosition(0);
-            binding.conversionRecycleView.setVisibility(View.VISIBLE);
-            binding.progressBar.setVisibility(View.GONE);
+            conversionRecycleView.smoothScrollToPosition(0);
+            conversionRecycleView.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+
         }
     };
 
@@ -167,15 +209,15 @@ public class MessageActivity extends BaseActivity implements ConversionListener 
         documentReference.update(updates)
                 .addOnSuccessListener(unused -> {
                     preferenceManager.clear();
-                    startActivity(new Intent(getApplicationContext(), SignInActivity.class));
-                    finish();
+//                    startActivity(new Intent(getActivity().getApplicationContext(), SignInActivity.class));
+                    getActivity().finish();
                 })
                 .addOnFailureListener(e -> showToast("Unable to sign out"));
     }
 
     @Override
     public void onConversionClicked(User user) {
-        Intent intent = new Intent(getApplicationContext(),ChatActivity.class);
+        Intent intent = new Intent(getActivity().getApplicationContext(),ChatActivity.class);
         intent.putExtra(Program.KEY_USER,user);
         startActivity(intent);
     }

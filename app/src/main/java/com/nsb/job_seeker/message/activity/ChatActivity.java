@@ -97,8 +97,8 @@ public class ChatActivity extends BaseActivity {
             conversion.put(Program.KEY_TIMESTAMP, new Date());
             addConversion(conversion);
         }
-        if(!isReceiverAvailable){
-            try{
+        if (!isReceiverAvailable) {
+            try {
                 JSONArray tokens = new JSONArray();
                 tokens.put(receiverUser.token);
 
@@ -113,7 +113,7 @@ public class ChatActivity extends BaseActivity {
                 body.put(Program.REMOTE_MSG_REGISTRATION_IDS, tokens);
 
                 sendNotification(body.toString());
-            }catch (Exception e){
+            } catch (Exception e) {
                 showToast(e.getMessage());
             }
         }
@@ -174,6 +174,11 @@ public class ChatActivity extends BaseActivity {
                     isReceiverAvailable = availability == 1;
                 }
                 receiverUser.token = value.getString(Program.KEY_FCM_TOKEN);
+                if(receiverUser.image == null){
+                    receiverUser.image = value.getString(Program.KEY_IMAGE);
+//                    chatAdapter.setReceiverProfileImage(getBitmapFromEncodedString(receiverUser.image));
+                    chatAdapter.notifyItemRangeChanged(0,chatMessages.size());
+                }
             }
             if (isReceiverAvailable) {
                 binding.textAvailability.setVisibility(View.VISIBLE);
@@ -240,8 +245,12 @@ public class ChatActivity extends BaseActivity {
     }
 
     private Bitmap getBitmapFromEncodedString(String encodedImage) {
-        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        if (encodedImage != null) {
+            byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        } else {
+            return null;
+        }
     }
 
     private void loadReceiverDetail() {

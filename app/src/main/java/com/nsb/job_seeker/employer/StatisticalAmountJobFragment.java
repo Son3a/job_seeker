@@ -134,8 +134,10 @@ public class StatisticalAmountJobFragment extends Fragment {
     }
 
     private void bindingDataToSpinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_style, nameTypeJobs);
-        spnJob.setAdapter(adapter);
+        if(getActivity()!=null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_style, nameTypeJobs);
+            spnJob.setAdapter(adapter);
+        }
     }
 
     private void showJob() {
@@ -256,18 +258,20 @@ public class StatisticalAmountJobFragment extends Fragment {
     }
 
     private void setListView() {
-        JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobResultList, false);
-        listView.setAdapter(jobAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if(getActivity()!=null) {
+            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobResultList, false);
+            listView.setAdapter(jobAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                i.putExtra("id", jobResultList.get(position).getId());
-                startActivity(i);
+                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
+                    i.putExtra("id", jobResultList.get(position).getId());
+                    startActivity(i);
 
 
-            }
-        });
+                }
+            });
+        }
     }
 }

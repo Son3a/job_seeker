@@ -71,7 +71,7 @@ public class ForMeFragment extends Fragment {
     private void getNewJobs(String url) {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         List<String> listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
-        Log.d("itemSave",listSavedJob.toString());
+        Log.d("itemSave", listSavedJob.toString());
 
         pbLoading.setVisibility(View.VISIBLE);
         JsonObjectRequest data = new JsonObjectRequest(
@@ -151,17 +151,19 @@ public class ForMeFragment extends Fragment {
 
 
     private void setListViewAdapter() {
-        JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobList, true);
-        listViewJob.setAdapter(jobAdapter);
-        listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (getActivity() != null) {
+            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobList, true);
+            listViewJob.setAdapter(jobAdapter);
+            listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                i.putExtra("id", jobList.get(position).getId());
-                i.putExtra("isApply", true);
-                startActivity(i);
-            }
-        });
+                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
+                    i.putExtra("id", jobList.get(position).getId());
+                    i.putExtra("isApply", true);
+                    startActivity(i);
+                }
+            });
+        }
     }
 }

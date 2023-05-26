@@ -149,8 +149,10 @@ public class PieChartFragment extends Fragment {
 
                             setupPieChart();
                             loadPieChart();
-                            StatisticalPieChartAdapter statisticalPieChartAdapter = new StatisticalPieChartAdapter(getActivity(), R.layout.list_view_item_percent_job, listNameJobs, listAmountJobs, sum);
-                            listViewJob.setAdapter(statisticalPieChartAdapter);
+                            if (getActivity() != null) {
+                                StatisticalPieChartAdapter statisticalPieChartAdapter = new StatisticalPieChartAdapter(getActivity(), R.layout.list_view_item_percent_job, listNameJobs, listAmountJobs, sum);
+                                listViewJob.setAdapter(statisticalPieChartAdapter);
+                            }
                         } catch (JSONException e) {
                             System.out.println(e);
                         }

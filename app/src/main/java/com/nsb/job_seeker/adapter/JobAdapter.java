@@ -1,20 +1,17 @@
 package com.nsb.job_seeker.adapter;
 
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,8 +38,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +85,7 @@ public class JobAdapter extends ArrayAdapter {
         View row = convertView;
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         row = inflater.inflate(layoutId, parent, false);
-        LinearLayout layoutItemJob = row.findViewById(R.id.layout_item_job);
+        FrameLayout layoutItemJob = row.findViewById(R.id.layout_item_job);
         preferenceManager = new PreferenceManager(context);
         listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
 
@@ -139,7 +134,7 @@ public class JobAdapter extends ArrayAdapter {
         }
     }
 
-    private void toggleJobFavourite(String jobId, int position, ImageView imgSave, LinearLayout layoutItem) throws JSONException {
+    private void toggleJobFavourite(String jobId, int position, ImageView imgSave, FrameLayout layoutItem) throws JSONException {
 
         layoutItem.animate()
                 .setDuration(300)
@@ -151,12 +146,12 @@ public class JobAdapter extends ArrayAdapter {
                     }
                 });
 
-//        layoutItem.setVisibility(View.INVISIBLE);
+        layoutItem.setVisibility(View.INVISIBLE);
         mRequestQueue = Volley.newRequestQueue(getContext());
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("jobId", jobId);
-        pbLoading.setVisibility(View.VISIBLE);
+//        pbLoading.setVisibility(View.VISIBLE);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PATCH, base_url + "/list-job-favourite", jsonObject, new Response.Listener<JSONObject>() {
             @Override
@@ -164,7 +159,7 @@ public class JobAdapter extends ArrayAdapter {
                 try {
                     String message = response.getString("message");
 //                    dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
-                    pbLoading.setVisibility(View.GONE);
+//                    pbLoading.setVisibility(View.GONE);
                     if (isSaveView) {
                         listSavedJob.remove(position);
                         jobList.remove(position);
@@ -186,7 +181,7 @@ public class JobAdapter extends ArrayAdapter {
 
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                    pbLoading.setVisibility(View.GONE);
+//                    pbLoading.setVisibility(View.GONE);
                     e.printStackTrace();
                 }
             }
@@ -230,7 +225,7 @@ public class JobAdapter extends ArrayAdapter {
         Job job;
         TextView tvCompany, tvNameJob, tvPlace, tvSalary, tvTimeUpdated;
         ImageView btnSave;
-        LinearLayout layoutItemJob;
+        FrameLayout layoutItemJob;
     }
 
 }

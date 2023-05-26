@@ -17,7 +17,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final List<ChatMessage> chatMessages;
     private final String senderId;
-    private final Bitmap receiverProfileImage;
+    private Bitmap receiverProfileImage;
 
     public static final int VIEW_TYPE_SENT = 1;
     public static final int VIEW_TYPE_RECEIVED = 2;
@@ -98,7 +98,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void setData(ChatMessage chatMessage, Bitmap receiverProfileImage) {
             binding.textMessage.setText(chatMessage.message);
             binding.textDateTime.setText(chatMessage.dateTime);
-            binding.imageProfile.setImageBitmap(receiverProfileImage);
+//            binding.imageProfile.setImageBitmap(receiverProfileImage);
         }
     }
 }

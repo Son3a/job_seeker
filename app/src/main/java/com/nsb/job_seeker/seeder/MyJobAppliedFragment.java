@@ -160,20 +160,23 @@ public class MyJobAppliedFragment extends Fragment {
     }
 
     private void setListViewAdapter() {
-        JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobListApplied, false);
-        listView.setAdapter(jobAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (getActivity() != null) {
+            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobListApplied, false);
+            listView.setAdapter(jobAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                i.putExtra("id", jobListApplied.get(position).getId());
-                i.putExtra("isApply", false);
-                startActivity(i);
+                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
+                    i.putExtra("id", jobListApplied.get(position).getId());
+                    i.putExtra("isApply", false);
+                    startActivity(i);
 
 
-            }
-        });
+                }
+            });
+        }
+
     }
 
 }

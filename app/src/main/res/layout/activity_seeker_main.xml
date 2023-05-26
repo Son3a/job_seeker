@@ -31,19 +31,4 @@
         app:itemTextColor="@color/custom_bottom_navigation_main"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/menu_seeker" />
-
-    <com.nsb.job_seeker.common.MovableFloatingActionButton
-        android:id="@+id/fab_messenger"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_messenger"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="70dp"
-        android:layout_marginRight="5dp"
-        android:backgroundTint="@color/white"
-        android:elevation="10dp"
-        app:tint="#4B90C6"
-        app:maxImageSize="56dp"
-        android:scaleType="center"/>
 </RelativeLayout>

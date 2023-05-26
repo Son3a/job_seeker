@@ -43,6 +43,7 @@ public class RecruitmentsFragment extends Fragment {
     private ProgressBar pbLoading;
     private String Url = "https://job-seeker-smy5.onrender.com/job/list/company/";
     private PreferenceManager preferenceManager;
+    private RecruitmentAdapter recruitmentAdapter;
 
     @Nullable
     @Override
@@ -73,16 +74,19 @@ public class RecruitmentsFragment extends Fragment {
 
     private void setListViewAdapter() {
         amountRec.setText("Tổng số lượng tin: " + String.valueOf(recruitmentList.size()));
-        RecruitmentAdapter recruitmentAdapter = new RecruitmentAdapter(getActivity(), R.layout.list_view_item_recruitment, recruitmentList);
-        listViewRecruitments.setAdapter(recruitmentAdapter);
-        listViewRecruitments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getActivity(), RecruitmentDetailActivity.class);
-                i.putExtra("id", recruitmentList.get(position).getId());
-                startActivity(i);
-            }
-        });
+        if (getActivity()!=null){
+            recruitmentAdapter = new RecruitmentAdapter(getActivity(), R.layout.list_view_item_recruitment, recruitmentList);
+            listViewRecruitments.setAdapter(recruitmentAdapter);
+            listViewRecruitments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent i = new Intent(getActivity(), RecruitmentDetailActivity.class);
+                    i.putExtra("id", recruitmentList.get(position).getId());
+                    startActivity(i);
+                }
+            });
+        }
+
     }
 
     private void getListJobOfCompany(String url) {
