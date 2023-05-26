@@ -52,7 +52,7 @@ public class JobAdapter extends ArrayAdapter {
     private DialogNotification dialogNotification = null;
     private ProgressBar pbLoading;
     private PreferenceManager preferenceManager;
-    private List<String> listSavedJob;
+//    private List<String> listSavedJob;
 
     private boolean isVisibleBtnSave;
     private boolean isSaveView = false;
@@ -83,23 +83,29 @@ public class JobAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        row = inflater.inflate(layoutId, parent, false);
-        FrameLayout layoutItemJob = row.findViewById(R.id.layout_item_job);
-        preferenceManager = new PreferenceManager(context);
-        listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
+        JobHolder holder;
+        if (row == null) {
+            holder = new JobHolder();
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            row = inflater.inflate(layoutId, parent, false);
+            FrameLayout layoutItemJob = row.findViewById(R.id.layout_item_job);
+            preferenceManager = new PreferenceManager(context);
+//            listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
 
-        JobHolder holder = new JobHolder();
-        holder.job = jobList.get(position);
-        holder.tvCompany = (TextView) row.findViewById(R.id.tv_company);
-        holder.tvNameJob = (TextView) row.findViewById(R.id.tv_name_job);
-        holder.tvPlace = (TextView) row.findViewById(R.id.tv_place);
-        holder.tvSalary = (TextView) row.findViewById(R.id.tv_salary);
-        holder.tvTimeUpdated = (TextView) row.findViewById(R.id.tv_time_updated);
-        holder.btnSave = row.findViewById(R.id.img_save_job);
-        holder.layoutItemJob = row.findViewById(R.id.layout_item_job);
 
-        row.setTag(holder);
+            holder.job = jobList.get(position);
+            holder.tvCompany = (TextView) row.findViewById(R.id.tv_company);
+            holder.tvNameJob = (TextView) row.findViewById(R.id.tv_name_job);
+            holder.tvPlace = (TextView) row.findViewById(R.id.tv_place);
+            holder.tvSalary = (TextView) row.findViewById(R.id.tv_salary);
+            holder.tvTimeUpdated = (TextView) row.findViewById(R.id.tv_time_updated);
+            holder.btnSave = row.findViewById(R.id.img_save_job);
+            holder.layoutItemJob = row.findViewById(R.id.layout_item_job);
+            row.setTag(holder);
+        }else{
+            holder = (JobHolder) row.getTag();
+        }
+
         holder.tvNameJob.setText(holder.job.getNameJob());
         holder.tvCompany.setText(holder.job.getCompany());
         holder.tvPlace.setText(holder.job.getPlace());
@@ -108,7 +114,7 @@ public class JobAdapter extends ArrayAdapter {
 
         pbLoading = ((Activity) context).findViewById(R.id.idLoadingPB);
 
-        hideBtnSave(holder.btnSave, position);
+        hideBtnSave(holder.btnSave,position);
 
         holder.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,13 +131,24 @@ public class JobAdapter extends ArrayAdapter {
     }
 
     private void hideBtnSave(ImageView imgSaveButton, int position) {
-        if (isVisibleBtnSave == false) {
+        if (isVisibleBtnSave == false) { //hide icon
             imgSaveButton.setVisibility(View.GONE);
         }
+
         if (isSaveView) {
             imgSaveButton.setImageResource(R.drawable.ic_save_job1);
             imgSaveButton.setTag("save");
+        }else{
+            if(Program.idSavedJobs.contains(jobList.get(position).getId())){
+                imgSaveButton.setImageResource(R.drawable.ic_save_job1);
+                imgSaveButton.setTag("save");
+            }
+            else{
+                imgSaveButton.setImageResource(R.drawable.ic_save_job);
+                imgSaveButton.setTag("not save");
+            }
         }
+
     }
 
     private void toggleJobFavourite(String jobId, int position, ImageView imgSave, FrameLayout layoutItem) throws JSONException {
@@ -161,7 +178,7 @@ public class JobAdapter extends ArrayAdapter {
 //                    dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
 //                    pbLoading.setVisibility(View.GONE);
                     if (isSaveView) {
-                        listSavedJob.remove(position);
+                        Program.idSavedJobs.remove(position);
                         jobList.remove(position);
                         imgSave.setTag("not save");
                         notifyDataSetChanged();
@@ -169,15 +186,16 @@ public class JobAdapter extends ArrayAdapter {
                         if (imgSave.getTag().equals("not save")) {
                             imgSave.setImageResource(R.drawable.ic_save_job1);
                             imgSave.setTag("save");
-                            listSavedJob.add(jobId);
+                            Program.idSavedJobs.add(jobId);
                         } else {
                             imgSave.setImageResource(R.drawable.ic_save_job);
-                            listSavedJob.remove(listSavedJob.size() - 1);
+                            Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
                             imgSave.setTag("not save");
                         }
                         layoutItem.setVisibility(View.VISIBLE);
                     }
-                    preferenceManager.putArray(listSavedJob);
+                    preferenceManager.putArray(Program.idSavedJobs);
+                    Log.d("SavedJob",Program.idSavedJobs.toString());
 
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();

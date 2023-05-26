@@ -23,7 +23,7 @@
             android:focusable="true"
             android:layout_marginLeft="10dp"
             android:src="@drawable/ic_cancel"
-            android:visibility="visible"
+            android:visibility="gone"
             app:tint="@color/white" />
 
         <TextView

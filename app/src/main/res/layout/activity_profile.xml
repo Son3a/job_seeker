@@ -4,75 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="10"
     android:orientation="vertical"
-    >
+    android:weightSum="10">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        >
+        android:gravity="center">
 
         <ImageView
             android:id="@+id/backArrow"
             android:layout_width="24dp"
             android:layout_height="32dp"
             android:layout_alignParentStart="true"
-            android:layout_marginLeft="12dp"
-            android:src="@drawable/ic_baseline_arrow_back_24"
             android:layout_centerInParent="true"
-            />
+            android:layout_marginLeft="12dp"
+            android:src="@drawable/ic_baseline_arrow_back_24" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Đổi thông tin"
-            android:layout_toRightOf="@+id/backArrow"
-            android:layout_marginLeft="16dp"
-            android:textSize="24dp"
-            android:textStyle="bold"
             android:layout_centerInParent="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@+id/backArrow"
+            android:text="Đổi thông tin"
             android:textColor="@color/black"
-            />
+            android:textSize="24dp"
+            android:textStyle="bold" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:background="@color/notFocusd"
             android:layout_alignParentBottom="true"
-            />
+            android:background="@color/notFocusd" />
     </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="9"
-        android:paddingHorizontal="16dp"
-        >
-<!--        <com.google.android.material.imageview.ShapeableImageView-->
-<!--            android:layout_width="160dp"-->
-<!--            android:layout_height="160dp"-->
-<!--            app:shapeAppearanceOverlay="@drawable/rounded_outline"-->
-<!--            app:srcCompat="@drawable/background_company"-->
-<!--            android:id="@+id/ivAvatar"-->
-<!--            android:layout_alignParentTop="true"-->
-<!--            android:layout_centerHorizontal="true"-->
-<!--            />-->
+        android:paddingHorizontal="16dp">
+        <!--        <com.google.android.material.imageview.ShapeableImageView-->
+        <!--            android:layout_width="160dp"-->
+        <!--            android:layout_height="160dp"-->
+        <!--            app:shapeAppearanceOverlay="@drawable/rounded_outline"-->
+        <!--            app:srcCompat="@drawable/background_company"-->
+        <!--            android:id="@+id/ivAvatar"-->
+        <!--            android:layout_alignParentTop="true"-->
+        <!--            android:layout_centerHorizontal="true"-->
+        <!--            />-->
         <ImageView
+            android:id="@+id/ivChooseAvatar"
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:scaleType="fitXY"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:id="@+id/ivChooseAvatar"
             android:background="@drawable/rounded_outline"
-            />
+            android:scaleType="fitXY" />
+
         <TextView
             android:id="@+id/txtName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tên"
-            android:layout_marginVertical="8dp"
             android:layout_below="@+id/ivChooseAvatar"
-            />
+            android:layout_marginVertical="8dp"
+            android:text="Tên" />
 
         <EditText
             android:id="@+id/edtName"
@@ -80,20 +77,19 @@
             android:layout_height="46dp"
             android:layout_below="@+id/txtName"
             android:background="@drawable/custom_input"
-            android:paddingHorizontal="8dp"
-
             android:drawableStart="@drawable/custom_icon_name"
+
             android:drawablePadding="12dp"
             android:ems="10"
-            />
+            android:paddingHorizontal="8dp" />
 
         <TextView
             android:id="@+id/txtEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Email"
             android:layout_below="@+id/edtName"
             android:layout_marginVertical="8dp"
+            android:text="Email"
 
             />
 
@@ -101,22 +97,21 @@
             android:id="@+id/edtEmail"
             android:layout_width="match_parent"
             android:layout_height="46dp"
-            android:inputType="textEmailAddress"
             android:layout_below="@+id/txtEmail"
             android:background="@drawable/custom_input"
-            android:paddingHorizontal="8dp"
             android:drawableStart="@drawable/custom_icon_email"
             android:drawablePadding="12dp"
             android:ems="10"
-            />
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="8dp" />
 
         <TextView
             android:id="@+id/txtPhone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Số điện thoại"
             android:layout_below="@+id/edtEmail"
             android:layout_marginVertical="8dp"
+            android:text="Số điện thoại"
 
             />
 
@@ -125,26 +120,27 @@
             android:id="@+id/edtPhone"
             android:layout_width="match_parent"
             android:layout_height="46dp"
-            android:inputType="phone"
             android:layout_below="@+id/txtPhone"
             android:background="@drawable/custom_input"
-            android:paddingHorizontal="8dp"
             android:drawableStart="@drawable/custom_icon_phone"
             android:drawablePadding="12dp"
             android:ems="10"
+            android:inputType="phone"
+            android:paddingHorizontal="8dp"
 
             />
 
         <Button
+            android:id="@+id/btnChangeProfile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/edtPhone"
-            android:text="Thay đổi thông tin"
-            android:backgroundTint="@color/secondary"
             android:layout_marginTop="20dp"
+            android:backgroundTint="@color/primary"
             android:paddingVertical="12dp"
-            android:id="@+id/btnChangeProfile"
-            />
+            android:text="Thay đổi thông tin"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
     </RelativeLayout>
 
 </LinearLayout>

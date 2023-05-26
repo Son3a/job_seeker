@@ -142,7 +142,6 @@ public class PieChartFragment extends Fragment {
                                 if (!tempAmount.equals("0")) {
                                     listAmountJobs.add(Integer.parseInt(tempAmount));
                                     listNameJobs.add(tempName);
-                                    System.out.println(tempName);
                                 }
                             }
                             pbLoading.setVisibility(View.GONE);

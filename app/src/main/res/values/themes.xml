@@ -14,7 +14,7 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="TextAppearance.AppCompat.Widget.ActionBar.Title" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="TextAppearance.AppCompat.Widget.ActionBar.Title" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:textColor">@color/black</item>
     </style>
 

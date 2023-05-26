@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.seeker;
 
 import android.Manifest;
 import android.app.Activity;
@@ -47,7 +47,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 

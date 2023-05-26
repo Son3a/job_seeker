@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Áp dụng"
-            android:backgroundTint="#3ABBE3"/>
+            android:backgroundTint="@color/primary"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_reset"

@@ -6,11 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -19,7 +14,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -58,10 +52,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Đăng Ký");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#DB3AA1F6")));
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_register);
         this.loadingDialog = new LoadingDialog(RegisterActivity.this);
@@ -151,6 +142,10 @@ public class RegisterActivity extends AppCompatActivity {
                         signUp(); // sign up on firebase
 
                         dialogNotification.openDialogNotification(message.substring(0, message.length() - 1), RegisterActivity.this);
+
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
 
                     } catch (JSONException e) {
                         Toast.makeText(RegisterActivity.this, e.toString(), Toast.LENGTH_SHORT).show();

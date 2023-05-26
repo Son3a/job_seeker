@@ -36,17 +36,23 @@ public class FeedAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        row = inflater.inflate(layoutId, parent, false);
+        FeedHolder feedHolder;
+        if(row == null){
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            row = inflater.inflate(layoutId, parent, false);
 
-        FeedHolder feedHolder = new FeedHolder();
-        feedHolder.item = listItems.get(position);
-        feedHolder.tvContent = row.findViewById(R.id.content);
-        feedHolder.tvDate = row.findViewById(R.id.date);
-        feedHolder.tvTitle = row.findViewById(R.id.title);
+            feedHolder = new FeedHolder();
+            feedHolder.item = listItems.get(position);
+            feedHolder.tvContent = row.findViewById(R.id.content);
+            feedHolder.tvDate = row.findViewById(R.id.date);
+            feedHolder.tvTitle = row.findViewById(R.id.title);
 
 
-        row.setTag(feedHolder);
+            row.setTag(feedHolder);
+        }else{
+            feedHolder = (FeedHolder) row.getTag();
+        }
+
         String description = feedHolder.item.getContent();
 
         feedHolder.tvTitle.setText(Html.fromHtml(feedHolder.item.getTitle(), Html.FROM_HTML_MODE_LEGACY).toString());

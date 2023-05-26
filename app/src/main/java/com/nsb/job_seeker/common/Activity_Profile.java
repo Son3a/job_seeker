@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -63,6 +64,7 @@ public class Activity_Profile extends AppCompatActivity {
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
 
+    private ImageView imgBack;
     private EditText edtName, edtEmail, edtPhone;
     private Button btnChangeProfile;
     private ImageView ivChooseAvatar;
@@ -76,9 +78,9 @@ public class Activity_Profile extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_profile);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+
         this.loadingDialog = new LoadingDialog(Activity_Profile.this);
         setControl();
         initData();
@@ -86,6 +88,9 @@ public class Activity_Profile extends AppCompatActivity {
     }
 
     private void setEvent() {
+        imgBack.setOnClickListener(v->{
+            onBackPressed();
+        });
         btnChangeProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,6 +196,7 @@ public class Activity_Profile extends AppCompatActivity {
         edtPhone = findViewById(R.id.edtPhone);
         btnChangeProfile = findViewById(R.id.btnChangeProfile);
         ivChooseAvatar = findViewById(R.id.ivChooseAvatar);
+        imgBack = findViewById(R.id.backArrow);
 
         new DownloadImageTask((ImageView) findViewById(R.id.ivChooseAvatar))
                 .execute(Program.url_dev_img+"/"+Program.avatar);

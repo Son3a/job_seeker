@@ -1,10 +1,7 @@
 package com.nsb.job_seeker.message.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,7 +49,7 @@ public class MessageFragment extends Fragment implements ConversionListener {
     private RecyclerView conversionRecycleView;
     private AppCompatImageView imageSignOut;
     private RoundedImageView imageProfile;
-    private TextView textName,textNotify;
+    private TextView textName, textNotify;
     private ProgressBar progressBar;
     private FloatingActionButton fabNewChat;
 
@@ -61,7 +57,7 @@ public class MessageFragment extends Fragment implements ConversionListener {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        messageView = inflater.inflate(R.layout.activity_main,container,false);
+        messageView = inflater.inflate(R.layout.activity_message, container, false);
 
         setControl();
         init();
@@ -70,12 +66,10 @@ public class MessageFragment extends Fragment implements ConversionListener {
         setEvent();
         listenConversions();
 
-
-
         return messageView;
     }
 
-    private void setControl(){
+    private void setControl() {
         conversionRecycleView = messageView.findViewById(R.id.conversionRecycleView);
         preferenceManager = new PreferenceManager(getActivity());
         imageProfile = messageView.findViewById(R.id.image_profile);
@@ -112,19 +106,20 @@ public class MessageFragment extends Fragment implements ConversionListener {
         Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void listenConversions(){
+    private void listenConversions() {
         database.collection(Program.KEY_COLLECTION_CONVERSATIONS)
-                .whereEqualTo(Program.KEY_SENDER_ID,preferenceManager.getString(Program.KE_USER_ID))
+                .whereEqualTo(Program.KEY_SENDER_ID, preferenceManager.getString(Program.KE_USER_ID))
                 .addSnapshotListener(eventListener);
 
         database.collection(Program.KEY_COLLECTION_CONVERSATIONS)
-                .whereEqualTo(Program.KEY_RECEIVER_ID,preferenceManager.getString(Program.KE_USER_ID))
+                .whereEqualTo(Program.KEY_RECEIVER_ID, preferenceManager.getString(Program.KE_USER_ID))
                 .addSnapshotListener(eventListener);
 
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
         if (error != null) {
+            textNotify.setVisibility(View.VISIBLE);
             return;
         }
         if (value != null) {
@@ -157,9 +152,6 @@ public class MessageFragment extends Fragment implements ConversionListener {
                             break;
                         }
                     }
-                    if(conversions.size() == 0){
-                        textNotify.setVisibility(View.VISIBLE);
-                    }
                 }
             }
 
@@ -187,7 +179,7 @@ public class MessageFragment extends Fragment implements ConversionListener {
     }
 
     private void updateToken(String token) {
-        preferenceManager.putString(Program.KEY_FCM_TOKEN,token);
+        preferenceManager.putString(Program.KEY_FCM_TOKEN, token);
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         DocumentReference documentReference =
                 database.collection(Program.KEY_COLLECTION_USERS).document(
@@ -217,8 +209,8 @@ public class MessageFragment extends Fragment implements ConversionListener {
 
     @Override
     public void onConversionClicked(User user) {
-        Intent intent = new Intent(getActivity().getApplicationContext(),ChatActivity.class);
-        intent.putExtra(Program.KEY_USER,user);
+        Intent intent = new Intent(getActivity().getApplicationContext(), ChatActivity.class);
+        intent.putExtra(Program.KEY_USER, user);
         startActivity(intent);
     }
 }

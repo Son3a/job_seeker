@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -39,12 +41,11 @@ public class Activity_ChangePassword extends AppCompatActivity {
     private String base_url = Program.url_dev+"/auth";
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
+    private ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
         setContentView(R.layout.activity_change_password);
         this.loadingDialog = new LoadingDialog(Activity_ChangePassword.this);
         setControl();
@@ -56,9 +57,11 @@ public class Activity_ChangePassword extends AppCompatActivity {
         tiePassword = findViewById(R.id.tiePassword);
         tieConfirmPassword = findViewById(R.id.tieConfirmPassword);
         tiePasswordCurrent = findViewById(R.id.tiePasswordCurrent);
+        imgBack = findViewById(R.id.backArrow);
     }
 
     private void setEvent() {
+        imgBack.setOnClickListener(v->onBackPressed());
         btnChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

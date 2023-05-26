@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_vertical"
-    android:paddingHorizontal="16dp"
-    >
+    android:paddingHorizontal="16dp">
 
     <include layout="@layout/toolbar" />
 
@@ -16,17 +15,18 @@
         android:layout_height="160dp"
         android:layout_alignParentLeft="true"
         android:src="@drawable/findjob" />
+
     <TextView
+        android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login JobSeeker"
-        android:textSize="26sp"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:id="@+id/login"
         android:layout_below="@+id/ivLogo"
+        android:gravity="center"
+        android:text="Login JobSeeker"
         android:textColor="@color/black"
-        />
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/txtEmail"
         android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
         android:ems="10"
         android:hint="Nhập email"
         android:paddingHorizontal="8dp"
-        />
+        android:text="fpt@gmail.com" />
 
     <TextView
         android:id="@+id/txtPassword"
@@ -82,7 +82,7 @@
             android:paddingBottom="4dp"
             android:textSize="18sp"
             app:hintEnabled="false"
-            />
+            android:text="Phongtorai9@"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,17 +98,23 @@
         android:textColor="#FFEB3B"
         android:textSize="16sp"
         android:visibility="gone" />
-    <RelativeLayout android:layout_height="wrap_content"  android:layout_width="match_parent" android:id="@+id/rlForgot" android:layout_below="@+id/edtPasswordContainer">
+
+    <RelativeLayout
+        android:id="@+id/rlForgot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edtPasswordContainer">
+
         <CheckBox
+            android:id="@+id/cbxRemember"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nhớ mật khẩu"
-            android:textSize="16dp"
-            android:id="@+id/cbxRemember"
             android:layout_marginBottom="-12dp"
+            android:text="Nhớ mật khẩu"
             android:textColor="#727371"
-            />
+            android:textSize="16dp" />
     </RelativeLayout>
+
     <TextView
         android:id="@+id/txtForgotPassword"
         android:layout_width="match_parent"
@@ -142,8 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bạn chưa có tài khoản ? "
-            android:textSize="16sp"
-            />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/txtRedirectRegister"

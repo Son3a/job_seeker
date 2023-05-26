@@ -13,9 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -23,7 +21,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,9 +36,7 @@ import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.employer.EmployerMainActivity;
-import com.nsb.job_seeker.message.activity.MessageFragment;
-import com.nsb.job_seeker.model.Job;
-import com.nsb.job_seeker.seeder.SeekerMainActivity;
+import com.nsb.job_seeker.seeker.SeekerMainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +45,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,9 +67,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         preferenceManager = new PreferenceManager(this);
-//        if (preferenceManager.getBoolean(Program.KEY_IS_SIGNED_IN)) {
-//            redirectAfterLogin();
-//        }
+        if (preferenceManager.getBoolean(Program.KEY_IS_SIGNED_IN)) {
+            Program.idSavedJobs = preferenceManager.getArray(Program.LIST_SAVED_JOB);
+            redirectAfterLogin();
+        }
 
 
         FirebaseMessaging.getInstance().getToken()
@@ -127,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
         txtForgotPassword = findViewById(R.id.txtForgotPassword);
 
         cbxRemeberPassword = findViewById(R.id.cbxRemember);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.hide();
     }
 
     private void setEvent() {
@@ -253,21 +248,21 @@ public class MainActivity extends AppCompatActivity {
                     String avatar = response.getString("avatar");
 
                     preferenceManager.putString(Program.USER_ID, response.getString("_id"));
+                    Program.idSavedJobs = new ArrayList<>();
                     if (role.equals(Program.ADMIN_ROLE)) {
                         preferenceManager.putString(Program.COMPANY_ID, response.getJSONObject("company").getString("_id"));
                     } else {
-                        List<String> idSavedJobs = new ArrayList<>();
                         JSONArray listJobFavorite = response.getJSONArray("jobFavourite");
                         for (int i = 0; i < listJobFavorite.length(); i++) {
                             JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
                             if (jobObject.getString("status").equals("true")) {
-                                idSavedJobs.add(jobObject.getString("_id"));
+                                Program.idSavedJobs.add(jobObject.getString("_id"));
                             }
 //                            Log.d("ABC", listSavedJob.get(i));
                         }
-                        preferenceManager.putArray(idSavedJobs);
-                        Log.d("Jobsaved", preferenceManager.getArray(Program.LIST_SAVED_JOB).toString());
+//                        Log.d("Jobsaved", preferenceManager.getArray(Program.LIST_SAVED_JOB).toString());
                     }
+                    preferenceManager.putArray(Program.idSavedJobs);
                     preferenceManager.putString(Program.ROLE, role);
 
 
@@ -350,7 +345,9 @@ public class MainActivity extends AppCompatActivity {
                                 preferenceManager.putString(Program.KEY_IMAGE, documentSnapshot.getString(Program.KEY_IMAGE));
                             }
                         }
-                );
+                ).addOnFailureListener(e -> {
+                    Toast.makeText(this, "Cant not sign in", Toast.LENGTH_SHORT).show();
+                });
     }
 
 }

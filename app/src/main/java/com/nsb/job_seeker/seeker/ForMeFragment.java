@@ -1,22 +1,18 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.seeker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
@@ -35,61 +31,65 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class MyJobSavedFragment extends Fragment {
-    private View savedJobView;
-    private ListView listViewJobSaved;
+public class ForMeFragment extends Fragment {
+    private ListView listViewJob;
+    private String url = "https://job-seeker-smy5.onrender.com/job/list/sort-by-date";
+    private View homeView;
     private ProgressBar pbLoading;
-    private TextView tvNotify;
-    private List<Job> jobList;
     private PreferenceManager preferenceManager;
+
+    public static List<Job> jobList;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        savedJobView = inflater.inflate(R.layout.fragment_seeker_saved_job, container, false);
+        homeView = inflater.inflate(R.layout.fragment_seeker_for_me, container, false);
 
         setControl();
         setEvent();
-        return savedJobView;
+
+        return homeView;
     }
 
     private void setControl() {
-        listViewJobSaved = savedJobView.findViewById(R.id.lv_job_saved);
-        pbLoading = savedJobView.findViewById(R.id.idLoadingPB);
-        tvNotify = savedJobView.findViewById(R.id.tv_notify);
+        jobList = new ArrayList<Job>();
+        listViewJob = homeView.findViewById(R.id.lv_job);
+        pbLoading = homeView.findViewById(R.id.idLoadingPB);
 
-        jobList = new ArrayList<>();
         preferenceManager = new PreferenceManager(getActivity());
     }
 
     private void setEvent() {
-        getJobSaved();
+        if (ForMeFragment.jobList.isEmpty()) {
+            getNewJobs(url);
+        }
     }
 
-    private void getJobSaved() {
-        String url = "https://job-seeker-smy5.onrender.com/auth/info-user";
+    private void getNewJobs(String url) {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
+//        List<String> listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
+//        Log.d("itemSave", listSavedJob.toString());
 
         pbLoading.setVisibility(View.VISIBLE);
-        JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
+        JsonObjectRequest data = new JsonObjectRequest(
                 url,
-                null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
                             String idCompany = "";
-                            JSONArray jobsList = response.getJSONArray("jobFavourite");
-//                            Log.d("ABC", String.valueOf(jobsList));
+                            JSONArray jobsList = response.getJSONArray("data");
+                            int lenghJobs = jobsList.length();
+                            if (Program.calculateTime(jobsList.getJSONObject(0).getString("updateDate")) >= (7 * 24 * 60 * 60 * 1000)) {      //check time update job if it > 1 week to show on news
+                                lenghJobs = 10;
+                            }
+                            for (int i = 0; i < lenghJobs; i++) {
+                                JSONObject job = jobsList.getJSONObject(i);
+                                if ((Program.calculateTime(job.getString("updateDate")) < (7 * 24 * 60 * 60 * 1000)) &&
+                                        job.getString("status").equals("true")) {
 
-                            for (int i = 0; i < jobsList.length(); i++) {
-                                JSONObject job = jobsList.getJSONObject(i).getJSONObject("jobId");
-                                Log.d("ABC", job.getString("name"));
-                                if (job.getString("status").equals("true")) {
                                     if (!job.isNull("idCompany")) {
                                         idCompany = job.getJSONObject("idCompany").getString("name");
                                     } else {
@@ -106,18 +106,14 @@ public class MyJobSavedFragment extends Fragment {
                                             job.getString("name"),
                                             idCompany,
                                             job.getString("locationWorking"),
-                                            Program.formatSalary(job.getString("salary")),
+                                            job.getString("salary"),
                                             time
                                     ));
                                 }
                             }
 
                             pbLoading.setVisibility(View.GONE);
-                            if (jobsList.length() == 0) {
-                                tvNotify.setVisibility(View.VISIBLE);
-                            } else {
-                                setListViewAdapter();
-                            }
+                            setListViewAdapter();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
@@ -131,15 +127,7 @@ public class MyJobSavedFragment extends Fragment {
                         System.out.println(error);
                     }
                 }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", preferenceManager.getString(Program.TOKEN));
-                headers.put("Content-Type", "application/json");
-                return headers;
-            }
-        };
+        );
         data.setRetryPolicy(new RetryPolicy() {
             @Override
             public int getCurrentTimeout() {
@@ -162,11 +150,12 @@ public class MyJobSavedFragment extends Fragment {
 
     private void setListViewAdapter() {
         if (getActivity() != null) {
-            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobList, true, true);
-            listViewJobSaved.setAdapter(jobAdapter);
-            listViewJobSaved.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobList, true);
+            listViewJob.setAdapter(jobAdapter);
+            listViewJob.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                     Intent i = new Intent(getActivity(), JobDetailActivity.class);
                     i.putExtra("id", jobList.get(position).getId());
                     i.putExtra("isApply", true);
@@ -176,4 +165,3 @@ public class MyJobSavedFragment extends Fragment {
         }
     }
 }
-

@@ -1,5 +1,6 @@
 package com.nsb.job_seeker.message.activity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nsb.job_seeker.Program;
+import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityChatBinding;
 import com.nsb.job_seeker.message.adapter.ChatAdapter;
@@ -22,6 +24,7 @@ import com.nsb.job_seeker.message.model.ChatMessage;
 import com.nsb.job_seeker.message.model.User;
 import com.nsb.job_seeker.message.network.ApiClient;
 import com.nsb.job_seeker.message.network.ApiService;
+import com.nsb.job_seeker.seeker.SeekerMainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -145,7 +148,6 @@ public class ChatActivity extends BaseActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        showToast("Notification sent successful");
                     }
                 } else {
                     showToast("Error: " + response.code());
@@ -174,10 +176,10 @@ public class ChatActivity extends BaseActivity {
                     isReceiverAvailable = availability == 1;
                 }
                 receiverUser.token = value.getString(Program.KEY_FCM_TOKEN);
-                if(receiverUser.image == null){
+                if (receiverUser.image == null) {
                     receiverUser.image = value.getString(Program.KEY_IMAGE);
 //                    chatAdapter.setReceiverProfileImage(getBitmapFromEncodedString(receiverUser.image));
-                    chatAdapter.notifyItemRangeChanged(0,chatMessages.size());
+                    chatAdapter.notifyItemRangeChanged(0, chatMessages.size());
                 }
             }
             if (isReceiverAvailable) {
@@ -202,6 +204,7 @@ public class ChatActivity extends BaseActivity {
 
     private final EventListener<QuerySnapshot> eventListener = ((value, error) -> {
         if (error != null) {
+            binding.textNotifyEmptyChats.setVisibility(View.VISIBLE);
             return;
         }
         if (value != null) {

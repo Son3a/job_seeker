@@ -48,7 +48,8 @@
                     android:id="@+id/body_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone">
+                    android:visibility="gone"
+                    android:paddingLeft="10dp">
                     <LinearLayout
                         android:id="@+id/body1"
                         android:layout_width="match_parent"
@@ -272,13 +273,13 @@
                             android:id="@+id/btn_apply"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-
                             android:layout_gravity="center"
                             android:layout_margin="30dp"
-                            android:backgroundTint="@color/blue_main"
+                            android:backgroundTint="@color/primary"
                             android:text="ỨNG TUYỂN NGAY"
                             android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:textColor="@color/white"/>
 
                     </FrameLayout>
                 </RelativeLayout>

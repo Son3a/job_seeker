@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.seeker;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;

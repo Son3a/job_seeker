@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,8 +46,10 @@ import java.util.Map;
 
 public class AccountFragment extends Fragment {
 
-    TextView tvLogin, tvLogout, tvChangePw, tvMyFile, tvDeleteAccount, tvRegister, tvStatistical;
+    TextView tvLogin, tvChangePw, tvMyFile, tvDeleteAccount, tvRegister, tvStatistical;
     private View beforeLoginView, afterLoginView;
+    private LinearLayout layoutManager;
+    private Button btnLogout;
 
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
@@ -73,17 +77,18 @@ public class AccountFragment extends Fragment {
         tvLogin = beforeLoginView.findViewById(R.id.tv_login);
         tvRegister = beforeLoginView.findViewById(R.id.tv_register);
 
-        tvLogout = afterLoginView.findViewById(R.id.tv_logout);
+        btnLogout = afterLoginView.findViewById(R.id.btn_logout);
         tvChangePw = afterLoginView.findViewById(R.id.tv_change_password);
         tvMyFile = afterLoginView.findViewById(R.id.tv_my_file);
         tvDeleteAccount = afterLoginView.findViewById(R.id.tv_delete_account);
         tvStatistical = afterLoginView.findViewById(R.id.tv_statistical);
         preferenceManager = new PreferenceManager(getActivity());
+        layoutManager = afterLoginView.findViewById(R.id.layout_manager);
     }
 
     private void setEvent() {
         if (preferenceManager.getString(Program.ROLE).equals(Program.USER_ROLE)) {
-            tvStatistical.setVisibility(View.GONE);
+            layoutManager.setVisibility(View.GONE);
         }
 
         tvStatistical.setOnClickListener(new View.OnClickListener() {
@@ -109,12 +114,12 @@ public class AccountFragment extends Fragment {
             }
         });
 
-        tvLogout.setOnClickListener(new View.OnClickListener() {
+        btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadingDialog.startLoadingDialog();
                 Log.d("Token", preferenceManager.getString(Program.TOKEN));
-                handleLogout(preferenceManager.getString(Program.REFRESH_TOKEN));
+                handleLogout(preferenceManager.getString(Program.TOKEN));
             }
         });
     }
@@ -132,6 +137,7 @@ public class AccountFragment extends Fragment {
                     preferenceManager.clear();
 
                     Intent i = new Intent(getContext(), MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(i);
                 } catch (JSONException e) {
                     Log.d("ABC", e.toString());

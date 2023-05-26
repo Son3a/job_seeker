@@ -24,12 +24,10 @@ import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
-import com.nsb.job_seeker.seeder.JobDetailActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +37,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class RecruitmentDetailActivity extends AppCompatActivity {
     private ImageView icBack, icListCV, icDelete, icEdit;

@@ -1,10 +1,12 @@
 package com.nsb.job_seeker.employer;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,7 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.model.Job;
-import com.nsb.job_seeker.seeder.JobDetailActivity;
+import com.nsb.job_seeker.seeker.JobDetailActivity;
 import com.nsb.job_seeker.adapter.JobAdapter;
 
 import org.json.JSONArray;
@@ -81,17 +83,17 @@ public class StatisticalAmountJobFragment extends Fragment {
     }
 
     private void getTypeJob() {
-        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list/sort-by-day";
+        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray listTypeJob = response.getJSONArray("data");
+                    JSONArray listTypeJob = response.getJSONObject("data").getJSONArray("data");
                     for (int i = 0; i < listTypeJob.length(); i++) {
                         JSONObject typeJob = listTypeJob.getJSONObject(i);
-                        if (typeJob.getString("status").equals("true")) {
+                        if (typeJob.getString("isDelete").equals("false")) {
                             nameTypeJobs.add(typeJob.getString("name"));
                             idTypeJobs.add(typeJob.getString("_id"));
                         }
@@ -134,7 +136,7 @@ public class StatisticalAmountJobFragment extends Fragment {
     }
 
     private void bindingDataToSpinner() {
-        if(getActivity()!=null) {
+        if (getActivity() != null) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_style, nameTypeJobs);
             spnJob.setAdapter(adapter);
         }
@@ -144,6 +146,9 @@ public class StatisticalAmountJobFragment extends Fragment {
         spnJob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TextView spinnerText = (TextView) spnJob.getChildAt(0);
+
+                spinnerText.setTextColor(Color.WHITE);
                 int index = position - 1;
                 if (index < 0) {
                     findJobByIdTypeJob("");
@@ -191,7 +196,7 @@ public class StatisticalAmountJobFragment extends Fragment {
                                     job.getString("name"),
                                     idCompany,
                                     job.getString("locationWorking"),
-                                    job.getString("salary"),
+                                    Program.formatSalary(job.getString("salary")),
                                     time
                             ));
                         }
@@ -258,7 +263,7 @@ public class StatisticalAmountJobFragment extends Fragment {
     }
 
     private void setListView() {
-        if(getActivity()!=null) {
+        if (getActivity() != null) {
             JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobResultList, false);
             listView.setAdapter(jobAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
