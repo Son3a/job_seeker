@@ -21,10 +21,14 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
@@ -34,6 +38,7 @@ import com.nsb.job_seeker.auth.DialogNotification;
 import com.nsb.job_seeker.auth.LoadingDialog;
 import com.nsb.job_seeker.auth.MainActivity;
 import com.nsb.job_seeker.common.Activity_Profile;
+import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.employer.StatisticalJobActivity;
 
@@ -134,6 +139,7 @@ public class AccountFragment extends Fragment {
                     String message = response.getString("message");
                     Log.d("ABC", message);
 
+                    signOut();
                     preferenceManager.clear();
 
                     Intent i = new Intent(getContext(), MainActivity.class);
@@ -151,10 +157,15 @@ public class AccountFragment extends Fragment {
                 String body;
                 //get status code here
 
-                if (error.networkResponse.statusCode == 401) {
-                    handleLogout(preferenceManager.getString(Program.REFRESH_TOKEN));
-                } else if (error.networkResponse.data != null) {
+                if (error.networkResponse.data != null) {
                     try {
+                        if (error.networkResponse.statusCode == 401) {
+                            Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(getActivity(),MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
                         body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
@@ -177,6 +188,60 @@ public class AccountFragment extends Fragment {
                 return params;
             }
         };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                if(error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 401) {
+
+                        new AsyncTasks() {
+                            @Override
+                            public void onPreExecute() {
+                            }
+
+                            @Override
+                            public void doInBackground() {
+                                Intent i = new Intent(getActivity(), MainActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                preferenceManager.clear();
+                                startActivity(i);
+                            }
+
+                            @Override
+                            public void onPostExecute() {
+                                Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            }
+                        }.execute();
+                    }
+                }
+            }
+        });
         mRequestQueue.add(jsonObjectRequest);
+    }
+
+    private void signOut() {
+//        showToast("Signing out...");
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        DocumentReference documentReference =
+                database.collection(Program.KEY_COLLECTION_USERS).document(
+                        preferenceManager.getString(Program.KE_USER_ID)
+                );
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put(Program.KEY_FCM_TOKEN, FieldValue.delete());
+        documentReference.update(updates)
+                .addOnSuccessListener(unused -> {
+//                    startActivity(new Intent(getActivity().getApplicationContext(), SignInActivity.class));
+
+                });
     }
 }

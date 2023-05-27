@@ -3,6 +3,7 @@ package com.nsb.job_seeker.auth;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -25,6 +27,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.AsyncTasks;
+import com.nsb.job_seeker.common.PreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,12 +108,21 @@ public class Activity_ChangePassword extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
 
                 if(error.networkResponse.data!=null) {
                     try {
+                        if (error.networkResponse.statusCode == 401) {
+                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(getApplicationContext(),MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
                         body = new String(error.networkResponse.data,"UTF-8");
                         Log.d("ABC", body);
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
@@ -134,6 +147,45 @@ public class Activity_ChangePassword extends AppCompatActivity {
                 return params;
             }
         };;
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                if(error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 401) {
+
+                        new AsyncTasks() {
+                            @Override
+                            public void onPreExecute() {
+                            }
+
+                            @Override
+                            public void doInBackground() {
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                                preferenceManager.clear();
+                                startActivity(i);
+                            }
+
+                            @Override
+                            public void onPostExecute() {
+                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            }
+                        }.execute();
+                    }
+                }
+            }
+        });
         mRequestQueue.add(jsonObjectRequest);
     }
 

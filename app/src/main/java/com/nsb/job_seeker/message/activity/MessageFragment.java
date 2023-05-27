@@ -189,23 +189,6 @@ public class MessageFragment extends Fragment implements ConversionListener {
                 .addOnFailureListener(e -> showToast("Unable to update token"));
     }
 
-    private void signOut() {
-        showToast("Signing out...");
-        FirebaseFirestore database = FirebaseFirestore.getInstance();
-        DocumentReference documentReference =
-                database.collection(Program.KEY_COLLECTION_USERS).document(
-                        preferenceManager.getString(Program.KE_USER_ID)
-                );
-        HashMap<String, Object> updates = new HashMap<>();
-        updates.put(Program.KEY_FCM_TOKEN, FieldValue.delete());
-        documentReference.update(updates)
-                .addOnSuccessListener(unused -> {
-                    preferenceManager.clear();
-//                    startActivity(new Intent(getActivity().getApplicationContext(), SignInActivity.class));
-                    getActivity().finish();
-                })
-                .addOnFailureListener(e -> showToast("Unable to sign out"));
-    }
 
     @Override
     public void onConversionClicked(User user) {

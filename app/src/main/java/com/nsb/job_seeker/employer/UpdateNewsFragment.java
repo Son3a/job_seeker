@@ -36,6 +36,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.auth.MainActivity;
+import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
 
 
@@ -245,6 +247,13 @@ public class UpdateNewsFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
+                    Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(getActivity(), MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    preferenceManager.clear();
+                    startActivity(i);
+                }
                 System.out.println(error);
             }
         }) {
@@ -256,10 +265,44 @@ public class UpdateNewsFragment extends Fragment {
                 return headers;
             }
         };
-        sr.setRetryPolicy(new DefaultRetryPolicy(
-                0,
-                -1,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        sr.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                if(error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 401) {
+
+                        new AsyncTasks() {
+                            @Override
+                            public void onPreExecute() {
+                            }
+
+                            @Override
+                            public void doInBackground() {
+                                Intent i = new Intent(getActivity(), MainActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                preferenceManager.clear();
+                                startActivity(i);
+                            }
+
+                            @Override
+                            public void onPostExecute() {
+                                Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            }
+                        }.execute();
+                    }
+                }
+            }
+        });
         queue.add(sr);
     }
 
@@ -427,8 +470,10 @@ public class UpdateNewsFragment extends Fragment {
     }
 
     private void bindingDataToSpinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, nameTypeJobs);
-        spnTypeJob.setAdapter(adapter);
+        if(getActivity()!=null) {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, nameTypeJobs);
+            spnTypeJob.setAdapter(adapter);
+        }
     }
 
     private void getTypeJob() {

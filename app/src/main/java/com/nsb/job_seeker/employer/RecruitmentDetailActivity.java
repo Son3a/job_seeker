@@ -27,6 +27,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.auth.MainActivity;
+import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
 
 import org.json.JSONException;
@@ -96,7 +98,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
         showListCV();
     }
 
-    private void back(){
+    private void back() {
         icBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,14 +199,14 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
     }
 
     private void deleteRecruitmentAPI() throws JSONException {
-        String urlDeleteRecruitment ="https://job-seeker-smy5.onrender.com/job/delete";
+        String urlDeleteRecruitment = "https://job-seeker-smy5.onrender.com/job/delete";
         String access_token = preferenceManager.getString(Program.TOKEN);
         Log.d("ABC", "check token : " + access_token);
         RequestQueue queue = Volley.newRequestQueue(RecruitmentDetailActivity.this);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("_id", idJob);
-        Log.d("ABC", "idJOb "+idJob);
+        Log.d("ABC", "idJOb " + idJob);
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.PATCH, urlDeleteRecruitment, jsonObject, new Response.Listener<JSONObject>() {
             @Override
@@ -219,17 +221,25 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
 //                System.out.println(error);
 //                Log.d("ABC","check error : " + error.toString());
                 String body;
                 //get status code here
 //                String statusCode = String.valueOf(error.networkResponse.statusCode);
-                if(error.networkResponse.data!=null) {
+                if (error.networkResponse.data != null) {
                     try {
-                        body = new String(error.networkResponse.data,"UTF-8");
+                        if (error.networkResponse.statusCode == 401) {
+                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
+                        body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                     } catch (UnsupportedEncodingException e) {
-                        Log.d("ABC","LOI 2 : " + e.toString());
+                        Log.d("ABC", "LOI 2 : " + e.toString());
                         e.printStackTrace();
                     }
 //                    loadingDialog.dismissDialog();
@@ -244,10 +254,44 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                 return headers;
             }
         };
-        sr.setRetryPolicy(new DefaultRetryPolicy(
-                0,
-                -1,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        sr.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                if(error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 401) {
+
+                        new AsyncTasks() {
+                            @Override
+                            public void onPreExecute() {
+                            }
+
+                            @Override
+                            public void doInBackground() {
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                preferenceManager.clear();
+                                startActivity(i);
+                            }
+
+                            @Override
+                            public void onPostExecute() {
+                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            }
+                        }.execute();
+                    }
+                }
+            }
+        });
         queue.add(sr);
     }
 
@@ -275,7 +319,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(RecruitmentDetailActivity.this, ListCVActivity.class);
-                i.putExtra("id",idJob);
+                i.putExtra("id", idJob);
                 startActivity(i);
             }
         });

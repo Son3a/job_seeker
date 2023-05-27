@@ -31,6 +31,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -59,7 +60,7 @@ import java.util.Map;
 public class Activity_Profile extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String base_url = Program.url_dev+"/auth";
+    private String base_url = Program.url_dev + "/auth";
     private String sharedPreferencesName = "JobSharedPreference";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
@@ -70,7 +71,7 @@ public class Activity_Profile extends AppCompatActivity {
     private ImageView ivChooseAvatar;
 
     private static final int REQUEST_PERMISSIONS = 100;
-    private static final int PICK_IMAGE_REQUEST =1 ;
+    private static final int PICK_IMAGE_REQUEST = 1;
     private Bitmap bitmap;
     private String filePath;
     private String ROOT_URL = Program.url_dev + "/auth/update-avatar";
@@ -88,7 +89,7 @@ public class Activity_Profile extends AppCompatActivity {
     }
 
     private void setEvent() {
-        imgBack.setOnClickListener(v->{
+        imgBack.setOnClickListener(v -> {
             onBackPressed();
         });
         btnChangeProfile.setOnClickListener(new View.OnClickListener() {
@@ -188,8 +189,6 @@ public class Activity_Profile extends AppCompatActivity {
     }
 
 
-
-
     private void setControl() {
         edtName = findViewById(R.id.edtName);
         edtEmail = findViewById(R.id.edtEmail);
@@ -199,7 +198,7 @@ public class Activity_Profile extends AppCompatActivity {
         imgBack = findViewById(R.id.backArrow);
 
         new DownloadImageTask((ImageView) findViewById(R.id.ivChooseAvatar))
-                .execute(Program.url_dev_img+"/"+Program.avatar);
+                .execute(Program.url_dev_img + "/" + Program.avatar);
     }
 
     private void uploadBitmap(final Bitmap bitmap) {
@@ -219,17 +218,25 @@ public class Activity_Profile extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
+                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
                         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-                        Log.e("GotError",""+error.toString());
+                        Log.e("GotError", "" + error.toString());
                     }
                 }) {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName,  MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                 String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
-                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length()-1));
+                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length() - 1));
                 return params;
             }
 
@@ -241,13 +248,52 @@ public class Activity_Profile extends AppCompatActivity {
                 return params;
             }
         };
+        volleyMultipartRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                if(error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 401) {
+
+                        new AsyncTasks() {
+                            @Override
+                            public void onPreExecute() {
+                            }
+
+                            @Override
+                            public void doInBackground() {
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                                preferenceManager.clear();
+                                startActivity(i);
+                            }
+
+                            @Override
+                            public void onPostExecute() {
+                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            }
+                        }.execute();
+                    }
+                }
+            }
+        });
 
         //adding the request to volley
         Volley.newRequestQueue(this).add(volleyMultipartRequest);
     }
 
     private void initData() {
-        SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName,  MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
         String name = sharedPreferences.getString("name", "");
         String email = sharedPreferences.getString("email", "");
         String phone = sharedPreferences.getString("phone", "");
@@ -274,7 +320,7 @@ public class Activity_Profile extends AppCompatActivity {
 
                     dialogNotification.openDialogNotification(message, Activity_Profile.this);
                 } catch (JSONException e) {
-                    Log.d("ABC",e.toString());
+                    Log.d("ABC", e.toString());
                     e.printStackTrace();
                 }
                 loadingDialog.dismissDialog();
@@ -282,18 +328,27 @@ public class Activity_Profile extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
 
-                if(error.networkResponse.data!=null) {
+                if (error.networkResponse.data != null) {
                     try {
-                        body = new String(error.networkResponse.data,"UTF-8");
+                        if (error.networkResponse.statusCode == 401) {
+                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
+                        body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), Activity_Profile.this);
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), Activity_Profile.this);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -301,17 +356,57 @@ public class Activity_Profile extends AppCompatActivity {
                 loadingDialog.dismissDialog();
 
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName,  MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                 String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length()-1));
+                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length() - 1));
                 return params;
             }
-        };;
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                if(error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 401) {
+
+                        new AsyncTasks() {
+                            @Override
+                            public void onPreExecute() {
+                            }
+
+                            @Override
+                            public void doInBackground() {
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                                preferenceManager.clear();
+                                startActivity(i);
+                            }
+
+                            @Override
+                            public void onPostExecute() {
+                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            }
+                        }.execute();
+                    }
+                }
+            }
+        });
+        ;
         mRequestQueue.add(jsonObjectRequest);
     }
 
