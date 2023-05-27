@@ -33,13 +33,11 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.MainActivity;
-import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.common.RealPathUtil;
 import com.nsb.job_seeker.common.VolleyMultipartRequest;
@@ -159,11 +157,10 @@ public class ApplyJobActivity extends AppCompatActivity {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (error.networkResponse.statusCode == 401 && error.networkResponse != null) {
+                            if (error.networkResponse.statusCode == 401 ) {
                                 Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
                                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                preferenceManager.clear();
                                 startActivity(i);
                             }
                             pbLoading.setVisibility(View.GONE);
@@ -202,44 +199,10 @@ public class ApplyJobActivity extends AppCompatActivity {
             };
 
 
-            volleyMultipartRequest.setRetryPolicy(new RetryPolicy() {
-                @Override
-                public int getCurrentTimeout() {
-                    return 50000;
-                }
-
-                @Override
-                public int getCurrentRetryCount() {
-                    return 50000;
-                }
-
-                @Override
-                public void retry(VolleyError error) throws VolleyError {
-                    if(error.networkResponse != null) {
-                        if (error.networkResponse.statusCode == 401) {
-
-                            new AsyncTasks() {
-                                @Override
-                                public void onPreExecute() {
-                                }
-
-                                @Override
-                                public void doInBackground() {
-                                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    preferenceManager.clear();
-                                    startActivity(i);
-                                }
-
-                                @Override
-                                public void onPostExecute() {
-                                    Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                                }
-                            }.execute();
-                        }
-                    }
-                }
-            });
+            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    0,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
             rQueue.add(volleyMultipartRequest);
 

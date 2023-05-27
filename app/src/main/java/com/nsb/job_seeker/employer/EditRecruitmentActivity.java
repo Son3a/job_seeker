@@ -209,29 +209,7 @@ public class EditRecruitmentActivity extends AppCompatActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if(error.networkResponse != null) {
-                    if (error.networkResponse.statusCode == 401) {
 
-                        new AsyncTasks() {
-                            @Override
-                            public void onPreExecute() {
-                            }
-
-                            @Override
-                            public void doInBackground() {
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                preferenceManager.clear();
-                                startActivity(i);
-                            }
-
-                            @Override
-                            public void onPostExecute() {
-                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            }
-                        }.execute();
-                    }
-                }
             }
         });
         queue.add(sr);

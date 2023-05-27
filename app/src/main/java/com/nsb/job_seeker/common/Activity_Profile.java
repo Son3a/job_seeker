@@ -31,7 +31,6 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -222,8 +221,6 @@ public class Activity_Profile extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
                             Intent i = new Intent(getApplicationContext(), MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
-                            preferenceManager.clear();
                             startActivity(i);
                         }
                         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
@@ -248,45 +245,6 @@ public class Activity_Profile extends AppCompatActivity {
                 return params;
             }
         };
-        volleyMultipartRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-                if(error.networkResponse != null) {
-                    if (error.networkResponse.statusCode == 401) {
-
-                        new AsyncTasks() {
-                            @Override
-                            public void onPreExecute() {
-                            }
-
-                            @Override
-                            public void doInBackground() {
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
-                                preferenceManager.clear();
-                                startActivity(i);
-                            }
-
-                            @Override
-                            public void onPostExecute() {
-                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            }
-                        }.execute();
-                    }
-                }
-            }
-        });
 
         //adding the request to volley
         Volley.newRequestQueue(this).add(volleyMultipartRequest);
@@ -335,8 +293,7 @@ public class Activity_Profile extends AppCompatActivity {
 
                 if (error.networkResponse.data != null) {
                     try {
-                        if (error.networkResponse.statusCode == 401) {
-                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                        if(error.networkResponse.statusCode == 401) {
                             Intent i = new Intent(getApplicationContext(), MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
@@ -367,45 +324,6 @@ public class Activity_Profile extends AppCompatActivity {
                 return params;
             }
         };
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-                if(error.networkResponse != null) {
-                    if (error.networkResponse.statusCode == 401) {
-
-                        new AsyncTasks() {
-                            @Override
-                            public void onPreExecute() {
-                            }
-
-                            @Override
-                            public void doInBackground() {
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
-                                preferenceManager.clear();
-                                startActivity(i);
-                            }
-
-                            @Override
-                            public void onPostExecute() {
-                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            }
-                        }.execute();
-                    }
-                }
-            }
-        });
         ;
         mRequestQueue.add(jsonObjectRequest);
     }
