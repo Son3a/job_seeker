@@ -54,7 +54,6 @@ public class ExtraNewsFragment extends Fragment {
     private TextView tvAll, tvHCM, tvHN, tvContent;
     private List<String> listRSSLocationLinks, listRSSFieldLinks;
     private String[] listLocations, listFields;
-    private AlertDialog.Builder builder;
     private int defaultPositionRadio = 0;
     private final String Rss_to_Json_API = "https://api.rss2json.com/v1/api.json?rss_url=";
     private String Rss_Link;
