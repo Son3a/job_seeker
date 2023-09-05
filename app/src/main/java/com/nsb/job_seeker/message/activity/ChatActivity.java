@@ -1,10 +1,10 @@
 package com.nsb.job_seeker.message.activity;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -16,7 +16,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nsb.job_seeker.Program;
-import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityChatBinding;
 import com.nsb.job_seeker.message.adapter.ChatAdapter;
@@ -24,7 +23,6 @@ import com.nsb.job_seeker.message.model.ChatMessage;
 import com.nsb.job_seeker.message.model.User;
 import com.nsb.job_seeker.message.network.ApiClient;
 import com.nsb.job_seeker.message.network.ApiService;
-import com.nsb.job_seeker.seeker.SeekerMainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,7 +69,7 @@ public class ChatActivity extends BaseActivity {
         chatMessages = new ArrayList<>();
         chatAdapter = new ChatAdapter(
                 chatMessages,
-                preferenceManager.getString(Program.KE_USER_ID),
+                preferenceManager.getString(Program.KEY_USER_ID),
                 getBitmapFromEncodedString(receiverUser.image)
         );
         binding.chatRecycleView.setAdapter(chatAdapter);
@@ -80,7 +78,7 @@ public class ChatActivity extends BaseActivity {
 
     private void sendMessage() {
         HashMap<String, Object> message = new HashMap<>();
-        message.put(Program.KEY_SENDER_ID, preferenceManager.getString(Program.KE_USER_ID));
+        message.put(Program.KEY_SENDER_ID, preferenceManager.getString(Program.KEY_USER_ID));
         message.put(Program.KEY_RECEIVER_ID, receiverUser.id);
         message.put(Program.KEY_MESSAGE, binding.inputMessage.getText().toString());
         message.put(Program.KEY_TIMESTAMP, new Date());
@@ -89,7 +87,7 @@ public class ChatActivity extends BaseActivity {
             updateConversion(binding.inputMessage.getText().toString());
         } else {
             HashMap<String, Object> conversion = new HashMap<>();
-            conversion.put(Program.KEY_SENDER_ID, preferenceManager.getString(Program.KE_USER_ID));
+            conversion.put(Program.KEY_SENDER_ID, preferenceManager.getString(Program.KEY_USER_ID));
             conversion.put(Program.KEY_SENDER_NAME, preferenceManager.getString(Program.KEY_NAME));
             conversion.put(Program.KEY_SENDER_IMAGE, preferenceManager.getString(Program.KEY_IMAGE));
 
@@ -106,7 +104,7 @@ public class ChatActivity extends BaseActivity {
                 tokens.put(receiverUser.token);
 
                 JSONObject data = new JSONObject();
-                data.put(Program.KE_USER_ID, preferenceManager.getString(Program.KE_USER_ID));
+                data.put(Program.KEY_USER_ID, preferenceManager.getString(Program.KEY_USER_ID));
                 data.put(Program.KEY_NAME, preferenceManager.getString(Program.KEY_NAME));
                 data.put(Program.KEY_FCM_TOKEN, preferenceManager.getString(Program.KEY_FCM_TOKEN));
                 data.put(Program.KEY_MESSAGE, binding.inputMessage.getText().toString());
@@ -162,6 +160,9 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void listenAvailabilityOfReceiver() {
+        if(receiverUser == null) return;
+        Log.d("receiverUser",receiverUser.toString());
+
         database.collection(Program.KEY_COLLECTION_USERS).document(
                 receiverUser.id
         ).addSnapshotListener(ChatActivity.this, (value, error) -> {
@@ -192,13 +193,13 @@ public class ChatActivity extends BaseActivity {
 
     private void listenMessages() {
         database.collection(Program.KEY_COLLECTION_CHAT)
-                .whereEqualTo(Program.KEY_SENDER_ID, preferenceManager.getString(Program.KE_USER_ID))
+                .whereEqualTo(Program.KEY_SENDER_ID, preferenceManager.getString(Program.KEY_USER_ID))
                 .whereEqualTo(Program.KEY_RECEIVER_ID, receiverUser.id)
                 .addSnapshotListener(eventListener);
 
         database.collection(Program.KEY_COLLECTION_CHAT)
                 .whereEqualTo(Program.KEY_SENDER_ID, receiverUser.id)
-                .whereEqualTo(Program.KEY_RECEIVER_ID, preferenceManager.getString(Program.KE_USER_ID))
+                .whereEqualTo(Program.KEY_RECEIVER_ID, preferenceManager.getString(Program.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
     }
 
@@ -264,12 +265,12 @@ public class ChatActivity extends BaseActivity {
     private void checkForConversion() {
         if (chatMessages.size() > 0) {
             checkForConversionRemotely(
-                    preferenceManager.getString(Program.KE_USER_ID),
+                    preferenceManager.getString(Program.KEY_USER_ID),
                     receiverUser.id
             );
             checkForConversionRemotely(
                     receiverUser.id,
-                    preferenceManager.getString(Program.KE_USER_ID)
+                    preferenceManager.getString(Program.KEY_USER_ID)
             );
         }
     }

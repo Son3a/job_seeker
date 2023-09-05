@@ -25,7 +25,6 @@ public class Program {
     public static final String url_dev = "https://job-seeker-smy5.onrender.com";
     public static final String url_product = "https://job-seeker-smy5.onrender.com";
     public static String url_dev_img = url_dev + "/images";
-    public static final String USER_ID = "userId";
     public static final String ROLE = "role";
     public static final String TOKEN = "token";
     public static final String REFRESH_TOKEN = "refreshToken";
@@ -39,8 +38,7 @@ public class Program {
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PASSWORD = "password";
-    public static final String KEY_PREFERENCE_NAME = "chatAppPreference";
-    public static final String KE_USER_ID = "userId";
+    public static final String KEY_USER_ID = "userIdFB";
     public static final String KEY_IMAGE = "image";
     public static final String KEY_FCM_TOKEN = "fcmToken";
     public static final String KEY_USER = "user";

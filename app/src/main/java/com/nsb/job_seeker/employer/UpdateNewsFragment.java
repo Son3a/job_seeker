@@ -3,9 +3,11 @@ package com.nsb.job_seeker.employer;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,6 +109,8 @@ public class UpdateNewsFragment extends Fragment {
         Date date = new Date(System.currentTimeMillis());
         tvTimeCreate.setText(formatter.format(date));
 
+        setColorItemSelectedSpinner();
+
         getTypeJob();
 
         showFuncCancel();
@@ -118,6 +122,20 @@ public class UpdateNewsFragment extends Fragment {
         clickCreateRecruitment();
 
         clickCancel();
+    }
+
+    private void setColorItemSelectedSpinner(){
+        spnTypeJob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) view).setTextColor(Color.BLACK); //C
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
     }
 
     private void pickTime() {
@@ -225,7 +243,7 @@ public class UpdateNewsFragment extends Fragment {
         jsonObject.put("description", descJob);
         jsonObject.put("requirement", jobReq);
         jsonObject.put("idOccupation", idTypeJob);
-        jsonObject.put("idcompany", idCompany);
+        jsonObject.put("idCompany", idCompany);
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.POST, urlCreate, jsonObject, new Response.Listener<JSONObject>() {
             @Override
@@ -449,7 +467,7 @@ public class UpdateNewsFragment extends Fragment {
 
     private void bindingDataToSpinner() {
         if(getActivity()!=null) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, nameTypeJobs);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.item_spinner, nameTypeJobs);
             spnTypeJob.setAdapter(adapter);
         }
     }
@@ -467,6 +485,7 @@ public class UpdateNewsFragment extends Fragment {
                     for (int i = 0; i < listTypeJob.length(); i++) {
                         JSONObject typeJob = listTypeJob.getJSONObject(i);
                         if (typeJob.getString("isDelete").equals("false")) {
+                            Log.d("TypeJob", typeJob.getString("name"));
                             nameTypeJobs.add(typeJob.getString("name"));
                             idTypeJobs.add(typeJob.getString("_id"));
                         }

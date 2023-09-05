@@ -141,11 +141,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                         signUp(); // sign up on firebase
 
-                        dialogNotification.openDialogNotification(message.substring(0, message.length() - 1), RegisterActivity.this);
-
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                        //dialogNotification.openDialogNotification(message.substring(0, message.length() - 1), RegisterActivity.this);
 
                     } catch (JSONException e) {
                         Toast.makeText(RegisterActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
@@ -197,21 +193,17 @@ public class RegisterActivity extends AppCompatActivity {
                     .add(user)
                     .addOnSuccessListener(documentReference -> {
                         preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);
-                        preferenceManager.putString(Program.KE_USER_ID, documentReference.getId());
+                        preferenceManager.putString(Program.KEY_USER_ID, documentReference.getId());
                         preferenceManager.putString(Program.KEY_NAME, edtName.getText().toString());
+
+                        Toast.makeText(RegisterActivity.this, "Success!", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+
 //                        preferenceManager.putString(Program.KEY_IMAGE, encodeImage);
                     });
         }
-
-        private String encodeImage(Bitmap bitmap) {
-            int previewWidth = 150;
-            int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
-            Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
-            byte[] bytes = byteArrayOutputStream.toByteArray();
-            return Base64.encodeToString(bytes, Base64.DEFAULT);
-        }
-
     }
 }

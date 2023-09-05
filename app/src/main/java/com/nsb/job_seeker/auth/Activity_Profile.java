@@ -1,7 +1,5 @@
-package com.nsb.job_seeker.common;
+package com.nsb.job_seeker.auth;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -39,17 +37,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.auth.Activity_ChangePassword;
-import com.nsb.job_seeker.auth.DialogNotification;
-import com.nsb.job_seeker.auth.LoadingDialog;
-import com.nsb.job_seeker.auth.MainActivity;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.helper.VolleyMultipartRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -74,6 +68,7 @@ public class Activity_Profile extends AppCompatActivity {
     private Bitmap bitmap;
     private String filePath;
     private String ROOT_URL = Program.url_dev + "/auth/update-avatar";
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,6 +190,7 @@ public class Activity_Profile extends AppCompatActivity {
         btnChangeProfile = findViewById(R.id.btnChangeProfile);
         ivChooseAvatar = findViewById(R.id.ivChooseAvatar);
         imgBack = findViewById(R.id.backArrow);
+        preferenceManager = new PreferenceManager(getApplicationContext());
 
         new DownloadImageTask((ImageView) findViewById(R.id.ivChooseAvatar))
                 .execute(Program.url_dev_img + "/" + Program.avatar);
@@ -233,7 +229,7 @@ public class Activity_Profile extends AppCompatActivity {
                 Map<String, String> params = new HashMap<>();
                 SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                 String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
-                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length() - 1));
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
 
@@ -320,7 +316,7 @@ public class Activity_Profile extends AppCompatActivity {
                 String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length() - 1));
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
         };

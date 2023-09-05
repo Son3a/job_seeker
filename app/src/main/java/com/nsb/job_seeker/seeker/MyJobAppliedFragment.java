@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -27,6 +28,8 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.auth.MainActivity;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
+import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
@@ -40,14 +43,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MyJobAppliedFragment extends Fragment {
+public class MyJobAppliedFragment extends Fragment implements JobListener {
     private MyJobAppliedFragment myJobAppliedFragment;
     private View appliedJobView;
     private ProgressBar pbLoading;
     private List<Job> jobListApplied;
-    private ListView listView;
+    private RecyclerView listView;
     private TextView tvNotify;
     private PreferenceManager preferenceManager;
+    private JobAdapter jobAdapter;
 
     @Nullable
     @Override
@@ -66,6 +70,9 @@ public class MyJobAppliedFragment extends Fragment {
         tvNotify = appliedJobView.findViewById(R.id.tv_notify);
 
         preferenceManager = new PreferenceManager(getActivity());
+
+        jobAdapter = new JobAdapter(jobListApplied, this, false);
+        listView.setAdapter(jobAdapter);
     }
 
     private void setEvent() {
@@ -108,7 +115,7 @@ public class MyJobAppliedFragment extends Fragment {
                             if (jobsList.length() == 0) {
                                 tvNotify.setVisibility(View.VISIBLE);
                             } else {
-                                setListViewAdapter();
+                                jobAdapter.notifyDataSetChanged();
                             }
                             pbLoading.setVisibility(View.GONE);
                         } catch (JSONException e) {
@@ -168,24 +175,16 @@ public class MyJobAppliedFragment extends Fragment {
         return create;
     }
 
-    private void setListViewAdapter() {
-        if (getActivity() != null) {
-            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobListApplied, false);
-            listView.setAdapter(jobAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                    i.putExtra("id", jobListApplied.get(position).getId());
-                    i.putExtra("isApply", false);
-                    startActivity(i);
-
-
-                }
-            });
-        }
-
+    @Override
+    public void onClick(Job job) {
+        Intent i = new Intent(getActivity(), JobDetailActivity.class);
+        i.putExtra("id", job.getId());
+        i.putExtra("isApply", false);
+        startActivity(i);
     }
 
+    @Override
+    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding binding) {
+
+    }
 }

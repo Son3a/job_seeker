@@ -24,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -38,6 +39,9 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.employer.EmployerMainActivity;
+import com.nsb.job_seeker.message.activity.ChatActivity;
+import com.nsb.job_seeker.message.listener.ConversionListener;
+import com.nsb.job_seeker.message.model.User;
 import com.nsb.job_seeker.seeker.SeekerMainActivity;
 
 import org.json.JSONArray;
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private PreferenceManager preferenceManager;
     private String tokenDevice;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,12 +75,20 @@ public class MainActivity extends AppCompatActivity {
 
         preferenceManager = new PreferenceManager(this);
         if (preferenceManager.getBoolean(Program.KEY_IS_SIGNED_IN)) {
+
             Program.idSavedJobs = preferenceManager.getArray(Program.LIST_SAVED_JOB);
-//            preferenceManager.putString(Program.TOKEN, "Bearer asd");
-            redirectAfterLogin();
+            redirectAfterLogin(preferenceManager.getString(Program.ROLE));
         }
 
+        getToken();
 
+        this.loadingDialog = new LoadingDialog(MainActivity.this);
+
+        setControl();
+        setEvent();
+    }
+
+    private void getToken() {
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {
                     @Override
@@ -87,16 +100,12 @@ public class MainActivity extends AppCompatActivity {
 
                         // Get new FCM registration token
                         String token = task.getResult();
-
+//                        preferenceManager.putString(Program.TOKEN, token);
                         tokenDevice = token;
                         // Log and toast
                         Log.d("ABC", token);
                     }
                 });
-
-        this.loadingDialog = new LoadingDialog(MainActivity.this);
-        setControl();
-        setEvent();
     }
 
     @Override
@@ -140,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                     txtWarning.setVisibility(View.GONE);
                     loadingDialog.startLoadingDialog();
                     try {
-                        sendAndRequestResponse(edtEmail.getText().toString(), edtPassword.getText().toString());
+                        login(edtEmail.getText().toString().trim(), edtPassword.getText().toString().trim());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -166,7 +175,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void sendAndRequestResponse(String email, String password) throws JSONException {
+    private void login(String email, String password) throws JSONException {
+        Log.d("Process", "Login monggo");
         mRequestQueue = Volley.newRequestQueue(MainActivity.this);
         //post data
         JSONObject jsonObject = new JSONObject();
@@ -183,27 +193,9 @@ public class MainActivity extends AppCompatActivity {
                     String refreshToken = convertedObject.get("refreshToken").toString();
                     preferenceManager.putString(Program.TOKEN, "Bearer " + accessToken.replace("\"", ""));
                     preferenceManager.putString(Program.REFRESH_TOKEN, "Bearer " + refreshToken.replace("\"", ""));
-                    preferenceManager.putString("accessToken", accessToken);
-                    preferenceManager.putString("refreshToken", refreshToken);
+                    Log.d("Process", "Login monggo successfully!");
+                    signIn(email, password);   //login firebase
 
-                    signIn();   //login firebase
-
-
-                    SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("accessToken", accessToken);
-                    editor.putString("refreshToken", refreshToken);
-                    if (cbxRemeberPassword.isChecked()) {
-                        editor.putString("isRememberPassword", "true");
-                        editor.putString("email", edtEmail.getText().toString());
-                        editor.putString("password", edtPassword.getText().toString());
-                    } else {
-                        editor.putString("isRememberPassword", "false");
-                        editor.putString("email", "");
-                        editor.putString("password", "");
-                    }
-                    editor.commit();
-                    getInfoUser(accessToken);
                 } catch (JSONException e) {
                     Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
@@ -214,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 String body;
                 //get status code here
-                if (error.networkResponse.data != null) {
+                if (error.networkResponse != null) {
                     try {
                         body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
@@ -234,12 +226,9 @@ public class MainActivity extends AppCompatActivity {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    private void getInfoUser(String accessToken) {
-        StringBuilder sb = new StringBuilder(accessToken);
-        sb.deleteCharAt(0);
-        sb.deleteCharAt(accessToken.length() - 2);
-        String ACCESSTOKEN = sb.toString();
-        mRequestQueue = Volley.newRequestQueue(MainActivity.this);
+    private void getInfoUser() {
+        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+        Log.d("Process", "get info");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, base_url + "/info-user", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -250,7 +239,6 @@ public class MainActivity extends AppCompatActivity {
                     String phone = response.getString("phone");
                     String avatar = response.getString("avatar");
 
-                    preferenceManager.putString(Program.USER_ID, response.getString("_id"));
                     Program.idSavedJobs = new ArrayList<>();
                     if (role.equals(Program.ADMIN_ROLE)) {
                         preferenceManager.putString(Program.COMPANY_ID, response.getJSONObject("company").getString("_id"));
@@ -261,9 +249,7 @@ public class MainActivity extends AppCompatActivity {
                             if (jobObject.getString("status").equals("true")) {
                                 Program.idSavedJobs.add(jobObject.getString("_id"));
                             }
-//                            Log.d("ABC", listSavedJob.get(i));
                         }
-//                        Log.d("Jobsaved", preferenceManager.getArray(Program.LIST_SAVED_JOB).toString());
                     }
                     preferenceManager.putArray(Program.idSavedJobs);
                     preferenceManager.putString(Program.ROLE, role);
@@ -278,12 +264,12 @@ public class MainActivity extends AppCompatActivity {
                     editor.commit();
                     loadingDialog.dismissDialog();
 
-
-                    preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);
-                    redirectAfterLogin();
-
+                    preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);//
                     Program.avatar = avatar;
-                  
+                    Log.d("Process", "get info successfully!");
+                    redirectAfterLogin(role);
+
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("Job", "LOI 1 : " + e.toString());
@@ -292,19 +278,11 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                String body;
+                Log.d("Error","err " + error.toString());
+                String body = "";
                 //get status code here
-                String statusCode = String.valueOf(error.networkResponse.statusCode);
-                if (error.networkResponse.data != null) {
+                if (error.networkResponse != null && error.networkResponse.data != null) {
                     try {
-                        if (error.networkResponse.statusCode == 401) {
-                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(),MainActivity.class);
-                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            preferenceManager.clear();
-                            startActivity(i);
-                        }
                         body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                     } catch (UnsupportedEncodingException e) {
@@ -317,9 +295,10 @@ public class MainActivity extends AppCompatActivity {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
+                Log.d("Auth", preferenceManager.getString(Program.TOKEN));
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", "Bearer " + ACCESSTOKEN);
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
         };
@@ -336,36 +315,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if(error.networkResponse != null) {
-                    if (error.networkResponse.statusCode == 401) {
-
-                        new AsyncTasks() {
-                            @Override
-                            public void onPreExecute() {
-                            }
-
-                            @Override
-                            public void doInBackground() {
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                preferenceManager.clear();
-                                startActivity(i);
-                            }
-
-                            @Override
-                            public void onPostExecute() {
-                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            }
-                        }.execute();
-                    }
-                }
+                Log.d("Error", error.toString());
             }
         });
-        mRequestQueue.add(jsonObjectRequest);
+        requestQueue.add(jsonObjectRequest);
     }
 
-    private void redirectAfterLogin() {
-        if (preferenceManager.getString(Program.ROLE).trim().equals("user")) {
+    private void redirectAfterLogin(String role) {
+        if (role.trim().equals("user")) {
             Log.d("ABC", "user");
             Intent intent = new Intent(MainActivity.this, SeekerMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -379,23 +336,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void signIn() {
+    private void signIn(String email, String password) {
+        Log.d("Process", "Login Firebase");
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         database.collection(Program.KEY_COLLECTION_USERS)
-                .whereEqualTo(Program.KEY_EMAIL, edtEmail.getText().toString())
-                .whereEqualTo(Program.KEY_PASSWORD, edtPassword.getText().toString())
+                .whereEqualTo(Program.KEY_EMAIL, email)
+                .whereEqualTo(Program.KEY_PASSWORD, password)
                 .get()
                 .addOnCompleteListener(task -> {
                             if (task.isSuccessful() && task.getResult() != null &&
                                     task.getResult().getDocuments().size() > 0) {
+
                                 DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
-                                preferenceManager.putString(Program.KE_USER_ID, documentSnapshot.getId());
+                                Log.d("UserId", documentSnapshot.getId());
+                                preferenceManager.putString(Program.KEY_USER_ID, documentSnapshot.getId());
                                 preferenceManager.putString(Program.KEY_NAME, documentSnapshot.getString(Program.KEY_NAME));
                                 preferenceManager.putString(Program.KEY_IMAGE, documentSnapshot.getString(Program.KEY_IMAGE));
+
+                                Log.d("Process", "Login Firebase successfully");
+                                getInfoUser();
                             }
                         }
                 ).addOnFailureListener(e -> {
-                    Toast.makeText(this, "Cant not sign in", Toast.LENGTH_SHORT).show();
+                    Log.d("Error", e.getMessage());
                 });
     }
 

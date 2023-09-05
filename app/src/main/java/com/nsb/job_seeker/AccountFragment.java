@@ -1,8 +1,6 @@
 package com.nsb.job_seeker;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,27 +16,25 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nsb.job_seeker.Program;
-import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.Activity_ChangePassword;
 import com.nsb.job_seeker.auth.DialogNotification;
 import com.nsb.job_seeker.auth.LoadingDialog;
 import com.nsb.job_seeker.auth.MainActivity;
-import com.nsb.job_seeker.common.Activity_Profile;
-import com.nsb.job_seeker.common.AsyncTasks;
+import com.nsb.job_seeker.auth.Activity_Profile;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.employer.StatisticalJobActivity;
 
@@ -124,44 +120,32 @@ public class AccountFragment extends Fragment {
             public void onClick(View v) {
                 loadingDialog.startLoadingDialog();
                 Log.d("Token", preferenceManager.getString(Program.TOKEN));
-                handleLogout(preferenceManager.getString(Program.TOKEN));
+                handleLogout();
             }
         });
     }
 
-    private void handleLogout(String accessToken) {
+    private void handleLogout() {
         mRequestQueue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, Program.url_dev + "/auth/logout", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                try {
-                    String message = response.getString("message");
-                    Log.d("ABC", message);
-
-                    signOut();
-                    preferenceManager.clear();
-
-                    Intent i = new Intent(getContext(), MainActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(i);
-                } catch (JSONException e) {
-                    Log.d("ABC", e.toString());
-                    e.printStackTrace();
-                }
-                loadingDialog.dismissDialog();
+                Log.d("ABC", "Monggo: Sign out successfully!");
+                signOut();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d("Error", error.getMessage());
                 String body;
                 //get status code here
-
-                if (error.networkResponse.data != null) {
+                NetworkResponse statusCode = error.networkResponse;
+                if (statusCode.data != null) {
                     try {
                         if (error.networkResponse.statusCode == 401) {
                             Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getActivity(),MainActivity.class);
+                            Intent i = new Intent(getActivity(), MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             preferenceManager.clear();
                             startActivity(i);
@@ -184,7 +168,7 @@ public class AccountFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", accessToken);
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
         };
@@ -201,24 +185,45 @@ public class AccountFragment extends Fragment {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
+                Log.d("Error", error.getMessage());
+                if (error.networkResponse.data != null) {
+                    if (error.networkResponse.statusCode == 401) {
+                        Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(getActivity(), MainActivity.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        preferenceManager.clear();
+                        startActivity(i);
+                    }
+                }
             }
         });
         mRequestQueue.add(jsonObjectRequest);
     }
 
     private void signOut() {
-//        showToast("Signing out...");
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         DocumentReference documentReference =
                 database.collection(Program.KEY_COLLECTION_USERS).document(
-                        preferenceManager.getString(Program.KE_USER_ID)
+                        preferenceManager.getString(Program.KEY_USER_ID)
                 );
         HashMap<String, Object> updates = new HashMap<>();
-        updates.put(Program.KEY_FCM_TOKEN, FieldValue.delete());
+        updates.put(Program.KEY_FCM_TOKEN, null);
         documentReference.update(updates)
                 .addOnSuccessListener(unused -> {
 //                    startActivity(new Intent(getActivity().getApplicationContext(), SignInActivity.class));
-
+                    preferenceManager.clear();
+                    Toast.makeText(getActivity(), "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(getContext(), MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("Error", e.getMessage());
+                    preferenceManager.clear();
+                    Toast.makeText(getActivity(), "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(getContext(), MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
                 });
     }
 }

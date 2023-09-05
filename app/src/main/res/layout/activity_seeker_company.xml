@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -182,14 +183,15 @@
                 android:text="Danh sách tuyển việc"
                 android:textSize="16sp" />
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/lv_job_by_company"
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
                 android:divider="@null"
                 android:nestedScrollingEnabled="true"
                 android:scrollingCache="true"
-                android:smoothScrollbar="true" />
+                android:smoothScrollbar="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </LinearLayout>
 
         <ProgressBar

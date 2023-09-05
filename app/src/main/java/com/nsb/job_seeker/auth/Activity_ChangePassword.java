@@ -23,6 +23,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
@@ -42,10 +44,11 @@ public class Activity_ChangePassword extends AppCompatActivity {
     private TextInputEditText tieConfirmPassword, tiePassword, tiePasswordCurrent;
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
-    private String base_url = Program.url_dev+"/auth";
+    private String base_url = Program.url_dev + "/auth";
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
     private ImageView imgBack;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +65,11 @@ public class Activity_ChangePassword extends AppCompatActivity {
         tieConfirmPassword = findViewById(R.id.tieConfirmPassword);
         tiePasswordCurrent = findViewById(R.id.tiePasswordCurrent);
         imgBack = findViewById(R.id.backArrow);
+        preferenceManager = new PreferenceManager(getApplicationContext());
     }
 
     private void setEvent() {
-        imgBack.setOnClickListener(v->onBackPressed());
+        imgBack.setOnClickListener(v -> onBackPressed());
         btnChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,9 +102,9 @@ public class Activity_ChangePassword extends AppCompatActivity {
                 try {
                     String message = response.getString("message");
                     Log.d("ABC", message);
-                    dialogNotification.openDialogNotification(message, Activity_ChangePassword.this);
+                    changePasswordFirebase(newPassword, message);
                 } catch (JSONException e) {
-                    Log.d("ABC",e.toString());
+                    Log.d("ABC", e.toString());
                     e.printStackTrace();
                 }
                 loadingDialog.dismissDialog();
@@ -113,22 +117,22 @@ public class Activity_ChangePassword extends AppCompatActivity {
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
 
-                if(error.networkResponse.data!=null) {
+                if (error.networkResponse.data != null) {
                     try {
                         if (error.networkResponse.statusCode == 401) {
                             Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(),MainActivity.class);
+                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
                             preferenceManager.clear();
                             startActivity(i);
                         }
-                        body = new String(error.networkResponse.data,"UTF-8");
+                        body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), Activity_ChangePassword.this);
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), Activity_ChangePassword.this);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -136,17 +140,18 @@ public class Activity_ChangePassword extends AppCompatActivity {
                 loadingDialog.dismissDialog();
 
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName,  MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                 String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", "Bearer "+ACCESSTOKEN.substring(1, ACCESSTOKEN.length()-1));
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
-        };;
+        };
+        ;
         jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
             @Override
             public int getCurrentTimeout() {
@@ -166,5 +171,20 @@ public class Activity_ChangePassword extends AppCompatActivity {
         mRequestQueue.add(jsonObjectRequest);
     }
 
+    private void changePasswordFirebase(String newPassword, String message) {
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        DocumentReference documentReference =
+                database.collection(Program.KEY_COLLECTION_USERS).document(
+                        preferenceManager.getString(Program.KEY_USER_ID)
+                );
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put(Program.KEY_PASSWORD, newPassword);
+        documentReference.update(updates)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                    Log.d("ABC", "Firebase: Successfully!");
+                })
+                .addOnFailureListener(e -> Log.d("Error", e.getMessage()));
+    }
 
 }

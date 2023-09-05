@@ -21,7 +21,7 @@
         android:windowSoftInputMode="stateAlwaysVisible"
         tools:targetApi="31">
         <activity
-            android:name=".common.Activity_Profile"
+            android:name=".auth.Activity_Profile"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

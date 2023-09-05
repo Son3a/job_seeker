@@ -16,7 +16,7 @@ import com.nsb.job_seeker.message.model.User;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserActivity extends BaseActivity implements UserListener {
+public class        UserActivity extends BaseActivity implements UserListener {
 
     private ActivityUserActivityBinding binding;
     private PreferenceManager preferenceManager;
@@ -42,7 +42,7 @@ public class UserActivity extends BaseActivity implements UserListener {
                 .get()
                 .addOnCompleteListener(task -> {
                     loading(false);
-                    String currenUserId = preferenceManager.getString(Program.KE_USER_ID);
+                    String currenUserId = preferenceManager.getString(Program.KEY_USER_ID);
                     if (task.isSuccessful() && task.getResult() != null) {
                         List<User> users = new ArrayList<>();
                         for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {

@@ -18,10 +18,10 @@
             android:layout_height="30dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:layout_marginLeft="10dp"
             android:src="@drawable/ic_cancel"
             android:visibility="gone"
             app:tint="@color/white" />
@@ -41,9 +41,9 @@
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_save_recruiment"
-            android:layout_marginRight="10dp"/>
+            android:src="@drawable/ic_save_recruiment" />
     </RelativeLayout>
 
     <ScrollView
@@ -64,7 +64,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/custom_edittext_cre_news"
-                android:hint="Tên công việc" />
+                android:hint="Tên công việc"
+                android:textColorHint="@color/secondary_text" />
 
             <EditText
                 android:id="@+id/edt_place"
@@ -73,7 +74,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/custom_edittext_cre_news"
-                android:hint="Địa chỉ" />
+                android:hint="Địa chỉ"
+                android:textColorHint="@color/secondary_text" />
 
             <FrameLayout
                 android:id="@+id/line"
@@ -99,7 +101,8 @@
                     android:drawableLeft="@drawable/ic_salary_black"
                     android:drawablePadding="20dp"
                     android:hint="Lương"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:textColorHint="@color/secondary_text" />
 
                 <EditText
                     android:id="@+id/edt_work_time"
@@ -111,17 +114,20 @@
                     android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_work_time"
                     android:drawablePadding="20dp"
-                    android:hint="Thời gian làm việc" />
+                    android:hint="Thời gian làm việc"
+                    android:textColorHint="@color/secondary_text" />
 
                 <Spinner
                     android:id="@+id/spn_type_job"
-                    style="@style/text"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginTop="5dp"
+                    android:paddingStart="47dp"
                     android:layout_marginBottom="5dp"
                     android:background="@drawable/custom_spinner_type_job"
-                    android:paddingLeft="50dp" />
+                    android:paddingLeft="50dp"
+                    android:popupBackground="@color/white"
+                    android:theme="@style/mySpinnerItemStyle" />
 
                 <TextView
                     android:id="@+id/tv_time_create_new"
@@ -145,7 +151,8 @@
                     android:drawableLeft="@drawable/ic_deadline"
                     android:drawablePadding="20dp"
                     android:hint="Hạn nộp hồ sơ"
-                    android:inputType="date" />
+                    android:inputType="date"
+                    android:textColorHint="@color/secondary_text" />
 
                 <FrameLayout
                     android:layout_width="match_parent"

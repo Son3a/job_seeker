@@ -2,6 +2,7 @@ package com.nsb.job_seeker.seeker;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,6 +28,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobAdapter;
+import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
+import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.message.activity.ChatActivity;
 import com.nsb.job_seeker.message.model.User;
 import com.nsb.job_seeker.model.Job;
@@ -38,8 +42,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompanyActivity extends AppCompatActivity {
-    private ListView listView;
+public class CompanyActivity extends AppCompatActivity implements JobListener {
+    private RecyclerView listView;
     private ProgressBar pbLoading;
     private List<Job> jobList;
     private ImageView icBack;
@@ -49,6 +53,7 @@ public class CompanyActivity extends AppCompatActivity {
     private FloatingActionButton fabMessage;
     private String emailReceiver;
     private User userReceive;
+    private JobAdapter jobAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +80,9 @@ public class CompanyActivity extends AppCompatActivity {
 
         jobList = new ArrayList<>();
         userReceive = new User();
+
+        jobAdapter = new JobAdapter(jobList, this, true);
+        listView.setAdapter(jobAdapter);
     }
 
     private void setEvent() {
@@ -149,22 +157,6 @@ public class CompanyActivity extends AppCompatActivity {
         });
     }
 
-    private void setListViewAdapter() {
-        JobAdapter jobAdapter = new JobAdapter(CompanyActivity.this, R.layout.list_view_item_job, jobList, true);
-        listView.setAdapter(jobAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent i = new Intent(CompanyActivity.this, JobDetailActivity.class);
-                i.putExtra("id", jobList.get(position).getId());
-                i.putExtra("isApply", true);
-                i.putExtra("isLinkCompany", false);
-                startActivity(i);
-            }
-        });
-    }
-
     private void getListJobOfCompany(String url) {
         Bundle bundle = getIntent().getExtras();
         IDCompany = bundle.getString("idCompany");
@@ -201,7 +193,7 @@ public class CompanyActivity extends AppCompatActivity {
                                     ));
                                 }
                             }
-                            setListViewAdapter();
+                            jobAdapter.notifyDataSetChanged();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -237,7 +229,8 @@ public class CompanyActivity extends AppCompatActivity {
     }
 
     private void openChatBox() {
-        fabMessage.setOnClickListener(v->{
+        fabMessage.setOnClickListener(v -> {
+            Log.d("userReceive", userReceive.toString());
             Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
             intent.putExtra(Program.KEY_USER, userReceive);
             startActivity(intent);
@@ -249,15 +242,31 @@ public class CompanyActivity extends AppCompatActivity {
         database.collection(Program.KEY_COLLECTION_USERS)
                 .whereEqualTo(Program.KEY_EMAIL, emailReceiver)
                 .get()
-                .addOnCompleteListener(task ->{
+                .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        DocumentSnapshot queryDocumentSnapshot = task.getResult().getDocuments().get(0);
-                        userReceive.name = queryDocumentSnapshot.getString(Program.KEY_NAME);
-                        userReceive.email = queryDocumentSnapshot.getString(Program.KEY_EMAIL);
-                        userReceive.image = queryDocumentSnapshot.getString(Program.KEY_IMAGE);
-                        userReceive.token = queryDocumentSnapshot.getString(Program.KEY_FCM_TOKEN);
-                        userReceive.id = queryDocumentSnapshot.getId();
+                        Log.d("emailReceiver", emailReceiver.toString());
+                        Log.d("emailReceiver", task.getResult().getDocuments().get(0).getString("email"));
+                        userReceive.id = task.getResult().getDocuments().get(0).getId();
+                        userReceive.email = task.getResult().getDocuments().get(0).getString("email");
+                        userReceive.name = task.getResult().getDocuments().get(0).getString("name");
+                        userReceive.image = task.getResult().getDocuments().get(0).getString("image");
                     }
                 });
+
+//        Log.d("userReceive",userReceive.toString());
+    }
+
+    @Override
+    public void onClick(Job job) {
+        Intent i = new Intent(CompanyActivity.this, JobDetailActivity.class);
+        i.putExtra("id", job.getId());
+        i.putExtra("isApply", true);
+        i.putExtra("isLinkCompany", false);
+        startActivity(i);
+    }
+
+    @Override
+    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding binding) {
+
     }
 }

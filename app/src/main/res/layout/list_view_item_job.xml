@@ -4,6 +4,7 @@
     android:id="@+id/layout_item_job"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
     android:paddingLeft="20dp"
@@ -13,6 +14,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
         app:cardCornerRadius="10dp"
         app:cardElevation="8dp"
         android:layout_margin="5dp">

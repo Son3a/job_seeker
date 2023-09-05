@@ -33,7 +33,7 @@ public class MessageService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
         User user = new User();
-        user.id = message.getData().get(Program.KE_USER_ID);
+        user.id = message.getData().get(Program.KEY_USER_ID);
         user.name = message.getData().get(Program.KEY_NAME);
         user.token = message.getData().get(Program.KEY_FCM_TOKEN);
 
