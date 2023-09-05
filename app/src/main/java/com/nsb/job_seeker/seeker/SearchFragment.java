@@ -1,4 +1,4 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.seeker;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -33,6 +34,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobAdapter;
+import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
+import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
@@ -46,7 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements JobListener {
 
     private ImageView imgFilter; //test
     private Spinner spinnerLocation, spinnerTypeJob;
@@ -54,7 +57,7 @@ public class SearchFragment extends Fragment {
     private View searchView, bottomSheetDialogView;
     private BottomSheetDialog bottomSheetDialog;
     private AutoCompleteTextView edtSearch;
-    private ListView listView;
+    private RecyclerView listView;
     private List<Job> jobResultList;
     private ProgressBar pbLoading;
     private TextView tvNote;
@@ -63,13 +66,14 @@ public class SearchFragment extends Fragment {
 
     private ArrayList<String> locationList;
     private ArrayList<String> typeJobList;
-    private ArrayList<String> idtypeJobList;
+    private ArrayList<String> idTypeJobList;
+    private JobAdapter jobAdapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         searchView = inflater.inflate(R.layout.fragment_seeker_search, container, false);
-        bottomSheetDialogView = inflater.inflate(R.layout.bottom_sheet_filter, container, false);
+                bottomSheetDialogView = inflater.inflate(R.layout.bottom_sheet_filter, container, false);
 
         setControl();
         setEvent();
@@ -91,8 +95,12 @@ public class SearchFragment extends Fragment {
 
         typeJobList = new ArrayList<>();
         locationList = new ArrayList<>(Arrays.asList("Tất cả", "Ho Chi Minh", "Da Nang", "Ha Noi"));
-        idtypeJobList = new ArrayList<>();
+        idTypeJobList = new ArrayList<>();
         typeJobList.add("Tất cả");
+        jobResultList = new ArrayList<>();
+
+        jobAdapter = new JobAdapter(jobResultList, this, true);
+        listView.setAdapter(jobAdapter);
     }
 
     private void setEvent() {
@@ -178,11 +186,11 @@ public class SearchFragment extends Fragment {
         }
 
         if ((positionSpnIdOccupation - 1) >= 0) {
-            idOccupation = new String[]{idtypeJobList.get(positionSpnIdOccupation - 1)};
+            idOccupation = new String[]{idTypeJobList.get(positionSpnIdOccupation - 1)};
         }
 
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        jobResultList = new ArrayList<Job>();
+        jobResultList.clear();
 
         JSONArray idOccupationParam = new JSONArray(idOccupation);
         JSONArray locationWorkingParam = new JSONArray(locationWorking);
@@ -229,7 +237,7 @@ public class SearchFragment extends Fragment {
 
                         System.out.println(jobResultList.get(i).toString());
                     }
-                    setListView();
+                    jobAdapter.notifyDataSetChanged();
                     tvNote.setVisibility(View.GONE);
                     listView.setVisibility(View.VISIBLE);
                     pbLoading.setVisibility(View.GONE);
@@ -274,25 +282,6 @@ public class SearchFragment extends Fragment {
         queue.add(sr);
     }
 
-    private void setListView() {
-        if (getActivity() != null) {
-            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobResultList, true);
-            listView.setAdapter(jobAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                    i.putExtra("id", jobResultList.get(position).getId());
-                    i.putExtra("isApply", true);
-                    startActivity(i);
-
-
-                }
-            });
-        }
-    }
-
     private void getTypeJob() {
 
         String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
@@ -307,7 +296,7 @@ public class SearchFragment extends Fragment {
                         JSONObject typeJob = listTypeJob.getJSONObject(i);
                         if (typeJob.getString("isDelete").equals("false")) {
                             typeJobList.add(typeJob.getString("name"));
-                            idtypeJobList.add(typeJob.getString("_id"));
+                            idTypeJobList.add(typeJob.getString("_id"));
                         }
                     }
                     bindingDataToSpinner();
@@ -361,5 +350,18 @@ public class SearchFragment extends Fragment {
         bindingDataToSpinner();
         bottomSheetDialog = new BottomSheetDialog(getActivity());
         bottomSheetDialog.setContentView(bottomSheetDialogView);
+    }
+
+    @Override
+    public void onClick(Job job) {
+        Intent i = new Intent(getActivity(), JobDetailActivity.class);
+        i.putExtra("id", job.getId());
+        i.putExtra("isApply", true);
+        startActivity(i);
+    }
+
+    @Override
+    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding binding) {
+
     }
 }

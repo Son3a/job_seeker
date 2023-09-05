@@ -101,41 +101,49 @@
         android:focusable="true"
         android:gravity="center_vertical"
         android:padding="10dp"
-        android:text="Đổi mật khẩu" />
+        android:text="Xóa tài khoản" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#E1D9D9" />
 
-    <TextView
-        style="@style/text"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layout_manager"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
         android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:text="Quản lý" />
+        android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#E1D9D9" />
+        <TextView
+            style="@style/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="15dp"
+            android:text="Quản lý" />
 
-    <TextView
-        android:id="@+id/tv_statistical"
-        style="@style/text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:clickable="true"
-        android:drawableLeft="@drawable/ic_statistical"
-        android:drawableRight="@drawable/ic_expend_vertical"
-        android:drawablePadding="10dp"
-        android:focusable="true"
-        android:gravity="center_vertical"
-        android:padding="10dp"
-        android:text="Thống kê" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E1D9D9" />
+
+        <TextView
+            android:id="@+id/tv_statistical"
+            style="@style/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:clickable="true"
+            android:drawableLeft="@drawable/ic_statistical"
+            android:drawableRight="@drawable/ic_expend_vertical"
+            android:drawablePadding="10dp"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+            android:text="Thống kê" />
+    </LinearLayout>
+
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -145,7 +153,7 @@
 
 
     <Button
-        android:id="@+id/tv_logout"
+        android:id="@+id/btn_logout"
         style="@style/text"
         android:layout_width="350dp"
         android:layout_height="60dp"

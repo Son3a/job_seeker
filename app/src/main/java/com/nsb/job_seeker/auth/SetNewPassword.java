@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,11 +48,10 @@ public class SetNewPassword extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         super.onCreate(savedInstanceState);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Đặt lại mật khẩu");
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#DB3AA1F6")));
+
         setContentView(R.layout.activity_set_new_password);
         this.loadingDialog = new LoadingDialog(SetNewPassword.this);
         Intent i = getIntent();
@@ -106,6 +106,9 @@ public class SetNewPassword extends AppCompatActivity {
                     String message = response.getString("message");
                     dialogNotification.openDialogNotification(message, SetNewPassword.this);
                     Log.d("ABC", message);
+                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
                 } catch (JSONException e) {
                     Toast.makeText(SetNewPassword.this, e.toString(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();

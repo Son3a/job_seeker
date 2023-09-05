@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -52,7 +53,8 @@
                 android:id="@+id/spinner_location"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/custom_spinner_filter_job" />
+                android:background="@drawable/custom_spinner_filter_job"
+                android:popupBackground="@color/white" />
         </LinearLayout>
 
         <LinearLayout
@@ -72,7 +74,8 @@
                 android:id="@+id/spinner_type_job"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@drawable/custom_spinner_filter_job" />
+                android:background="@drawable/custom_spinner_filter_job"
+                android:popupBackground="@color/white" />
         </LinearLayout>
 
         <LinearLayout
@@ -89,29 +92,30 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginTop="50dp"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/btn_submit"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:backgroundTint="@color/primary"
             android:text="Áp dụng"
-            android:backgroundTint="#3ABBE3"/>
+            android:textColor="@color/white" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_reset"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Khôi phục"
-            android:textColor="#787474"
             android:layout_marginTop="10dp"
             android:backgroundTint="@color/white"
-            app:strokeWidth="1dp"
-            app:strokeColor="#787474"/>
+            android:text="Khôi phục"
+            android:textColor="#787474"
+            app:strokeColor="#787474"
+            app:strokeWidth="1dp" />
 
     </LinearLayout>
 </LinearLayout>

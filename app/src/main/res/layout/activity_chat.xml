@@ -156,4 +156,20 @@
         android:textSize="@dimen/_10ssp"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/viewSupporter" />
+
+    <TextView
+        android:id="@+id/text_notify_empty_chats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Hãy bắt đầu cuộc trò chuyện nào."
+        android:textColor="@color/secondary_text"
+        android:textSize="@dimen/_14ssp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_margin="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

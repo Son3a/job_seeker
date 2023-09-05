@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     android:layout_height="match_parent">
     <!--Header-->
     <LinearLayout
@@ -17,6 +19,7 @@
         <Spinner
             android:id="@+id/spinner_job"
             android:layout_width="match_parent"
+            android:popupBackground="@color/white"
             android:layout_height="50dp"
             android:background="@drawable/custom_spinner_statistical_job" />
 
@@ -37,13 +40,14 @@
         android:background="#D4D4D4" />
 
     <!--Body-->
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/lv_job"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_below="@+id/line"
         android:divider="@null"
         android:scrollingCache="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:smoothScrollbar="true" />
 
     <ProgressBar

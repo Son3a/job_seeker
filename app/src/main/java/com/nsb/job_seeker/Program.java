@@ -24,8 +24,7 @@ import java.util.List;
 public class Program {
     public static final String url_dev = "https://job-seeker-smy5.onrender.com";
     public static final String url_product = "https://job-seeker-smy5.onrender.com";
-    public static String url_dev_img = url_dev+"/images";
-    public static final String USER_ID = "userId";
+    public static String url_dev_img = url_dev + "/images";
     public static final String ROLE = "role";
     public static final String TOKEN = "token";
     public static final String REFRESH_TOKEN = "refreshToken";
@@ -39,8 +38,7 @@ public class Program {
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PASSWORD = "password";
-    public static final String KEY_PREFERENCE_NAME = "chatAppPreference";
-    public static final String KE_USER_ID = "userId";
+    public static final String KEY_USER_ID = "userIdFB";
     public static final String KEY_IMAGE = "image";
     public static final String KEY_FCM_TOKEN = "fcmToken";
     public static final String KEY_USER = "user";
@@ -60,12 +58,14 @@ public class Program {
     public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
     public static final String REMOTE_MSG_DATA = "data";
     public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
-  
+    public static List<String> idSavedJobs;
+
     public static String avatar;
 
-    public static HashMap<String,String> remoteMsgHeaders = null;
-    public  static HashMap<String,String> getRemoteMsgHeaders(){
-        if (remoteMsgHeaders == null){
+    public static HashMap<String, String> remoteMsgHeaders = null;
+
+    public static HashMap<String, String> getRemoteMsgHeaders() {
+        if (remoteMsgHeaders == null) {
             remoteMsgHeaders = new HashMap<>();
             remoteMsgHeaders.put(
                     REMOTE_MSG_AUTHORIZATION,
@@ -82,19 +82,28 @@ public class Program {
 
     public static String formatSalary(String salary) {
         Log.d("salary", salary);
-        if (!salary.matches(".*\\d.*")) return salary;
-
-        String money = salary.replaceAll("[^0-9]", "");
-        String moneySign = salary.replaceAll("[0-9]","").trim();
-
         NumberFormat df = NumberFormat.getCurrencyInstance();
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setGroupingSeparator('.');
         df.setMaximumFractionDigits(0);
         dfs.setCurrencySymbol("");
         ((DecimalFormat) df).setDecimalFormatSymbols(dfs);
-        Log.d("salary", df.format(Integer.parseInt(money)));
-        return df.format(Integer.parseInt(money)) + moneySign;
+
+        if (!salary.contains("-")) {
+            if (!salary.matches(".*\\d.*")) return salary;
+
+            String money = salary.replaceAll("[^0-9]", "");
+            String moneySign = salary.replaceAll("[0-9]", "").trim();
+            return df.format(Integer.parseInt(money)) + moneySign;
+        } else {
+            String salarys[] = salary.split("-");
+            String moneySign = salarys[0].replaceAll("[0-9]", "").trim();
+            salarys[0] = salarys[0].replaceAll("[^0-9]", "");
+            salarys[1] = salarys[1].replaceAll("[^0-9]", "");
+
+            String salaryFormat = df.format(Integer.parseInt(salarys[0])) + "-" + df.format(Integer.parseInt(salarys[1])) + moneySign;
+            return salaryFormat;
+        }
     }
 
     public static long calculateTime(String timeCreate) throws ParseException {
@@ -191,12 +200,22 @@ public class Program {
 
 
     public static String formatStringToBullet(String string) {
+        boolean containsHTMLTag = string.matches(".*\\<[^>]+>.*");
+        String[] listString;
         String newString = "";
-        String[] listString = string.split("\\.");
+        if (containsHTMLTag) {
+            String htmlString = String.valueOf(Html.fromHtml(string, Html.FROM_HTML_MODE_LEGACY));
+            Log.d("HTML", htmlString);
+            listString = htmlString.split("\n");
+        } else {
+            listString = string.split("\\.");
+        }
+
         for (int i = 0; i < listString.length; i++) {
-//            String term = String.valueOf(Html.fromHtml(listString[i],Html.FROM_HTML_MODE_LEGACY));
-            String term = listString[i];
-            newString = newString + "• " + term + "\n";
+            String term = listString[i].trim();
+            if (!term.equals("")) {
+                newString = newString + "• " + term + "\n";
+            }
         }
 
         return newString.substring(0, newString.length() - 1);

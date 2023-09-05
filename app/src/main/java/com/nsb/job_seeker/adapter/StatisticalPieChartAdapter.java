@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import com.nsb.job_seeker.R;
 
 import java.io.PrintStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class StatisticalPieChartAdapter extends ArrayAdapter{
@@ -41,22 +42,29 @@ public class StatisticalPieChartAdapter extends ArrayAdapter{
 
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        row = inflater.inflate(layoutId, parent,false);
+        StatisticalPieChartAdapter.JobHolder holder;
+        if(row == null){
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            row = inflater.inflate(layoutId, parent,false);
 
-        StatisticalPieChartAdapter.JobHolder holder = new StatisticalPieChartAdapter.JobHolder();
+            holder = new StatisticalPieChartAdapter.JobHolder();
 
-        holder.nameJob = listNameJobs.get(position);
-        holder.amountJob = listAmountJobs.get(position);
+            holder.nameJob = listNameJobs.get(position);
+            holder.amountJob = listAmountJobs.get(position);
 
-        holder.txtNameJob = (TextView) row.findViewById(R.id.txt_name_job);
-        holder.txtAmountJob = (TextView) row.findViewById(R.id.txt_amount_job);
+            holder.txtNameJob = (TextView) row.findViewById(R.id.txt_name_job);
+            holder.txtAmountJob = (TextView) row.findViewById(R.id.txt_amount_job);
 
 
-        row.setTag(holder);
+            row.setTag(holder);
+        }else{
+            holder = (JobHolder) row.getTag();
+        }
+
         holder.txtNameJob.setText(holder.nameJob);
         float percent = ((float)(holder.amountJob)/sum)*100;
-        format("%.2f", percent);
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        decimalFormat.format(percent);
         String amountJob = String.valueOf(holder.amountJob) + " (" + String.valueOf(percent) + "%)";
         holder.txtAmountJob.setText(amountJob);
 

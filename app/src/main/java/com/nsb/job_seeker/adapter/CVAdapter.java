@@ -45,16 +45,23 @@ public class CVAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        row = inflater.inflate(layoutId, parent, false);
+        CVAdapter.Holder holder;
 
-        CVAdapter.Holder holder = new CVAdapter.Holder();
-        holder.timeApplied = timeAppliedList.get(position);
-        holder.tvTimeApplied = (TextView) row.findViewById(R.id.tv_time_applied);
-        holder.tvSTT = (TextView) row.findViewById(R.id.tv_stt);
-        holder.tvFile = (TextView) row.findViewById(R.id.tv_file);
+        if(row == null){
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            row = inflater.inflate(layoutId, parent, false);
 
-        row.setTag(holder);
+            holder = new CVAdapter.Holder();
+            holder.timeApplied = timeAppliedList.get(position);
+            holder.tvTimeApplied = (TextView) row.findViewById(R.id.tv_time_applied);
+            holder.tvSTT = (TextView) row.findViewById(R.id.tv_stt);
+            holder.tvFile = (TextView) row.findViewById(R.id.tv_file);
+
+            row.setTag(holder);
+        }else{
+            holder = (Holder) row.getTag();
+        }
+
         holder.tvTimeApplied.setText(holder.timeApplied);
         holder.tvSTT.setText(String.valueOf(position + 1));
         holder.tvFile.setText("Xem ngay");

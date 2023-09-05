@@ -1,12 +1,15 @@
 package com.nsb.job_seeker.employer;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,15 +22,27 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.CVAdapter;
+import com.nsb.job_seeker.auth.MainActivity;
+import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.model.RssObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,6 +139,15 @@ public class ListCVActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        if(error.networkResponse != null) {
+                            if (error.networkResponse.statusCode == 401) {
+                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                preferenceManager.clear();
+                                startActivity(i);
+                            }
+                        }
                         System.out.println(error);
                     }
                 }
@@ -150,7 +174,29 @@ public class ListCVActivity extends AppCompatActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
+                if(error.networkResponse != null) {
+                    if (error.networkResponse.statusCode == 401) {
 
+                        new AsyncTasks() {
+                            @Override
+                            public void onPreExecute() {
+                            }
+
+                            @Override
+                            public void doInBackground() {
+                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                preferenceManager.clear();
+                                startActivity(i);
+                            }
+
+                            @Override
+                            public void onPostExecute() {
+                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            }
+                        }.execute();
+                    }
+                }
             }
         });
         queue.add(data);
