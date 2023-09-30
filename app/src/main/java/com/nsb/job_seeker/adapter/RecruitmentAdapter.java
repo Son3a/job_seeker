@@ -37,18 +37,24 @@ public class RecruitmentAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        row = inflater.inflate(layoutId, parent,false);
+        RecruitmentAdapter.JobHolder holder;
+        if(row == null){
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            row = inflater.inflate(layoutId, parent,false);
 
-        RecruitmentAdapter.JobHolder holder = new RecruitmentAdapter.JobHolder();
-        holder.recruitment = recruitmentList.get(position);
-        holder.tvTimeCreated = (TextView) row.findViewById(R.id.tv_time_created);
-        holder.tvNameJob = (TextView) row.findViewById(R.id.tv_name_job);
-        holder.tvPlace = (TextView) row.findViewById(R.id.tv_place);
-        holder.tvDeadline = (TextView) row.findViewById(R.id.tv_deadline);
+            holder = new RecruitmentAdapter.JobHolder();
+            holder.recruitment = recruitmentList.get(position);
+            holder.tvTimeCreated = (TextView) row.findViewById(R.id.tv_time_created);
+            holder.tvNameJob = (TextView) row.findViewById(R.id.tv_name_job);
+            holder.tvPlace = (TextView) row.findViewById(R.id.tv_place);
+            holder.tvDeadline = (TextView) row.findViewById(R.id.tv_deadline);
 
 
-        row.setTag(holder);
+            row.setTag(holder);
+        }else{
+            holder = (JobHolder) row.getTag();
+        }
+
         holder.tvNameJob.setText(holder.recruitment.getNameJob());
         holder.tvTimeCreated.setText(holder.recruitment.getTimeCreated());
         holder.tvPlace.setText(holder.recruitment.getPlace());

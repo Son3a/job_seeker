@@ -1,7 +1,5 @@
-package com.nsb.job_seeker.common;
+package com.nsb.job_seeker.auth;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -20,6 +18,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -38,17 +37,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.auth.Activity_ChangePassword;
-import com.nsb.job_seeker.auth.DialogNotification;
-import com.nsb.job_seeker.auth.LoadingDialog;
-import com.nsb.job_seeker.auth.MainActivity;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.helper.VolleyMultipartRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -58,27 +53,29 @@ import java.util.Map;
 public class Activity_Profile extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String base_url = Program.url_dev+"/auth";
+    private String base_url = Program.url_dev + "/auth";
     private String sharedPreferencesName = "JobSharedPreference";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
 
+    private ImageView imgBack;
     private EditText edtName, edtEmail, edtPhone;
     private Button btnChangeProfile;
     private ImageView ivChooseAvatar;
 
     private static final int REQUEST_PERMISSIONS = 100;
-    private static final int PICK_IMAGE_REQUEST =1 ;
+    private static final int PICK_IMAGE_REQUEST = 1;
     private Bitmap bitmap;
     private String filePath;
     private String ROOT_URL = Program.url_dev + "/auth/update-avatar";
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_profile);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+
         this.loadingDialog = new LoadingDialog(Activity_Profile.this);
         setControl();
         initData();
@@ -86,6 +83,9 @@ public class Activity_Profile extends AppCompatActivity {
     }
 
     private void setEvent() {
+        imgBack.setOnClickListener(v -> {
+            onBackPressed();
+        });
         btnChangeProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,17 +183,17 @@ public class Activity_Profile extends AppCompatActivity {
     }
 
 
-
-
     private void setControl() {
         edtName = findViewById(R.id.edtName);
         edtEmail = findViewById(R.id.edtEmail);
         edtPhone = findViewById(R.id.edtPhone);
         btnChangeProfile = findViewById(R.id.btnChangeProfile);
         ivChooseAvatar = findViewById(R.id.ivChooseAvatar);
+        imgBack = findViewById(R.id.backArrow);
+        preferenceManager = new PreferenceManager(getApplicationContext());
 
         new DownloadImageTask((ImageView) findViewById(R.id.ivChooseAvatar))
-                .execute(Program.url_dev_img+"/"+Program.avatar);
+                .execute(Program.url_dev_img + "/" + Program.avatar);
     }
 
     private void uploadBitmap(final Bitmap bitmap) {
@@ -213,17 +213,23 @@ public class Activity_Profile extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
+                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
+                        }
                         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-                        Log.e("GotError",""+error.toString());
+                        Log.e("GotError", "" + error.toString());
                     }
                 }) {
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName,  MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                 String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
-                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length()-1));
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
 
@@ -241,7 +247,7 @@ public class Activity_Profile extends AppCompatActivity {
     }
 
     private void initData() {
-        SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName,  MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
         String name = sharedPreferences.getString("name", "");
         String email = sharedPreferences.getString("email", "");
         String phone = sharedPreferences.getString("phone", "");
@@ -268,7 +274,7 @@ public class Activity_Profile extends AppCompatActivity {
 
                     dialogNotification.openDialogNotification(message, Activity_Profile.this);
                 } catch (JSONException e) {
-                    Log.d("ABC",e.toString());
+                    Log.d("ABC", e.toString());
                     e.printStackTrace();
                 }
                 loadingDialog.dismissDialog();
@@ -276,18 +282,26 @@ public class Activity_Profile extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
 
-                if(error.networkResponse.data!=null) {
+                if (error.networkResponse.data != null) {
                     try {
-                        body = new String(error.networkResponse.data,"UTF-8");
+                        if(error.networkResponse.statusCode == 401) {
+                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
+                        body = new String(error.networkResponse.data, "UTF-8");
                         Log.d("ABC", body);
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring( 1, message.length() - 1 ), Activity_Profile.this);
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), Activity_Profile.this);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -295,17 +309,18 @@ public class Activity_Profile extends AppCompatActivity {
                 loadingDialog.dismissDialog();
 
             }
-        }){
+        }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName,  MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
                 String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", "Bearer " + ACCESSTOKEN.substring(1, ACCESSTOKEN.length()-1));
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
-        };;
+        };
+        ;
         mRequestQueue.add(jsonObjectRequest);
     }
 

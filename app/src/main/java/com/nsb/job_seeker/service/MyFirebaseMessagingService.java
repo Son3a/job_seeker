@@ -34,6 +34,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // message, here is where that should be initiated. See sendNotification method below.
         String title = remoteMessage.getNotification().getTitle();
         String text = remoteMessage.getNotification().getBody();
+        Log.d("ABCD",text + "   "+title);
 
         String CHANNEL_ID = "MESSAGE";
         CharSequence name;

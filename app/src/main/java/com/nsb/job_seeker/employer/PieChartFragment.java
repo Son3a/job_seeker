@@ -127,12 +127,10 @@ public class PieChartFragment extends Fragment {
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         pbLoading.setVisibility(View.VISIBLE);
 
-        System.out.println("logggggggggggggggggggggggggggggggggg");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(url,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        System.out.println("logggggggggggggggggggggggggggggggggg");
                         try {
                             JSONArray jsonArray = response.getJSONArray("data");
                             for (int i = 0; i < jsonArray.length(); i++) {
@@ -142,7 +140,6 @@ public class PieChartFragment extends Fragment {
                                 if (!tempAmount.equals("0")) {
                                     listAmountJobs.add(Integer.parseInt(tempAmount));
                                     listNameJobs.add(tempName);
-                                    System.out.println(tempName);
                                 }
                             }
                             pbLoading.setVisibility(View.GONE);

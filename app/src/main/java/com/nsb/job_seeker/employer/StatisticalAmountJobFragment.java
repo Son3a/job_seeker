@@ -1,10 +1,12 @@
 package com.nsb.job_seeker.employer;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -27,8 +30,10 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
+import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;
-import com.nsb.job_seeker.seeder.JobDetailActivity;
+import com.nsb.job_seeker.seeker.JobDetailActivity;
 import com.nsb.job_seeker.adapter.JobAdapter;
 
 import org.json.JSONArray;
@@ -41,15 +46,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StatisticalAmountJobFragment extends Fragment {
+public class StatisticalAmountJobFragment extends Fragment implements JobListener {
     private Spinner spnJob;
     private View statisticalAmountJobView;
     private ProgressBar pbLoading;
     private List<String> nameTypeJobs;
     private List<String> idTypeJobs;
     private List<Job> jobResultList;
-    private ListView listView;
+    private RecyclerView listView;
     private TextView tvAmountJob;
+    private JobAdapter jobAdapter;
 
 
     @Nullable
@@ -72,26 +78,29 @@ public class StatisticalAmountJobFragment extends Fragment {
         nameTypeJobs = new ArrayList<>();
         nameTypeJobs.add("Tất cả");
         idTypeJobs = new ArrayList<>();
+        jobResultList = new ArrayList<Job>();
+
+        jobAdapter = new JobAdapter(jobResultList, this, false);
+        listView.setAdapter(jobAdapter);
     }
 
     private void setEvent() {
         getTypeJob();
-
         showJob();
     }
 
     private void getTypeJob() {
-        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list/sort-by-day";
+        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONArray listTypeJob = response.getJSONArray("data");
+                    JSONArray listTypeJob = response.getJSONObject("data").getJSONArray("data");
                     for (int i = 0; i < listTypeJob.length(); i++) {
                         JSONObject typeJob = listTypeJob.getJSONObject(i);
-                        if (typeJob.getString("status").equals("true")) {
+                        if (typeJob.getString("isDelete").equals("false")) {
                             nameTypeJobs.add(typeJob.getString("name"));
                             idTypeJobs.add(typeJob.getString("_id"));
                         }
@@ -134,7 +143,7 @@ public class StatisticalAmountJobFragment extends Fragment {
     }
 
     private void bindingDataToSpinner() {
-        if(getActivity()!=null) {
+        if (getActivity() != null) {
             ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_style, nameTypeJobs);
             spnJob.setAdapter(adapter);
         }
@@ -144,6 +153,9 @@ public class StatisticalAmountJobFragment extends Fragment {
         spnJob.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TextView spinnerText = (TextView) spnJob.getChildAt(0);
+
+                spinnerText.setTextColor(Color.WHITE);
                 int index = position - 1;
                 if (index < 0) {
                     findJobByIdTypeJob("");
@@ -162,7 +174,8 @@ public class StatisticalAmountJobFragment extends Fragment {
     private void findJobByIdTypeJob(String nameTypeJob) {
         pbLoading.setVisibility(View.VISIBLE);
         String url = "https://job-seeker-smy5.onrender.com/job/list/search";
-        jobResultList = new ArrayList<Job>();
+        jobResultList.clear();
+
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         StringRequest sr = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
@@ -191,12 +204,12 @@ public class StatisticalAmountJobFragment extends Fragment {
                                     job.getString("name"),
                                     idCompany,
                                     job.getString("locationWorking"),
-                                    job.getString("salary"),
+                                    Program.formatSalary(job.getString("salary")),
                                     time
                             ));
                         }
                     }
-                    setListView();
+                    jobAdapter.notifyDataSetChanged();
                     tvAmountJob.setText("Tìm thấy " + String.valueOf(jobResultList.size()) + " việc làm");
                     pbLoading.setVisibility(View.GONE);
                     System.out.println("Create Successful!!!");
@@ -257,21 +270,15 @@ public class StatisticalAmountJobFragment extends Fragment {
         queue.add(sr);
     }
 
-    private void setListView() {
-        if(getActivity()!=null) {
-            JobAdapter jobAdapter = new JobAdapter(getActivity(), R.layout.list_view_item_job, jobResultList, false);
-            listView.setAdapter(jobAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    @Override
+    public void onClick(Job job) {
+        Intent i = new Intent(getActivity(), JobDetailActivity.class);
+        i.putExtra("id", job.getId());
+        startActivity(i);
+    }
 
-                    Intent i = new Intent(getActivity(), JobDetailActivity.class);
-                    i.putExtra("id", jobResultList.get(position).getId());
-                    startActivity(i);
+    @Override
+    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding binding) {
 
-
-                }
-            });
-        }
     }
 }

@@ -1,16 +1,14 @@
-package com.nsb.job_seeker.seeder;
+package com.nsb.job_seeker.seeker;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
-import java.util.regex.Pattern;
 
 public class JobDetailActivity extends AppCompatActivity {
     private ImageView imgBack;

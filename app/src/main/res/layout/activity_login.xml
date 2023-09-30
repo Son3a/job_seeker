@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:gravity="center_vertical"
-    android:paddingHorizontal="16dp"
-    >
+    android:paddingHorizontal="16dp">
 
     <include layout="@layout/toolbar" />
 
@@ -16,17 +16,18 @@
         android:layout_height="160dp"
         android:layout_alignParentLeft="true"
         android:src="@drawable/findjob" />
+
     <TextView
+        android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login JobSeeker"
-        android:textSize="26sp"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:id="@+id/login"
         android:layout_below="@+id/ivLogo"
+        android:gravity="center"
+        android:text="Login JobSeeker"
         android:textColor="@color/black"
-        />
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/txtEmail"
         android:layout_width="wrap_content"
@@ -43,10 +44,13 @@
         android:background="@drawable/custom_input"
         android:drawableStart="@drawable/custom_icon_email"
         android:drawablePadding="12dp"
+        android:drawableTint="@color/secondary_text"
         android:ems="10"
         android:hint="Nhập email"
         android:paddingHorizontal="8dp"
-        />
+        android:text="sonba7b1@gmail.com"
+        android:textColor="@color/black"
+        android:textColorHint="@color/secondary_text" />
 
     <TextView
         android:id="@+id/txtPassword"
@@ -69,7 +73,9 @@
         app:hintAnimationEnabled="false"
         app:hintEnabled="false"
         app:passwordToggleEnabled="true"
-        app:startIconDrawable="@drawable/custom_icon_password">
+        app:passwordToggleTint="@color/secondary_text"
+        app:startIconDrawable="@drawable/custom_icon_password"
+        app:startIconTint="@color/secondary_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edtPassword"
@@ -80,9 +86,11 @@
             android:inputType="textPassword"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
+            android:text="1234Linh"
+            android:textColor="@color/black"
+            android:textColorHint="@color/secondary_text"
             android:textSize="18sp"
-            app:hintEnabled="false"
-            />
+            app:hintEnabled="false" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,17 +106,23 @@
         android:textColor="#FFEB3B"
         android:textSize="16sp"
         android:visibility="gone" />
-    <RelativeLayout android:layout_height="wrap_content"  android:layout_width="match_parent" android:id="@+id/rlForgot" android:layout_below="@+id/edtPasswordContainer">
+
+    <RelativeLayout
+        android:id="@+id/rlForgot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/edtPasswordContainer">
+
         <CheckBox
+            android:id="@+id/cbxRemember"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nhớ mật khẩu"
-            android:textSize="16dp"
-            android:id="@+id/cbxRemember"
             android:layout_marginBottom="-12dp"
+            android:text="Nhớ mật khẩu"
             android:textColor="#727371"
-            />
+            android:textSize="16dp" />
     </RelativeLayout>
+
     <TextView
         android:id="@+id/txtForgotPassword"
         android:layout_width="match_parent"
@@ -142,8 +156,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bạn chưa có tài khoản ? "
-            android:textSize="16sp"
-            />
+            android:textColor="@color/secondary_text"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/txtRedirectRegister"

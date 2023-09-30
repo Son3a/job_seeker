@@ -2,18 +2,11 @@ package com.nsb.job_seeker.common;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.nsb.job_seeker.Program;
-import com.nsb.job_seeker.model.Job;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PreferenceManager {

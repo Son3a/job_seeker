@@ -2,9 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".seeder.SeekerMainActivity">
+    tools:context=".seeker.SeekerMainActivity">
 
     <FrameLayout
         android:id="@+id/container"
@@ -26,6 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
+        android:background="@color/white"
         app:itemIconSize="30dp"
         app:itemIconTint="@color/custom_bottom_navigation_main"
         app:itemTextColor="@color/custom_bottom_navigation_main"
