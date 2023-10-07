@@ -20,6 +20,13 @@
         android:windowIsTranslucent="true"
         android:windowSoftInputMode="stateAlwaysVisible"
         tools:targetApi="31">
+
+        <activity
+            android:name=".auth.PreviousLoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".auth.LoginActivity"
+            android:exported="false" />
         <activity
             android:name=".auth.Activity_Profile"
             android:exported="false">
@@ -45,8 +52,7 @@
         <activity
             android:name=".auth.SetNewPassword"
             android:exported="false"
-            android:parentActivityName=".auth.ConfirmOTP"
-            >
+            android:parentActivityName=".auth.ConfirmOTP">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -54,8 +60,7 @@
         <activity
             android:name=".auth.ConfirmOTP"
             android:exported="false"
-            android:parentActivityName=".auth.ForgotActivity"
-            >
+            android:parentActivityName=".auth.ForgotActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -63,8 +68,7 @@
         <activity
             android:name=".auth.ForgotActivity"
             android:exported="false"
-            android:parentActivityName=".auth.MainActivity"
-            >
+            android:parentActivityName=".auth.LoginActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -73,14 +77,13 @@
             android:name=".auth.RegisterActivity"
             android:exported="false"
             android:label="Đăng Ký"
-            android:parentActivityName=".auth.MainActivity"
-            >
+            android:parentActivityName=".auth.LoginActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.MainActivity"
+            android:name=".auth.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -95,7 +98,6 @@
         <activity
             android:name=".employer.EmployerMainActivity"
             android:windowSoftInputMode="adjustPan" />
-      
         <activity
             android:name=".message.activity.ChatActivity"
             android:exported="false"
@@ -121,15 +123,13 @@
 
         <service
             android:name=".message.firebase.MessageService"
-                 android:exported="false">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-  
         <service
             android:name=".service.MyFirebaseMessagingService"
-
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

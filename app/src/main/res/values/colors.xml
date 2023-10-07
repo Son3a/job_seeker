@@ -25,4 +25,6 @@
     <color name="icon_background">#20FFFFFF</color>
     <color name="error">#B00020</color>
     <color name="received_message_bacground">#090D16</color>
+
+    <color name="green">#16B142</color>
 </resources>

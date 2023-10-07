@@ -8,10 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -33,7 +29,7 @@ import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobAdapter;
-import com.nsb.job_seeker.auth.MainActivity;
+import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
@@ -198,11 +194,11 @@ public class ForMeFragment extends Fragment implements JobListener {
                         jobAdapter.notifyDataSetChanged();
                     } else {
                         if (itemJobBinding.imgSaveJob.getTag().equals("not save")) {
-                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_save_job1);
+                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_saved);
                             itemJobBinding.imgSaveJob.setTag("save");
                             Program.idSavedJobs.add(jobId);
                         } else {
-                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_save_job);
+                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
                             Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
                             itemJobBinding.imgSaveJob.setTag("not save");
                         }
@@ -280,7 +276,7 @@ public class ForMeFragment extends Fragment implements JobListener {
 
                             @Override
                             public void doInBackground() {
-                                Intent i = new Intent(getActivity(), MainActivity.class);
+                                Intent i = new Intent(getActivity(), LoginActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 preferenceManager.clear();
                                 startActivity(i);

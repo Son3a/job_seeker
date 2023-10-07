@@ -1,6 +1,5 @@
 package com.nsb.job_seeker.auth;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -29,7 +27,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
 
 import org.json.JSONException;
@@ -121,7 +118,7 @@ public class Activity_ChangePassword extends AppCompatActivity {
                     try {
                         if (error.networkResponse.statusCode == 401) {
                             Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
                             preferenceManager.clear();

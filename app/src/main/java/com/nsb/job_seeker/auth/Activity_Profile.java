@@ -215,7 +215,7 @@ public class Activity_Profile extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
                             Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
                         }
@@ -290,7 +290,7 @@ public class Activity_Profile extends AppCompatActivity {
                 if (error.networkResponse.data != null) {
                     try {
                         if(error.networkResponse.statusCode == 401) {
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
                             preferenceManager.clear();

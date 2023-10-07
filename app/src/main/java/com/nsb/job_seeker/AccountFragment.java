@@ -24,8 +24,6 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
@@ -33,12 +31,11 @@ import com.google.gson.JsonObject;
 import com.nsb.job_seeker.auth.Activity_ChangePassword;
 import com.nsb.job_seeker.auth.DialogNotification;
 import com.nsb.job_seeker.auth.LoadingDialog;
-import com.nsb.job_seeker.auth.MainActivity;
+import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.auth.Activity_Profile;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.employer.StatisticalJobActivity;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -145,7 +142,7 @@ public class AccountFragment extends Fragment {
                     try {
                         if (error.networkResponse.statusCode == 401) {
                             Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getActivity(), MainActivity.class);
+                            Intent i = new Intent(getActivity(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             preferenceManager.clear();
                             startActivity(i);
@@ -189,7 +186,7 @@ public class AccountFragment extends Fragment {
                 if (error.networkResponse.data != null) {
                     if (error.networkResponse.statusCode == 401) {
                         Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(getActivity(), MainActivity.class);
+                        Intent i = new Intent(getActivity(), LoginActivity.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         preferenceManager.clear();
                         startActivity(i);
@@ -213,7 +210,7 @@ public class AccountFragment extends Fragment {
 //                    startActivity(new Intent(getActivity().getApplicationContext(), SignInActivity.class));
                     preferenceManager.clear();
                     Toast.makeText(getActivity(), "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(getContext(), MainActivity.class);
+                    Intent i = new Intent(getContext(), LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(i);
                 })
@@ -221,7 +218,7 @@ public class AccountFragment extends Fragment {
                     Log.d("Error", e.getMessage());
                     preferenceManager.clear();
                     Toast.makeText(getActivity(), "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(getContext(), MainActivity.class);
+                    Intent i = new Intent(getContext(), LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(i);
                 });

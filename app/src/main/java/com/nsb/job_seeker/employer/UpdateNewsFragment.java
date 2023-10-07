@@ -28,7 +28,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,8 +37,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.auth.MainActivity;
-import com.nsb.job_seeker.common.AsyncTasks;
+import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.common.PreferenceManager;
 
 
@@ -267,7 +265,7 @@ public class UpdateNewsFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
                     Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                    Intent i = new Intent(getActivity(), MainActivity.class);
+                    Intent i = new Intent(getActivity(), LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     preferenceManager.clear();
                     startActivity(i);

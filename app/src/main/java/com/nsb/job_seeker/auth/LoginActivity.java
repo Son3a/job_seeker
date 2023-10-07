@@ -24,7 +24,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -36,12 +35,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.databinding.ActivityLoginBinding;
 import com.nsb.job_seeker.employer.EmployerMainActivity;
-import com.nsb.job_seeker.message.activity.ChatActivity;
-import com.nsb.job_seeker.message.listener.ConversionListener;
-import com.nsb.job_seeker.message.model.User;
 import com.nsb.job_seeker.seeker.SeekerMainActivity;
 
 import org.json.JSONArray;
@@ -53,13 +49,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
-    private EditText edtEmail, edtPassword;
-    private Button btnLogin;
-    private TextView txtWarning, txtRedirectRegister, txtForgotPassword;
-    private CheckBox cbxRemeberPassword;
-
-    private RequestQueue mRequestQueue;
+public class LoginActivity extends AppCompatActivity {
+    private ActivityLoginBinding binding;
     private String base_url = Program.url_dev + "/auth";
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
@@ -69,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_login);
+        setContentView(binding.getRoot());
 
         preferenceManager = new PreferenceManager(this);
         if (preferenceManager.getBoolean(Program.KEY_IS_SIGNED_IN)) {
@@ -82,9 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
         getToken();
 
-        this.loadingDialog = new LoadingDialog(MainActivity.this);
+        this.loadingDialog = new LoadingDialog(LoginActivity.this);
 
-        setControl();
         setEvent();
     }
 
@@ -108,48 +98,15 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
-        String isRemember = sharedPreferences.getString("isRememberPassword", "false");
-
-        if (isRemember.equals("true")) {
-            String email = sharedPreferences.getString("email", "");
-            String pw = sharedPreferences.getString("password", "");
-            edtEmail.setText(email);
-            edtPassword.setText(pw);
-            cbxRemeberPassword.setChecked(true);
-        } else {
-            cbxRemeberPassword.setChecked(false);
-        }
-    }
-
-    private void setControl() {
-        edtEmail = findViewById(R.id.edtEmail);
-        edtPassword = findViewById(R.id.edtPassword);
-        btnLogin = findViewById(R.id.btnLogin);
-        txtWarning = findViewById(R.id.txtWarning);
-        txtRedirectRegister = findViewById(R.id.txtRedirectRegister);
-        txtForgotPassword = findViewById(R.id.txtForgotPassword);
-
-        cbxRemeberPassword = findViewById(R.id.cbxRemember);
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.hide();
-    }
-
     private void setEvent() {
-        btnLogin.setOnClickListener(new View.OnClickListener() {
+        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edtEmail.getText().toString().equals("") || edtPassword.getText().toString().equals("")) {
-                    txtWarning.setText("Không được bỏ trống email và password !");
-                    txtWarning.setVisibility(View.VISIBLE);
+                if (binding.textEmail.getText().toString().equals("") || binding.textPassword.getText().toString().equals("")) {
+                    Toast.makeText(LoginActivity.this, "Không được bỏ trống email và password !", Toast.LENGTH_SHORT).show();
                 } else {
-                    txtWarning.setVisibility(View.GONE);
-                    loadingDialog.startLoadingDialog();
                     try {
-                        login(edtEmail.getText().toString().trim(), edtPassword.getText().toString().trim());
+                        login(binding.textEmail.getText().toString().trim(), binding.textPassword.getText().toString().trim());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -158,26 +115,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        txtRedirectRegister.setOnClickListener(new View.OnClickListener() {
+        binding.textRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, RegisterActivity.class);
+                Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(i);
             }
         });
 
-        txtForgotPassword.setOnClickListener(new View.OnClickListener() {
+        binding.textForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, ForgotActivity.class);
+                Intent i = new Intent(LoginActivity.this, ForgotActivity.class);
                 startActivity(i);
             }
         });
     }
 
     private void login(String email, String password) throws JSONException {
-        Log.d("Process", "Login monggo");
-        mRequestQueue = Volley.newRequestQueue(MainActivity.this);
+        RequestQueue mRequestQueue = Volley.newRequestQueue(LoginActivity.this);
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("username", email);
@@ -197,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     signIn(email, password);   //login firebase
 
                 } catch (JSONException e) {
-                    Toast.makeText(MainActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
@@ -213,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), MainActivity.this);
+                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), LoginActivity.this);
                     } catch (UnsupportedEncodingException e) {
                         Log.d("ABC", e.toString());
                         e.printStackTrace();
@@ -227,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getInfoUser() {
-        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
         Log.d("Process", "get info");
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, base_url + "/info-user", null, new Response.Listener<JSONObject>() {
             @Override
@@ -278,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Error","err " + error.toString());
+                Log.d("Error", "err " + error.toString());
                 String body = "";
                 //get status code here
                 if (error.networkResponse != null && error.networkResponse.data != null) {
@@ -324,12 +280,12 @@ public class MainActivity extends AppCompatActivity {
     private void redirectAfterLogin(String role) {
         if (role.trim().equals("user")) {
             Log.d("ABC", "user");
-            Intent intent = new Intent(MainActivity.this, SeekerMainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, SeekerMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         } else {
             Log.d("ABC", "admin");
-            Intent intent = new Intent(MainActivity.this, EmployerMainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, EmployerMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }

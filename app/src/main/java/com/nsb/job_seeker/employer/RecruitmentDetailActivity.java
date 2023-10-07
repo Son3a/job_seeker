@@ -17,7 +17,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -27,8 +26,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.auth.MainActivity;
-import com.nsb.job_seeker.common.AsyncTasks;
+import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.common.PreferenceManager;
 
 import org.json.JSONException;
@@ -231,7 +229,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
                     try {
                         if (error.networkResponse.statusCode == 401) {
                             Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             preferenceManager.clear();
                             startActivity(i);

@@ -82,14 +82,14 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             }
 
             if (isSaveView) {
-                binding.imgSaveJob.setImageResource(R.drawable.ic_save_job1);
+                binding.imgSaveJob.setImageResource(R.drawable.ic_saved);
                 binding.imgSaveJob.setTag("save");
             } else {
                 if (Program.idSavedJobs.contains(job.getId())) {
-                    binding.imgSaveJob.setImageResource(R.drawable.ic_save_job1);
+                    binding.imgSaveJob.setImageResource(R.drawable.ic_saved);
                     binding.imgSaveJob.setTag("save");
                 } else {
-                    binding.imgSaveJob.setImageResource(R.drawable.ic_save_job);
+                    binding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
                     binding.imgSaveJob.setTag("not save");
                 }
             }

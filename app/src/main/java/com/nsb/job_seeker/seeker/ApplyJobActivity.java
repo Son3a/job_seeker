@@ -37,7 +37,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.auth.MainActivity;
+import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.common.RealPathUtil;
 import com.nsb.job_seeker.common.VolleyMultipartRequest;
@@ -159,7 +159,7 @@ public class ApplyJobActivity extends AppCompatActivity {
                         public void onErrorResponse(VolleyError error) {
                             if (error.networkResponse.statusCode == 401 ) {
                                 Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(i);
                             }
