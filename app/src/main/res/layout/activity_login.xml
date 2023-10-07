@@ -93,7 +93,6 @@
             app:hintEnabled="false"
             app:passwordToggleDrawable="@drawable/custom_password_toggle"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/secondary_text"
             app:startIconDrawable="@drawable/ic_lock"
             app:startIconTint="@color/secondary_text">
 
