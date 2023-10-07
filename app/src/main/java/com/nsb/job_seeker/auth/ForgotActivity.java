@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.databinding.ActivityForgotBinding;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,39 +36,33 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 public class ForgotActivity extends AppCompatActivity {
-    private Button btnSendCode;
-    private EditText edtEmailForgot;
-    private RequestQueue mRequestQueue;
-    private StringRequest mStringRequest;
+    private ActivityForgotBinding binding;
     private String base_url = Program.url_dev+"/auth";
     private String sharedPreferencesName = "JobSharedPreference";
-    private TextView txtWarningForgot;
-    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        binding = ActivityForgotBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forgot);
-        this.loadingDialog = new LoadingDialog(ForgotActivity.this);
-        setControl();
+        setContentView(binding.getRoot());
+
         setEvent();
     }
 
-    private void setControl() {
-        btnSendCode = findViewById(R.id.btnSendCode);
-        edtEmailForgot = findViewById(R.id.edtEmailForgot);
-        txtWarningForgot = findViewById(R.id.txtWarningForgot);
-    }
-
     private void setEvent() {
-
-        btnSendCode.setOnClickListener(new View.OnClickListener() {
+        binding.btnSendCode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 try {
-                    loadingDialog.startLoadingDialog();
-                    sendMailToResetPassword();
+                    if(!isEmpty()){
+                        binding.edtEmailForgot.setBackgroundResource(R.drawable.background_edittext_register);
+                        binding.layoutError.setVisibility(View.GONE);
+                        sendMailToResetPassword();
+                    } else {
+                        binding.edtEmailForgot.setBackgroundResource(R.drawable.background_edittext_error);
+                        binding.layoutError.setVisibility(View.VISIBLE);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -75,25 +70,29 @@ public class ForgotActivity extends AppCompatActivity {
         });
     }
 
+    private boolean isEmpty(){
+        if(binding.edtEmailForgot.getText().toString().isEmpty() || binding.edtEmailForgot.getText().toString().trim().equals(""))
+            return true;
+        return false;
+    }
+
     private void sendMailToResetPassword() throws JSONException {
-        mRequestQueue = Volley.newRequestQueue(ForgotActivity.this);
+        RequestQueue mRequestQueue = Volley.newRequestQueue(ForgotActivity.this);
         //post data
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("email", edtEmailForgot.getText().toString());
+        jsonObject.put("email", binding.edtEmailForgot.getText().toString());
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, base_url + "/forgot-password", jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                loadingDialog.dismissDialog();
                 try {
                     Boolean isSuccess = response.getBoolean("isSuccess");
 
                     SharedPreferences sharedPreferences = getSharedPreferences(sharedPreferencesName, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     if (isSuccess) {
-                        editor.putString("email", edtEmailForgot.getText().toString());
+                        editor.putString("email", binding.edtEmailForgot.getText().toString());
                         Log.d("ABC", "send mail doInBg : "+ isSuccess);
-                        txtWarningForgot.setVisibility(View.GONE);
                         Intent i = new Intent(ForgotActivity.this, ConfirmOTP.class);
                         startActivity(i);
                     }
@@ -106,7 +105,6 @@ public class ForgotActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                loadingDialog.dismissDialog();
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
@@ -115,8 +113,6 @@ public class ForgotActivity extends AppCompatActivity {
                         body = new String(error.networkResponse.data,"UTF-8");
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
 
-                        txtWarningForgot.setVisibility(View.VISIBLE);
-                        txtWarningForgot.setText(convertedObject.get("message").toString());
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }

@@ -70,14 +70,15 @@
             android:layout_marginEnd="20dp"
             android:background="@drawable/background_edittext_register"
             android:drawableLeft="@drawable/ic_email"
-            android:drawableTint="@color/secondary_text"
             android:drawablePadding="10dp"
+            android:drawableTint="@color/secondary_text"
             android:hint="Email"
             android:paddingStart="15dp"
             android:paddingTop="15dp"
             android:paddingBottom="15dp"
             android:textColor="@color/black"
             android:textColorHint="@color/secondary_text"
+            android:textCursorDrawable="@null"
             android:textSize="16sp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -93,6 +94,7 @@
             app:hintEnabled="false"
             app:passwordToggleDrawable="@drawable/custom_password_toggle"
             app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/custom_icon_password_toggle"
             app:startIconDrawable="@drawable/ic_lock"
             app:startIconTint="@color/secondary_text">
 
@@ -109,6 +111,7 @@
                 android:paddingBottom="15dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/secondary_text"
+                android:textCursorDrawable="@null"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -215,9 +218,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:backgroundTint="@color/white"
                 app:cardCornerRadius="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:backgroundTint="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textTileAnotherLogin"
                 app:strokeColor="@color/secondary_text"
