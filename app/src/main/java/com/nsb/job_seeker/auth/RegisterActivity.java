@@ -3,11 +3,15 @@ package com.nsb.job_seeker.auth;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
+import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityRegisterBinding;
 
@@ -53,24 +58,74 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setEvent() {
-        binding.btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (binding.textEmail.getText().toString().equals("") || binding.textEmail.getText().toString().equals("") || binding.textName.getText().toString().equals("") || binding.textPassword.getText().toString().equals("") || binding.textConfirmPassword.getText().toString().equals("")) {
-                    dialogNotification.openDialogNotification("Không được để trống bất kỳ ô nào !", RegisterActivity.this);
+        clickRegister();
+        gotoLogin();
+    }
 
-                } else if (!binding.textPassword.getText().toString().equals(binding.textConfirmPassword.getText().toString())) {
-                    dialogNotification.openDialogNotification("Mật khẩu xác thực không khớp", RegisterActivity.this);
-                } else {
-                    try {
-                        registerApi();
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
+    private void clickRegister() {
+        binding.btnRegister.setOnClickListener(v -> {
+
+            //validate email
+            if (isEmpty(binding.textEmail)) {
+                binding.layoutErrorEmail.setVisibility(View.VISIBLE);
+                binding.textEmail.setBackgroundResource(R.drawable.background_edittext_error);
+            } else {
+                binding.layoutErrorEmail.setVisibility(View.GONE);
+                binding.textEmail.setBackgroundResource(R.drawable.background_edittext_register);
+            }
+
+            //validate password
+            if (isEmpty(binding.textPassword)) {
+                binding.layoutErrorPassword.setVisibility(View.VISIBLE);
+                binding.textPassword.setBackgroundResource(R.drawable.background_edittext_error);
+            } else {
+                binding.layoutErrorPassword.setVisibility(View.GONE);
+                binding.textPassword.setBackgroundResource(R.drawable.background_edittext_register);
+            }
+
+            //validate name
+            if (isEmpty(binding.textName)) {
+                binding.layoutErrorName.setVisibility(View.VISIBLE);
+                binding.textName.setBackgroundResource(R.drawable.background_edittext_error);
+            } else {
+                binding.layoutErrorName.setVisibility(View.GONE);
+                binding.textName.setBackgroundResource(R.drawable.background_edittext_register);
+            }
+
+            //validate confirm password
+            if (isEmpty(binding.textConfirmPassword)) {
+                binding.layoutErrorConfirmPassword.setVisibility(View.VISIBLE);
+                binding.textConfirmPassword.setBackgroundResource(R.drawable.background_edittext_error);
+            } else {
+                binding.layoutErrorConfirmPassword.setVisibility(View.GONE);
+                binding.textConfirmPassword.setBackgroundResource(R.drawable.background_edittext_register);
+            }
+
+            if (!isEmpty(binding.textName) && !isEmpty(binding.textPassword) && !isEmpty(binding.textEmail)
+                    && !isEmpty(binding.textConfirmPassword) && binding.cbxAcceptApp.isChecked()) {
+                binding.layoutErrorConfirmPassword.setVisibility(View.GONE);
+                binding.textConfirmPassword.setBackgroundResource(R.drawable.background_edittext_register);
+                binding.layoutErrorName.setVisibility(View.GONE);
+                binding.textName.setBackgroundResource(R.drawable.background_edittext_register);
+                binding.layoutErrorPassword.setVisibility(View.GONE);
+                binding.textPassword.setBackgroundResource(R.drawable.background_edittext_register);
+                binding.layoutErrorEmail.setVisibility(View.GONE);
+                binding.textEmail.setBackgroundResource(R.drawable.background_edittext_register);
+
+                try {
+                    registerApi();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
             }
         });
+    }
+
+    private boolean isEmpty(EditText editText) {
+        if (editText.getText().toString().isEmpty() || editText.getText().toString().trim().equals("")) {
+            return true;
+        }
+        return false;
     }
 
     private void registerApi() throws JSONException {
@@ -83,6 +138,9 @@ public class RegisterActivity extends AppCompatActivity {
         jsonObject.put("name", binding.textName);
         jsonObject.put("phone", "");
         jsonObject.put("email", binding.textEmail);
+
+        binding.btnRegister.setVisibility(View.GONE);
+        binding.pbLoading.setVisibility(View.VISIBLE);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, base_url + "/register", jsonObject, new Response.Listener<JSONObject>() {
             @Override
@@ -149,8 +207,13 @@ public class RegisterActivity extends AppCompatActivity {
                     Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-
-//                        preferenceManager.putString(Program.KEY_IMAGE, encodeImage);
                 });
+    }
+
+    private void gotoLogin() {
+        binding.textLogin.setOnClickListener(v -> {
+            finish();
+            startActivity(new Intent(this, LoginActivity.class));
+        });
     }
 }

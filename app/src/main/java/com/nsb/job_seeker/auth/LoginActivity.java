@@ -99,30 +99,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setEvent() {
-        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (binding.textEmail.getText().toString().equals("") || binding.textPassword.getText().toString().equals("")) {
-                    Toast.makeText(LoginActivity.this, "Không được bỏ trống email và password !", Toast.LENGTH_SHORT).show();
-                } else {
-                    try {
-                        login(binding.textEmail.getText().toString().trim(), binding.textPassword.getText().toString().trim());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
 
-            }
-        });
+        clickLogin();
+        clickRegister();
+        clickForgotPassword();
+    }
 
-        binding.textRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(i);
-            }
-        });
-
+    private void clickForgotPassword() {
         binding.textForgotPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,13 +115,67 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void login(String email, String password) throws JSONException {
+    private void clickRegister() {
+        binding.textRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(i);
+            }
+        });
+    }
+
+    private void clickLogin() {
+        binding.btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isEmpty(binding.textEmail)) {
+                    binding.layoutErrorEmail.setVisibility(View.VISIBLE);
+                    binding.textEmail.setBackgroundResource(R.drawable.background_edittext_error);
+                } else {
+                    binding.layoutErrorEmail.setVisibility(View.GONE);
+                    binding.textEmail.setBackgroundResource(R.drawable.background_edittext_register);
+                }
+                if (isEmpty(binding.textPassword)) {
+                    binding.layoutErrorPassword.setVisibility(View.VISIBLE);
+                    binding.textPassword.setBackgroundResource(R.drawable.background_edittext_error);
+                } else {
+                    binding.layoutErrorPassword.setVisibility(View.GONE);
+                    binding.textPassword.setBackgroundResource(R.drawable.background_edittext_register);
+                }
+                if (!isEmpty(binding.textPassword) && !isEmpty(binding.textEmail) && binding.cbxAcceptApp.isChecked()) {
+                    binding.layoutErrorEmail.setVisibility(View.GONE);
+                    binding.textEmail.setBackgroundResource(R.drawable.background_edittext_register);
+                    binding.layoutErrorPassword.setVisibility(View.GONE);
+                    binding.textPassword.setBackgroundResource(R.drawable.background_edittext_register);
+                    try {
+                        postLogin(binding.textEmail.getText().toString().trim(), binding.textPassword.getText().toString().trim());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        });
+    }
+
+    private boolean isEmpty(EditText editText) {
+        if (editText.getText().toString().isEmpty() || editText.getText().toString().trim().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    private void postLogin(String email, String password) throws JSONException {
         RequestQueue mRequestQueue = Volley.newRequestQueue(LoginActivity.this);
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("username", email);
         jsonObject.put("password", password);
         jsonObject.put("tokenDevice", tokenDevice);
+
+        binding.btnLogin.setVisibility(View.GONE);
+        binding.pbLoading.setVisibility(View.VISIBLE);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, base_url + "/login", jsonObject, new Response.Listener<JSONObject>() {
             @Override
@@ -153,6 +190,8 @@ public class LoginActivity extends AppCompatActivity {
                     signIn(email, password);   //login firebase
 
                 } catch (JSONException e) {
+                    binding.btnLogin.setVisibility(View.VISIBLE);
+                    binding.pbLoading.setVisibility(View.GONE);
                     Toast.makeText(LoginActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
@@ -162,6 +201,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 String body;
                 //get status code here
+                binding.btnLogin.setVisibility(View.VISIBLE);
+                binding.pbLoading.setVisibility(View.GONE);
                 if (error.networkResponse != null) {
                     try {
                         body = new String(error.networkResponse.data, "UTF-8");
@@ -169,14 +210,12 @@ public class LoginActivity extends AppCompatActivity {
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), LoginActivity.this);
+                        Toast.makeText(LoginActivity.this, message.substring(1, message.length() - 1), Toast.LENGTH_SHORT).show();
                     } catch (UnsupportedEncodingException e) {
                         Log.d("ABC", e.toString());
                         e.printStackTrace();
                     }
                 }
-                loadingDialog.dismissDialog();
-
             }
         });
         mRequestQueue.add(jsonObjectRequest);
@@ -194,6 +233,8 @@ public class LoginActivity extends AppCompatActivity {
                     String email = response.getString("email");
                     String phone = response.getString("phone");
                     String avatar = response.getString("avatar");
+                    binding.btnLogin.setVisibility(View.VISIBLE);
+                    binding.pbLoading.setVisibility(View.GONE);
 
                     Program.idSavedJobs = new ArrayList<>();
                     if (role.equals(Program.ADMIN_ROLE)) {
@@ -218,7 +259,6 @@ public class LoginActivity extends AppCompatActivity {
                     editor.putString("phone", phone);
 
                     editor.commit();
-                    loadingDialog.dismissDialog();
 
                     preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);//
                     Program.avatar = avatar;
@@ -244,9 +284,7 @@ public class LoginActivity extends AppCompatActivity {
                     } catch (UnsupportedEncodingException e) {
                         Log.d("ABC", "LOI 2 : " + e.toString());
                         e.printStackTrace();
-                    }
-                    loadingDialog.dismissDialog();
-                }
+                    }}
             }
         }) {
             @Override
