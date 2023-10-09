@@ -78,6 +78,7 @@
             android:paddingBottom="15dp"
             android:textColor="@color/black"
             android:textColorHint="@color/secondary_text"
+            android:textCursorDrawable="@null"
             android:textSize="16sp" />
 
         <EditText
@@ -98,6 +99,7 @@
             android:paddingBottom="15dp"
             android:textColor="@color/black"
             android:textColorHint="@color/secondary_text"
+            android:textCursorDrawable="@null"
             android:textSize="16sp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -113,7 +115,7 @@
             app:hintEnabled="false"
             app:passwordToggleDrawable="@drawable/custom_password_toggle"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/secondary_text"
+            app:passwordToggleTint="@color/custom_icon_password_toggle"
             app:startIconDrawable="@drawable/ic_lock"
             app:startIconTint="@color/secondary_text">
 
@@ -130,6 +132,7 @@
                 android:paddingBottom="15dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/secondary_text"
+                android:textCursorDrawable="@null"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -146,7 +149,7 @@
             app:hintEnabled="false"
             app:passwordToggleDrawable="@drawable/custom_password_toggle"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="@color/secondary_text"
+            app:passwordToggleTint="@color/custom_icon_password_toggle"
             app:startIconDrawable="@drawable/ic_lock"
             app:startIconTint="@color/secondary_text">
 
@@ -163,6 +166,7 @@
                 android:paddingBottom="15dp"
                 android:textColor="@color/black"
                 android:textColorHint="@color/secondary_text"
+                android:textCursorDrawable="@null"
                 android:textSize="18sp" />
         </com.google.android.material.textfield.TextInputLayout>
 

@@ -1,85 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="10">
-    <TextView
-        android:id="@+id/title"
-        style="@style/text_title"
-        android:layout_width="match_parent"
+    android:background="@color/white"
+    android:paddingStart="40dp"
+    android:paddingTop="30dp"
+    android:paddingEnd="40dp">
+
+    <ImageView
+        android:id="@+id/imageBack"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@color/primary"
-        android:gravity="center"
-        android:padding="20dp"
+        android:src="@drawable/ic_back" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:text="Quên mật khẩu"
-        android:textColor="@color/white" />
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:textStyle="bold" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/textNotice"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9"
-        android:paddingHorizontal="16dp">
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageBack"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="Hệ thống sẽ gửi mã OTP qua email mà bạn cung cấp"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/edtEmailForgot"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/textNotice"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/background_edittext_register"
+        android:drawableStart="@drawable/ic_email"
+        android:drawablePadding="12dp"
+        android:drawableTint="@color/secondary_text"
+        android:hint="Email"
+        android:paddingHorizontal="8dp"
+        android:paddingStart="20dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/secondary_text"
+        android:textCursorDrawable="@null" />
+
+    <LinearLayout
+        android:id="@+id/layoutError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edtEmailForgot"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cvError"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:backgroundTint="@color/white"
+            app:cardCornerRadius="50dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_error"
+                android:tint="@color/red" />
+        </androidx.cardview.widget.CardView>
 
         <TextView
-            android:id="@+id/textNotice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:gravity="center"
-            android:paddingHorizontal="36dp"
-            android:paddingVertical="20dp"
-            android:text="Hệ thống sẽ gửi mã OTP qua email mà bạn cung cấp"
-            android:textSize="20dp" />
-
-        <TextView
-            android:id="@+id/txtEmailForgot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textNotice"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="12dp"
-            android:text="Email"
-            android:textColor="@color/secondary" />
+            android:layout_marginStart="5dp"
+            android:text="Cho chúng tôi biết email của bạn"
+            android:textColor="@color/red"
+            android:textSize="14sp" />
+    </LinearLayout>
 
-        <EditText
-            android:id="@+id/edtEmailForgot"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/txtEmailForgot"
-            android:background="@drawable/custom_input"
-            android:drawableStart="@drawable/custom_icon_email"
-            android:drawablePadding="12dp"
-            android:ems="10"
-            android:hint="Nhập email"
-            android:paddingHorizontal="8dp" />
+    <FrameLayout
+        android:id="@+id/layoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/layoutError">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSendCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/edtEmailForgot"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="@color/secondary"
+            android:layout_below="@+id/layoutError"
+            android:backgroundTint="@color/green"
             android:paddingVertical="12dp"
-            android:text="Gửi"
+            android:text="Tạo lại mật khẩu"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:visibility="gone"
+            app:cornerRadius="30dp" />
 
-            />
-
-        <TextView
-            android:id="@+id/txtWarningForgot"
+        <ProgressBar
+            android:id="@+id/pbLoading"
+            android:layout_gravity="center"
+            android:progressTint="@color/green"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnSendCode"
-            android:layout_marginTop="12dp"
-            android:text=""
-            android:textColor="@android:color/holo_red_light"
-            android:textSize="18dp"
-            android:textStyle="bold"
-            android:visibility="gone" />
-    </RelativeLayout>
+            android:layout_height="wrap_content"/>
+    </FrameLayout>
 
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/txtWarningForgot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutButton"
+        android:layout_marginTop="12dp"
+        android:text=""
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+</RelativeLayout>
