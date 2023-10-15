@@ -95,6 +95,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
 //                            Log.d("ABC", String.valueOf(jobsList));
 
                             for (int i = 0; i < jobsList.length(); i++) {
+                                if(jobsList.getJSONObject(i).isNull("jobId")) break;
                                 JSONObject job = jobsList.getJSONObject(i).getJSONObject("jobId");
                                 Log.d("ABC", job.getString("name"));
                                 if (job.getString("status").equals("true")) {

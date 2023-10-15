@@ -1,6 +1,8 @@
 package com.nsb.job_seeker.auth;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,9 +11,15 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.IntentSenderRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,6 +32,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.identity.BeginSignInResult;
+import com.google.android.gms.auth.api.identity.Identity;
+import com.google.android.gms.auth.api.identity.SignInClient;
+import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -33,6 +51,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nsb.job_seeker.BuildConfig;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
@@ -57,6 +76,11 @@ public class LoginActivity extends AppCompatActivity {
     private PreferenceManager preferenceManager;
     private String tokenDevice;
 
+    private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
+    private boolean showOneTapUI = true;
+
+    private BeginSignInRequest signInRequest;
+    private SignInClient signInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,18 +88,95 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(binding.getRoot());
 
+        Log.d("AppID", BuildConfig.APPLICATION_ID );
+
         preferenceManager = new PreferenceManager(this);
+
         if (preferenceManager.getBoolean(Program.KEY_IS_SIGNED_IN)) {
 
             Program.idSavedJobs = preferenceManager.getArray(Program.LIST_SAVED_JOB);
             redirectAfterLogin(preferenceManager.getString(Program.ROLE));
         }
+        initGoogle();
 
         getToken();
 
         this.loadingDialog = new LoadingDialog(LoginActivity.this);
 
         setEvent();
+    }
+
+    private void setEvent() {
+
+        clickLogin();
+        clickRegister();
+        clickForgotPassword();
+
+        //clickLoginGoogle();
+    }
+
+    private void initGoogle() {
+        signInClient = Identity.getSignInClient(this);
+        signInRequest = BeginSignInRequest.builder()
+                .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
+                        .setSupported(true)
+                        .build())
+                .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                        .setSupported(true)
+                        // Your server's client ID, not your Android client ID.
+                        .setServerClientId(getString(R.string.web_client_id))
+                        // Only show accounts previously used to sign in.
+                        .setFilterByAuthorizedAccounts(true)
+                        .build())
+                // Automatically sign in when exactly one credential is retrieved.
+                .setAutoSelectEnabled(true)
+                .build();
+
+        clickLoginGoogle();
+    }
+
+    private ActivityResultLauncher<IntentSenderRequest> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartIntentSenderForResult(), new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        try {
+                            SignInCredential credential = signInClient.getSignInCredentialFromIntent(result.getData());
+                            String idToken = credential.getGoogleIdToken();
+                            if (idToken != null) {
+                                String email = credential.getId();
+                                // Got an ID token from Google. Use it to authenticate
+                                // with your backend.
+                                Log.d("TAG", "Got ID token.");
+                                Log.d("TAG", email);
+                            }
+                        } catch (ApiException e) {
+                            // ...
+                            Log.d("TAG", e.getMessage());
+                        }
+                    }
+                }
+            });
+
+    private void clickLoginGoogle() {
+        binding.imageGoogle.setOnClickListener(v -> {
+            signInClient.beginSignIn(signInRequest)
+                    .addOnSuccessListener(LoginActivity.this, new OnSuccessListener<BeginSignInResult>() {
+                        @Override
+                        public void onSuccess(BeginSignInResult result) {
+                            IntentSenderRequest intentSenderRequest = new IntentSenderRequest.Builder(
+                                    result.getPendingIntent().getIntentSender()).build();
+                            activityResultLauncher.launch(intentSenderRequest);
+                        }
+                    })
+                    .addOnFailureListener(this, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            // No Google Accounts found. Just continue presenting the signed-out UI.
+                            Log.d("TAG", e.getMessage());
+                        }
+                    });
+        });
     }
 
     private void getToken() {
@@ -98,12 +199,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void setEvent() {
-
-        clickLogin();
-        clickRegister();
-        clickForgotPassword();
-    }
 
     private void clickForgotPassword() {
         binding.textForgotPassword.setOnClickListener(new View.OnClickListener() {
@@ -242,9 +337,11 @@ public class LoginActivity extends AppCompatActivity {
                     } else {
                         JSONArray listJobFavorite = response.getJSONArray("jobFavourite");
                         for (int i = 0; i < listJobFavorite.length(); i++) {
-                            JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
-                            if (jobObject.getString("status").equals("true")) {
-                                Program.idSavedJobs.add(jobObject.getString("_id"));
+                            if (!listJobFavorite.getJSONObject(i).isNull("jobId")) {
+                                JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
+                                if (jobObject.getString("status").equals("true")) {
+                                    Program.idSavedJobs.add(jobObject.getString("_id"));
+                                }
                             }
                         }
                     }
@@ -284,7 +381,8 @@ public class LoginActivity extends AppCompatActivity {
                     } catch (UnsupportedEncodingException e) {
                         Log.d("ABC", "LOI 2 : " + e.toString());
                         e.printStackTrace();
-                    }}
+                    }
+                }
             }
         }) {
             @Override

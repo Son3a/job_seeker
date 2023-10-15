@@ -73,9 +73,9 @@ public class SeekerMainActivity extends AppCompatActivity {
                     case R.id.menu_forme:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, newsJobFragment).commit();
                         return true;
-                    case R.id.menu_search:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, searchFragment).commit();
-                        return true;
+//                    case R.id.menu_search:
+//                        getSupportFragmentManager().beginTransaction().replace(R.id.container, searchFragment).commit();
+//                        return true;
                     case R.id.menu_myjob:
                         getSupportFragmentManager().beginTransaction().replace(R.id.container, myJobFragment).commit();
                         return true;

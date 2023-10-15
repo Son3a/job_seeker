@@ -2,51 +2,116 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:background="@color/white">
-    <!--Header-->
-    <LinearLayout
-        android:id="@+id/header"
+    android:layout_height="wrap_content"
+    android:background="@drawable/image_background">
+
+    <FrameLayout
+        android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:orientation="horizontal">
+        android:background="@color/white"
+        android:paddingStart="15dp"
+        android:paddingTop="15dp"
+        android:paddingEnd="15dp"
+        android:translationZ="100dp"
+        android:visibility="invisible">
 
-        <com.google.android.material.card.MaterialCardView
+        <include
+            layout="@layout/layout_search_job"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <ImageView
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" />
+    </FrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/layoutNested"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:translationZ="0dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:visibility="visible">
+
+                <include
+                    android:id="@+id/layoutWelcome"
+                    layout="@layout/layout_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <include
+                    layout="@layout/layout_search_job"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutWelcome" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <FrameLayout
+                android:id="@+id/layoutBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layoutHeader"
+                android:layout_marginTop="10dp">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="15dp"
+                    android:text="Chọn đúng việc - Đi đúng hướng"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:translationZ="10dp" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/image_bar" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/textRecommend"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/imageSearch"
-                android:src="ic_f"/>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+                android:layout_below="@id/layoutBar"
+                android:text="Gợi ý việc làm phù hợp"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold" />
 
-    <FrameLayout
-        android:id="@+id/line"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/header"
-        android:background="#D4D4D4" />
 
-    <!--Body-->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lv_job"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/line"
-        android:divider="@null"
-        android:scrollingCache="true"
-        android:smoothScrollbar="true"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-    <ProgressBar
-        android:id="@+id/idLoadingPB"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lv_job"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_below="@+id/textRecommend"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="15dp"
+                android:background="@null"
+                android:divider="@null"
+                android:nestedScrollingEnabled="true"
+                android:scrollingCache="true"
+                android:smoothScrollbar="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </RelativeLayout>

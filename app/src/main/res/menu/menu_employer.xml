@@ -9,8 +9,8 @@
         android:icon="@drawable/ic_add"/>
     <item android:id="@+id/menu_message"
         android:title="Tin nhắn"
-        android:icon="@drawable/ic_chat"/>
+        android:icon="@drawable/ic_message"/>
     <item android:id="@+id/menu_account"
         android:title="Tài khoản"
-        android:icon="@drawable/ic_baseline_account"/>
+        android:icon="@drawable/ic_account"/>
 </menu>

@@ -14,7 +14,6 @@
     <color name="main">#CAB1D4F1</color>
     <color name="notFocusd">#84B1D4F1</color>
     <color name="secondary">#DB3AA1F6</color>
-    <color name="transparent">#80FFFFFF</color>
     <color name="third">#F3DF37</color>
 
     <color name="primary">#1C2E46</color>
@@ -28,4 +27,7 @@
 
     <color name="green">#16B142</color>
     <color name="green_spur">#AEECC0</color>
+    <color name="border">#D6D5D5</color>
+    <color name="background">#E4E4E4</color>
+    <color name="transparent">#00000000</color>
 </resources>
