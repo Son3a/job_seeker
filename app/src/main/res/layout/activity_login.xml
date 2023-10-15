@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:animateLayoutChanges="true"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/white"
     android:fillViewport="true">
 
@@ -87,8 +87,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/textEmail"
-            android:layout_marginTop="5dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal"
             android:visibility="gone">
 
@@ -155,8 +155,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/textPasswordContainer"
-            android:layout_marginTop="5dp"
             android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal"
             android:visibility="gone">
 
@@ -214,11 +214,11 @@
             android:id="@+id/layoutButtonLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/textForgotPassword"
             android:layout_marginStart="20dp"
             android:layout_marginTop="15dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:layout_below="@+id/textForgotPassword">
+            android:layout_marginBottom="20dp">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogin"
@@ -228,18 +228,18 @@
                 android:paddingTop="15dp"
                 android:paddingBottom="15dp"
                 android:text="Đăng nhập"
-                android:visibility="visible"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="20sp"
+                android:visibility="visible"
                 app:cornerRadius="30dp" />
 
             <ProgressBar
                 android:id="@+id/pbLoading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:indeterminateTint="@color/green"
                 android:layout_gravity="center"
+                android:indeterminateTint="@color/green"
                 android:visibility="gone" />
         </FrameLayout>
 
@@ -303,9 +303,9 @@
                     android:padding="5dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_google" />
+
             </com.google.android.material.card.MaterialCardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
 
         <LinearLayout
             android:id="@+id/layoutTextLogin"

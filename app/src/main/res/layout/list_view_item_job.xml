@@ -1,144 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout_item_job"
+    android:id="@+id/layoutItemJob"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
-    android:background="@color/white"
-    android:paddingLeft="20dp"
-    android:paddingTop="10dp"
-    android:paddingRight="20dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/background_border_green"
+    android:paddingTop="15dp"
     android:paddingBottom="10dp">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
+        android:id="@+id/cvImageJob"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:backgroundTint="@color/white"
+        android:layout_marginLeft="20dp"
         app:cardCornerRadius="10dp"
-        app:cardElevation="8dp">
+        app:cardElevation="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp">
+        <ImageView
+            android:id="@+id/img_job"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
 
-            <ImageView
-                android:id="@+id/img_job"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_gravity="center"
-                android:layout_marginLeft="20dp"
-                android:layout_weight="0.8"
-                android:src="@drawable/ic_launcher_background"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_content"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:gravity="center"
-                app:layout_constraintEnd_toStartOf="@id/img_save_job"
-                app:layout_constraintStart_toEndOf="@id/img_job"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tv_name_job"
-                    style="@style/text_view_job"
-                    android:text="Graphic Designer (Chuyên Viên Thiết Kế Đồ Họa)"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_company"
-                    style="@style/text_view_job"
-                    android:text="Xgeme Studio"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_name_job" />
-
-                <TextView
-                    android:id="@+id/tv_place"
-                    style="@style/text_view_job"
-                    android:layout_marginTop="10dp"
-                    android:drawableLeft="@drawable/ic_baseline_location_on_24"
-                    android:drawablePadding="10dp"
-                    android:text="Hà Nội, Việt Nam"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_company" />
-
-                <TextView
-                    android:id="@+id/tv_salary"
-                    style="@style/text_view_job"
-                    android:layout_marginTop="10dp"
-                    android:drawableLeft="@drawable/ic_baseline_attach_money"
-                    android:drawablePadding="10dp"
-                    android:text="VND 7.000.000 - 12.000.000"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_place" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <ImageView
-                android:id="@+id/img_save_job"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="20dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_not_save"
-                android:tag="not save"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/layout_line"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:background="#61837F7F"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layout_content" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layout_line">
-
-                <TextView
-                    style="@style/text_view_job"
-                    android:text="Còn "
-                    android:textColor="#4F4C4C" />
-
-                <TextView
-                    android:id="@+id/tv_time_updated"
-                    style="@style/text_view_job"
-                    android:text="10"
-                    android:textColor="@color/black"
-                    android:textStyle="bold" />
-
-                <TextView
-                    style="@style/text_view_job"
-                    android:text=" ngày để ứng tuyển"
-                    android:textColor="#4F4C4C" />
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+            android:layout_weight="0.8"
+            android:src="@drawable/ic_launcher_background" />
     </androidx.cardview.widget.CardView>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toStartOf="@id/img_save_job"
+        app:layout_constraintStart_toEndOf="@id/cvImageJob"
+        app:layout_constraintTop_toTopOf="parent">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tv_name_job"
+            style="@style/text_view_job"
+            android:text="Graphic Designer (Chuyên Viên Thiết Kế Đồ Họa)"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_company"
+            style="@style/text_view_job"
+            android:text="Xgame Studio"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_name_job" />
+
+        <TextView
+            android:id="@+id/tv_place"
+            style="@style/text_view_job"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/ic_baseline_location_on_24"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/green"
+            android:text="Hà Nội, Việt Nam"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_company" />
+
+        <TextView
+            android:id="@+id/tv_salary"
+            style="@style/text_view_job"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/ic_baseline_attach_money"
+            android:drawablePadding="10dp"
+            android:drawableTint="@color/green"
+            android:text="VND 7.000.000 - 12.000.000"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_place" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/img_save_job"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_not_save"
+        android:tag="not save"
+        android:tint="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_name_job" />
+
+    <View
+        android:id="@+id/layout_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="#61837F7F"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_content" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_line">
+
+        <TextView
+            style="@style/text_view_job"
+            android:drawableLeft="@drawable/ic_time_apply"
+            android:drawablePadding="10dp"
+            android:drawableTint="#B5B3B3"
+            android:gravity="center_vertical"
+            android:text="Còn "
+            android:textColor="#4F4C4C" />
+
+        <TextView
+            android:id="@+id/tv_time_updated"
+            style="@style/text_view_job"
+            android:text="10"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <TextView
+            style="@style/text_view_job"
+            android:text=" ngày để ứng tuyển"
+            android:textColor="#4F4C4C" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

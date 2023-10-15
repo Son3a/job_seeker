@@ -58,6 +58,8 @@ public class Program {
     public static final String REMOTE_MSG_CONTENT_TYPE = "Content-Type";
     public static final String REMOTE_MSG_DATA = "data";
     public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
+    public static final String JOB_MODEL = "jobModel";
+    public static final String LIST_RELATED_JOB = "listRelatedJob";
     public static List<String> idSavedJobs;
 
     public static String avatar;

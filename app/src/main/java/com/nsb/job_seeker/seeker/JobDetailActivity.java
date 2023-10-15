@@ -1,14 +1,9 @@
 package com.nsb.job_seeker.seeker;
 
-import android.content.Intent;
+import static java.lang.Math.abs;
+
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,28 +14,32 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.tabs.TabLayout;
 import com.nsb.job_seeker.Program;
-import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.JobDetailAdapter;
+import com.nsb.job_seeker.databinding.ActivitySeekerJobDetailBinding;
+import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JobDetailActivity extends AppCompatActivity {
-    private ImageView imgBack;
-    private Button btnApply;
-    private TextView tvSalary, tvTypeJob, tvTimeJob, tvExperience, tvTimeUpdated, tvAddress, tvDescJob, tvNameJob, tvCompany, tvPlace, tvReqSkill, tvNameJobTitle;
-    private ProgressBar pbLoading;
-    private RelativeLayout body;
+    private ActivitySeekerJobDetailBinding binding;
     private String IDCompany = "";
     private String IDJob = "";
+    private JobDetailAdapter jobDetailAdapter;
+    private List<Job> listRelatedJob;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        binding = ActivitySeekerJobDetailBinding.inflate(getLayoutInflater());
+
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_seeker_job_detail);
+        setContentView(binding.getRoot());
 
         setControl();
 
@@ -50,42 +49,70 @@ public class JobDetailActivity extends AppCompatActivity {
     }
 
     private void setControl() {
-        imgBack = findViewById(R.id.ic_back);
-        btnApply = findViewById(R.id.btn_apply);
-        tvNameJobTitle = findViewById(R.id.tv_name_job);
-        tvSalary = findViewById(R.id.txt_salary_detail);
-        tvTypeJob = findViewById(R.id.txt_type_job_detail);
-        tvTimeJob = findViewById(R.id.txt_type_job_time_detail);
-        tvExperience = findViewById(R.id.txt_experience_detail);
-        tvTimeUpdated = findViewById(R.id.txt_time_updated_detail);
-        tvAddress = findViewById(R.id.tv_address_detail);
-        tvDescJob = findViewById(R.id.tv_desc_job_detail);
-        tvNameJob = findViewById(R.id.txt_name_job_detail);
-        tvCompany = findViewById(R.id.txt_company_detail);
-        tvPlace = findViewById(R.id.txt_place_detail);
-        body = findViewById(R.id.body_layout);
-        tvReqSkill = findViewById(R.id.tv_request_skill);
-        pbLoading = findViewById(R.id.idLoadingPB);
-
         Bundle bundle = getIntent().getExtras();
         if (bundle.containsKey("isLinkCompany")) {
-            tvCompany.setEnabled(false);
+            //binding..setEnabled(false);
         }
         IDJob = bundle.getString("id");
+        listRelatedJob = new ArrayList<>();
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Thông tin"));
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công việc liên quan"));
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công ty"));
     }
 
+
     private void setEvent() {
+        binding.viewPager.setUserInputEnabled(false);
+
+        setStateAppBar();
+
         back();
+
+        setTabLayout();
 
         changeBtnSubmit();
 
         applyJob();
+    }
 
-        directToListJobByCompany();
+    private void setStateAppBar() {
+        binding.appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+            if (abs(verticalOffset) - appBarLayout.getTotalScrollRange() == 0) {
+                binding.toolbar.setVisibility(View.VISIBLE);
+            } else if (verticalOffset == 0) {
+
+            } else {
+                binding.toolbar.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    private void setViewAdapter(List<Job> listRelatedJob, Job job, String idCompany) {
+        jobDetailAdapter = new JobDetailAdapter(JobDetailActivity.this, listRelatedJob, job, idCompany);
+        binding.viewPager.setAdapter(jobDetailAdapter);
+    }
+
+    private void setTabLayout() {
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                binding.viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
     }
 
     private void back() {
-        imgBack.setOnClickListener(new View.OnClickListener() {
+        binding.imageBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -94,36 +121,36 @@ public class JobDetailActivity extends AppCompatActivity {
     }
 
     private void applyJob() {
-        btnApply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(JobDetailActivity.this, ApplyJobActivity.class);
-                i.putExtra("idJob",IDJob);
-                startActivity(i);
-            }
-        });
+//        btnApply.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent i = new Intent(JobDetailActivity.this, ApplyJobActivity.class);
+//                i.putExtra("idJob",IDJob);
+//                startActivity(i);
+//            }
+//        });
     }
 
     private void changeBtnSubmit() {
-        Bundle bundle = getIntent().getExtras();
-        if (bundle.containsKey("isApply")) {
-            boolean isApply = bundle.getBoolean("isApply");
-            if (!isApply) {
-                btnApply.setText("ĐÃ ỨNG TUYỂN");
-                btnApply.setEnabled(false);
-            } else {
-                btnApply.setText("ỨNG TUYỂN NGAY");
-            }
-        } else {
-            btnApply.setVisibility(View.GONE);
-        }
+//        Bundle bundle = getIntent().getExtras();
+//        if (bundle.containsKey("isApply")) {
+//            boolean isApply = bundle.getBoolean("isApply");
+//            if (!isApply) {
+//                binding.layoutBottomSheet.btnApplyJob.setText("Đã ứng tuyển");
+//                //btnApply.setEnabled(false);
+//            } else {
+//                binding.layoutBottomSheet.btnApplyJob.setText("ỨNG TUYỂN NGAY");
+//            }
+//        } else {
+//            binding.layoutBottomSheet.btnApplyJob.setVisibility(View.GONE);
+//        }
     }
 
     private void getJobDetail() {
         RequestQueue requestQueue = Volley.newRequestQueue(JobDetailActivity.this);
 
         String url = "https://job-seeker-smy5.onrender.com/job/detail?id=" + IDJob;
-        pbLoading.setVisibility(View.VISIBLE);
+//        binding.idLoadingPB.setVisibility(View.VISIBLE);
 
         JsonObjectRequest data = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
@@ -131,9 +158,9 @@ public class JobDetailActivity extends AppCompatActivity {
                 try {
                     JSONObject job = response.getJSONObject("data");
 
-                    String idCompany = "", place = "";
+                    String nameCompany = "", place = "";
                     if (!job.isNull("idCompany")) {
-                        idCompany = job.getJSONObject("idCompany").getString("name");
+                        nameCompany = job.getJSONObject("idCompany").getString("name");
                         place = job.getJSONObject("idCompany").getString("location");
                         IDCompany = job.getJSONObject("idCompany").getString("_id");
                     }
@@ -153,21 +180,55 @@ public class JobDetailActivity extends AppCompatActivity {
                     else
                         time = "Cập nhật " + time + " trước";
 
-                    tvNameJobTitle.setText(job.getString("name"));
-                    tvNameJob.setText(job.getString("name"));
-                    tvCompany.setText(idCompany);
-                    tvPlace.setText(place);
-                    tvSalary.setText(salary);
-                    tvTypeJob.setText(typeJob);
-                    tvTimeJob.setText(job.getString("hourWorking"));
-                    tvExperience.setText("Không cần kinh nghiệm");
-                    tvTimeUpdated.setText(time);
-                    tvAddress.setText("• " + job.getString("locationWorking"));
-                    tvDescJob.setText(Program.formatStringToBullet(job.getString("description")));
-                    tvReqSkill.setText(Program.formatStringToBullet(job.getString("requirement")));
+                    binding.textNameJob.setText(job.getString("name"));
+                    binding.textNameCompany.setText(nameCompany);
+                    binding.textPosition.setText(place);
+                    binding.textSalary.setText(salary);
+//                    tvTimeJob.setText(job.getString("hourWorking"));
+//                    tvExperience.setText("Không cần kinh nghiệm");
+//                    tvTimeUpdated.setText(time);
+//                    tvAddress.setText("• " + job.getString("locationWorking"));
+//                    tvDescJob.setText(Program.formatStringToBullet(job.getString("description")));
+//                    tvReqSkill.setText(Program.formatStringToBullet(job.getString("requirement")));
 
-                    pbLoading.setVisibility(View.GONE);
-                    body.setVisibility(View.VISIBLE);
+//                    binding.idLoadingPB.setVisibility(View.GONE);
+
+                    for (int i = 0; i < job.getJSONArray("relatedJob").length(); i++) {
+                        JSONObject jobRelated = job.getJSONArray("relatedJob").getJSONObject(i);
+
+                        if (jobRelated.getString("status").equals("true")) {
+                            time = Program.setTime(jobRelated.getString("updateDate"));
+                            if (time.equals(null))
+                                time = "Vừa mới cập nhật";
+                            else
+                                time = "Cập nhật " + time + " trước";
+                            listRelatedJob.add(new Job(
+                                    job.getString("_id"),
+                                    job.getString("name"),
+                                    nameCompany,
+                                    job.getString("locationWorking"),
+                                    job.getString("salary"),
+                                    time
+                            ));
+                        }
+                    }
+
+                    setViewAdapter(
+                            listRelatedJob,
+                            new Job(
+                                    job.getString("_id"),
+                                    job.getString("name"),
+                                    nameCompany,
+                                    job.getString("locationWorking"),
+                                    salary,
+                                    time,
+                                    place,
+                                    Program.formatStringToBullet(job.getString("description")),
+                                    Program.formatStringToBullet(job.getString("requirement")),
+                                    typeJob
+                            ),
+                            IDCompany
+                    );
 
                     //setContentView(R.layout.activity_seeker_job_detail);
 
@@ -200,18 +261,5 @@ public class JobDetailActivity extends AppCompatActivity {
             }
         });
         requestQueue.add(data);
-    }
-
-
-    private void directToListJobByCompany() {
-        tvCompany.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Toast.makeText(JobDetailActivity.this, IDCompany, Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(JobDetailActivity.this, CompanyActivity.class);
-                i.putExtra("idCompany", IDCompany);
-                startActivity(i);
-            }
-        });
     }
 }

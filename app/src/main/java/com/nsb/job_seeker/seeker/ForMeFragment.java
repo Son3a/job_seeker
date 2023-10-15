@@ -1,5 +1,7 @@
 package com.nsb.job_seeker.seeker;
 
+import static java.lang.Math.abs;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
@@ -8,11 +10,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +31,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
@@ -51,11 +59,13 @@ public class ForMeFragment extends Fragment implements JobListener {
     private RecyclerView listViewJob;
     private String url = "https://job-seeker-smy5.onrender.com/job/list/sort-by-date";
     private View homeView;
-    private ProgressBar pbLoading;
+    //private ProgressBar pbLoading;
     private PreferenceManager preferenceManager;
     private JobAdapter jobAdapter;
-
+    private FrameLayout layoutSearch;
+    private ConstraintLayout layoutHeader;
     public static List<Job> jobList;
+    private NestedScrollView nestedScrollView;
 
     @Nullable
     @Override
@@ -71,16 +81,19 @@ public class ForMeFragment extends Fragment implements JobListener {
     private void setControl() {
         jobList = new ArrayList<Job>();
         listViewJob = homeView.findViewById(R.id.lv_job);
-        pbLoading = homeView.findViewById(R.id.idLoadingPB);
+        //pbLoading = homeView.findViewById(R.id.idLoadingPB);
 
         preferenceManager = new PreferenceManager(getActivity());
-
         jobAdapter = new JobAdapter(jobList, this, true);
+        layoutSearch = homeView.findViewById(R.id.toolBar);
         listViewJob.setAdapter(jobAdapter);
+        layoutHeader = homeView.findViewById(R.id.layoutHeader);
+        nestedScrollView = homeView.findViewById(R.id.layoutNested);
     }
 
     private void setEvent() {
         getNewJobs(url);
+        setStateAppBar();
     }
 
     private void getNewJobs(String url) {
@@ -88,7 +101,7 @@ public class ForMeFragment extends Fragment implements JobListener {
 //        List<String> listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
 //        Log.d("itemSave", listSavedJob.toString());
 
-        pbLoading.setVisibility(View.VISIBLE);
+        //pbLoading.setVisibility(View.VISIBLE);
         JsonObjectRequest data = new JsonObjectRequest(
                 url,
                 new Response.Listener<JSONObject>() {
@@ -127,7 +140,7 @@ public class ForMeFragment extends Fragment implements JobListener {
                                 }
                             }
                             jobAdapter.notifyDataSetChanged();
-                            pbLoading.setVisibility(View.GONE);
+                            //pbLoading.setVisibility(View.GONE);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -160,6 +173,32 @@ public class ForMeFragment extends Fragment implements JobListener {
             }
         });
         queue.add(data);
+    }
+
+    private void setStateAppBar() {
+//        appBar.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+//            if (abs(verticalOffset) - appBarLayout.getTotalScrollRange() == 0) {
+//                toolbar.setVisibility(View.VISIBLE);
+//            } else if (verticalOffset == 0) {
+//
+//            } else {
+//                toolbar.setVisibility(View.INVISIBLE);
+//            }
+//        });
+
+        nestedScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                int height = layoutHeader.getHeight();
+                if(scrollY >= height){
+                    layoutSearch.setVisibility(View.VISIBLE);
+                    Log.d("Position", scrollX + "  " + scrollY + "  " + height);
+                } else {
+                    layoutSearch.setVisibility(View.GONE);
+                }
+
+            }
+        });
     }
 
     private void saveJob(String jobId, int position, ListViewItemJobBinding itemJobBinding, boolean isSaveView) throws JSONException {
@@ -233,10 +272,10 @@ public class ForMeFragment extends Fragment implements JobListener {
                         String message = convertedObject.get("message").toString();
 
                         Toast.makeText(getActivity(), message.substring(1, message.length() - 1), Toast.LENGTH_SHORT).show();
-                        pbLoading.setVisibility(View.GONE);
+                        //pbLoading.setVisibility(View.GONE);
                         Log.d("ABC", body);
                     } catch (UnsupportedEncodingException e) {
-                        pbLoading.setVisibility(View.GONE);
+                        //pbLoading.setVisibility(View.GONE);
                         e.printStackTrace();
                     }
                 }

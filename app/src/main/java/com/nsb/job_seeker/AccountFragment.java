@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
@@ -24,6 +25,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
@@ -44,10 +46,10 @@ import java.util.Map;
 
 public class AccountFragment extends Fragment {
 
-    TextView tvLogin, tvChangePw, tvMyFile, tvDeleteAccount, tvRegister, tvStatistical;
-    private View beforeLoginView, afterLoginView;
-    private LinearLayout layoutManager;
-    private Button btnLogout;
+    TextView textChangePw, textRemoveAccount;
+    private View view;
+    private ConstraintLayout layoutInfo;
+    private MaterialButton btnLogout;
 
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
@@ -58,67 +60,50 @@ public class AccountFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        beforeLoginView = inflater.inflate(R.layout.fragment_account_before_login, container, false);
-        afterLoginView = inflater.inflate(R.layout.fragment_account_after_login, container, false);
+        view = inflater.inflate(R.layout.fragment_account, container, false);
 
         setControl();
         setEvent();
 
-//        if(Program.isLogin == false){
-//           return beforeLoginView;
-//        }
-        return afterLoginView;
+        return view;
     }
 
     private void setControl() {
         this.loadingDialog = new LoadingDialog(getActivity());
-        tvLogin = beforeLoginView.findViewById(R.id.tv_login);
-        tvRegister = beforeLoginView.findViewById(R.id.tv_register);
+        textChangePw = view.findViewById(R.id.textChangePW);
+        textRemoveAccount = view.findViewById(R.id.textRemoveAccount);
+        layoutInfo = view.findViewById(R.id.layoutInfo);
+        btnLogout = view.findViewById(R.id.buttonLogout);
 
-        btnLogout = afterLoginView.findViewById(R.id.btn_logout);
-        tvChangePw = afterLoginView.findViewById(R.id.tv_change_password);
-        tvMyFile = afterLoginView.findViewById(R.id.tv_my_file);
-        tvDeleteAccount = afterLoginView.findViewById(R.id.tv_delete_account);
-        tvStatistical = afterLoginView.findViewById(R.id.tv_statistical);
         preferenceManager = new PreferenceManager(getActivity());
-        layoutManager = afterLoginView.findViewById(R.id.layout_manager);
     }
 
     private void setEvent() {
-        if (preferenceManager.getString(Program.ROLE).equals(Program.USER_ROLE)) {
-            layoutManager.setVisibility(View.GONE);
-        }
+        clickChangePW();
 
-        tvStatistical.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), StatisticalJobActivity.class);
-                startActivity(i);
-            }
-        });
+        clickInfo();
 
-        tvChangePw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), Activity_ChangePassword.class);
-                startActivity(i);
-            }
-        });
-        tvMyFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), Activity_Profile.class);
-                startActivity(i);
-            }
-        });
+        clickLogout();
+    }
 
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadingDialog.startLoadingDialog();
-                Log.d("Token", preferenceManager.getString(Program.TOKEN));
-                handleLogout();
-            }
+    private void clickChangePW(){
+        textChangePw.setOnClickListener(v->{
+            Intent i = new Intent(getActivity(), Activity_ChangePassword.class);
+            startActivity(i);
+        });
+    }
+
+    private void clickLogout(){
+        btnLogout.setOnClickListener(v->{
+            Log.d("Token", preferenceManager.getString(Program.TOKEN));
+            handleLogout();
+        });
+    }
+
+    private void clickInfo(){
+        layoutInfo.setOnClickListener(v->{
+            Intent i = new Intent(getActivity(), Activity_Profile.class);
+            startActivity(i);
         });
     }
 

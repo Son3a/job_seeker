@@ -2,22 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_forme"
-        android:icon="@drawable/ic_baseline_forme"
+        android:icon="@drawable/ic_home"
         android:title="Cho bạn" />
-    <item
-        android:id="@+id/menu_search"
-        android:icon="@drawable/ic_baseline_search"
-        android:title="Tìm kiếm"/>
+<!--    <item-->
+<!--        android:id="@+id/menu_search"-->
+<!--        android:icon="@drawable/ic_baseline_search"-->
+<!--        android:title="Tìm kiếm"/>-->
     <item
         android:id="@+id/menu_myjob"
-        android:icon="@drawable/ic_baseline_myjob"
+        android:icon="@drawable/ic_my_job"
         android:title="Việc của tôi"/>
     <item
         android:id="@+id/menu_message"
-        android:icon="@drawable/ic_chat"
+        android:icon="@drawable/ic_message"
         android:title="Tin nhắn"/>
     <item
         android:id="@+id/menu_account"
-        android:icon="@drawable/ic_baseline_account"
+        android:icon="@drawable/ic_account"
         android:title="Tài khoản"/>
 </menu>
