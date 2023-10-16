@@ -22,7 +22,7 @@ public class SeekerMainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
     private NewsJobFragment newsJobFragment;
-    private SearchFragment searchFragment;
+    private SearchActivity searchFragment;
     private MyJobFragment myJobFragment;
     private MessageFragment messageFragment;
     private AccountFragment accountFragment;
@@ -45,7 +45,7 @@ public class SeekerMainActivity extends AppCompatActivity {
 //        fabMessenger = findViewById(R.id.fab_messenger);
 
         newsJobFragment = new NewsJobFragment();
-        searchFragment = new SearchFragment();
+        searchFragment = new SearchActivity();
         myJobFragment = new MyJobFragment();
         messageFragment = new MessageFragment();
         accountFragment = new AccountFragment();
