@@ -16,6 +16,12 @@ android {
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -81,4 +87,11 @@ dependencies {
     implementation 'io.github.florent37:shapeofview:1.4.7'
 
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
+
+    //Room
+    implementation "androidx.room:room-runtime:2.5.0"
+    annotationProcessor "androidx.room:room-compiler:2.5.0"
+
+    //custom layout manager
+    implementation 'com.github.DingMouRen:LayoutManagerGroup:1e6f4f96eb'
 }

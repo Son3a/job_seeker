@@ -1,7 +1,5 @@
 package com.nsb.job_seeker.seeker;
 
-import static java.lang.Math.abs;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
@@ -10,18 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -31,7 +22,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.appbar.AppBarLayout;
+import com.dingmouren.layoutmanagergroup.picker.PickerLayoutManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
@@ -40,6 +31,7 @@ import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.common.AsyncTasks;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.databinding.FragmentSeekerForMeBinding;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;
@@ -56,44 +48,49 @@ import java.util.List;
 import java.util.Map;
 
 public class ForMeFragment extends Fragment implements JobListener {
-    private RecyclerView listViewJob;
+    FragmentSeekerForMeBinding binding;
     private String url = "https://job-seeker-smy5.onrender.com/job/list/sort-by-date";
-    private View homeView;
-    //private ProgressBar pbLoading;
     private PreferenceManager preferenceManager;
     private JobAdapter jobAdapter;
-    private FrameLayout layoutSearch;
-    private ConstraintLayout layoutHeader;
+
     public static List<Job> jobList;
-    private NestedScrollView nestedScrollView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        homeView = inflater.inflate(R.layout.fragment_seeker_for_me, container, false);
+        binding = FragmentSeekerForMeBinding.inflate(getLayoutInflater());
 
         setControl();
         setEvent();
 
-        return homeView;
+        return binding.getRoot();
     }
 
     private void setControl() {
         jobList = new ArrayList<Job>();
-        listViewJob = homeView.findViewById(R.id.lv_job);
-        //pbLoading = homeView.findViewById(R.id.idLoadingPB);
 
         preferenceManager = new PreferenceManager(getActivity());
         jobAdapter = new JobAdapter(jobList, this, true);
-        layoutSearch = homeView.findViewById(R.id.toolBar);
-        listViewJob.setAdapter(jobAdapter);
-        layoutHeader = homeView.findViewById(R.id.layoutHeader);
-        nestedScrollView = homeView.findViewById(R.id.layoutNested);
+        PickerLayoutManager pickerLayoutManager = new PickerLayoutManager();
+        binding.lvJob.setClipChildren(false);
+        binding.lvJob.
+        binding.lvJob.setAdapter(jobAdapter);
     }
 
     private void setEvent() {
         getNewJobs(url);
         setStateAppBar();
+        gotoSearch();
+    }
+
+    private void gotoSearch() {
+        binding.includeSearch.layoutSearch.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), SearchActivity.class));
+        });
+
+        binding.includeSearch1.layoutSearch.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), SearchActivity.class));
+        });
     }
 
     private void getNewJobs(String url) {
@@ -186,15 +183,15 @@ public class ForMeFragment extends Fragment implements JobListener {
 //            }
 //        });
 
-        nestedScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+        binding.layoutNested.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                int height = layoutHeader.getHeight();
-                if(scrollY >= height){
-                    layoutSearch.setVisibility(View.VISIBLE);
+                int height = binding.layoutHeader.getHeight();
+                if (scrollY >= height) {
+                    binding.toolBar.setVisibility(View.VISIBLE);
                     Log.d("Position", scrollX + "  " + scrollY + "  " + height);
                 } else {
-                    layoutSearch.setVisibility(View.GONE);
+                    binding.toolBar.setVisibility(View.GONE);
                 }
 
             }
