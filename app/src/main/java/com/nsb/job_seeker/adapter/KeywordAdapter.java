@@ -1,6 +1,5 @@
 package com.nsb.job_seeker.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -8,15 +7,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nsb.job_seeker.databinding.ItemSeachKeywordBinding;
+import com.nsb.job_seeker.listener.KeywordListener;
 import com.nsb.job_seeker.room.KeyWord;
 
 import java.util.List;
 
 public class KeywordAdapter extends RecyclerView.Adapter<KeywordAdapter.KeywordHolder> {
     private final List<KeyWord> keyWordList;
+    private final KeywordListener listener;
 
-    public KeywordAdapter(List<KeyWord> keyWordList) {
+    public KeywordAdapter(List<KeyWord> keyWordList, KeywordListener listener) {
         this.keyWordList = keyWordList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -33,6 +35,10 @@ public class KeywordAdapter extends RecyclerView.Adapter<KeywordAdapter.KeywordH
     @Override
     public void onBindViewHolder(@NonNull KeywordHolder holder, int position) {
         holder.setData(keyWordList.get(position));
+
+        holder.binding.imageRemove.setOnClickListener(v -> {
+            listener.onClickRemove(keyWordList.get(position), position);
+        });
     }
 
     @Override
@@ -50,7 +56,6 @@ public class KeywordAdapter extends RecyclerView.Adapter<KeywordAdapter.KeywordH
 
         void setData(KeyWord keyWord) {
             binding.textKeyWord.setText(keyWord.getName());
-            Log.d("KeyWord", keyWord.getName());
         }
     }
 }

@@ -8,4 +8,6 @@
   ]]>
 </string>
     <string name="web_client_id">569828007420-42i93un9pbqabmi88k2qjin4o40c9pg0.apps.googleusercontent.com</string>
+    <string name="string_delete_all">Bạn có chắc chắn muốn xóa lịch sử tìm kiếm gần đây không?</string>
+    <string name="string_delete_one">Bạn có chắc muốn xóa từ khóa này khỏi danh sách tìm kiếm gần đây không?</string>
 </resources>

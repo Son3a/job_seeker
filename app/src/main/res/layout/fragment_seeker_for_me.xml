@@ -113,7 +113,7 @@
                 android:nestedScrollingEnabled="true"
                 android:scrollingCache="true"
                 android:smoothScrollbar="true"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 

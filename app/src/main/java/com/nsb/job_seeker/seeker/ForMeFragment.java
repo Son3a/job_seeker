@@ -22,6 +22,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.dingmouren.layoutmanagergroup.picker.PickerLayoutManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
@@ -48,16 +49,11 @@ import java.util.Map;
 
 public class ForMeFragment extends Fragment implements JobListener {
     FragmentSeekerForMeBinding binding;
-    //private RecyclerView listViewJob;
     private String url = "https://job-seeker-smy5.onrender.com/job/list/sort-by-date";
-    //private View homeView;
-    //private ProgressBar pbLoading;
     private PreferenceManager preferenceManager;
     private JobAdapter jobAdapter;
-    //private FrameLayout layoutSearch;
-    //private ConstraintLayout layoutHeader;
+
     public static List<Job> jobList;
-    //private NestedScrollView nestedScrollView;
 
     @Nullable
     @Override
@@ -75,6 +71,9 @@ public class ForMeFragment extends Fragment implements JobListener {
 
         preferenceManager = new PreferenceManager(getActivity());
         jobAdapter = new JobAdapter(jobList, this, true);
+        PickerLayoutManager pickerLayoutManager = new PickerLayoutManager();
+        binding.lvJob.setClipChildren(false);
+        binding.lvJob.
         binding.lvJob.setAdapter(jobAdapter);
     }
 
