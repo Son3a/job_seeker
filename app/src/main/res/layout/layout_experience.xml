@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/custom_background_bottom_sheet"
+    android:paddingStart="20dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chọn số năm kinh nghiệm"
+        android:textColor="@color/secondary_text"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/textDone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:text="Xong"
+        android:textColor="@color/green"
+        android:textSize="20sp" />
+
+    <com.eddystudio.scrollpicker.ScrollPickerView
+        android:id="@+id/scrollpickerview"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_below="@id/textDone"
+        android:layout_margin="16dp"
+        app:centerPointerBgColor="@color/red"
+        app:centerPointerHeight="68dp"
+        app:centerPointerWidth="42dp"
+        app:pickerOrientation="vertical"
+        app:pickerViewBgColor="@color/white" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true" />
+
+    <!--    <com.jackandphantom.carouselrecyclerview.CarouselRecyclerview-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:id="@+id/carouselRecyclerview"-->
+    <!--        android:layout_below="@id/textDone"/>-->
+
+</RelativeLayout>

@@ -56,6 +56,7 @@ public class KeywordAdapter extends RecyclerView.Adapter<KeywordAdapter.KeywordH
 
         void setData(KeyWord keyWord) {
             binding.textKeyWord.setText(keyWord.getName());
+            binding.getRoot().setOnClickListener(v -> listener.onClickItem(keyWord));
         }
     }
 }

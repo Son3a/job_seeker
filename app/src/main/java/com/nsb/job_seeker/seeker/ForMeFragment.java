@@ -22,7 +22,6 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.dingmouren.layoutmanagergroup.picker.PickerLayoutManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
@@ -71,9 +70,9 @@ public class ForMeFragment extends Fragment implements JobListener {
 
         preferenceManager = new PreferenceManager(getActivity());
         jobAdapter = new JobAdapter(jobList, this, true);
-        PickerLayoutManager pickerLayoutManager = new PickerLayoutManager();
+     //   PickerLayoutManager pickerLayoutManager = new PickerLayoutManager();
         binding.lvJob.setClipChildren(false);
-        binding.lvJob.
+
         binding.lvJob.setAdapter(jobAdapter);
     }
 

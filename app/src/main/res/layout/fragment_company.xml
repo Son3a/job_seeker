@@ -1,95 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <TextView
-        android:id="@+id/textNameCompany"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Công ty"
-        android:textColor="@color/black"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/imagePosition"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/id_position_company"
-        android:tint="@color/green"
-        app:layout_constraintStart_toStartOf="@+id/textNameCompany"
-        app:layout_constraintBottom_toBottomOf="@+id/textPosition"
-        app:layout_constraintTop_toTopOf="@+id/textTitlePosition" />
+        <TextView
+            android:id="@+id/textNameCompany"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Công ty"
+            android:textColor="@color/black"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textTitlePosition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:text="Địa chỉ công ty"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@id/imagePosition"
-        app:layout_constraintTop_toBottomOf="@+id/textNameCompany" />
+        <ImageView
+            android:id="@+id/imagePosition"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/id_position_company"
+            android:tint="@color/green"
+            app:layout_constraintBottom_toBottomOf="@+id/textPosition"
+            app:layout_constraintStart_toStartOf="@+id/textNameCompany"
+            app:layout_constraintTop_toTopOf="@+id/textTitlePosition" />
 
-    <TextView
-        android:id="@+id/textPosition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@id/imagePosition"
-        app:layout_constraintTop_toBottomOf="@+id/textTitlePosition" />
+        <TextView
+            android:id="@+id/textTitlePosition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Địa chỉ công ty"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/imagePosition"
+            app:layout_constraintTop_toBottomOf="@+id/textNameCompany" />
 
-    <TextView
-        android:id="@+id/textTitleIntroduce"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Giới thiệu công ty"
-        android:layout_marginTop="20dp"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textPosition" />
+        <TextView
+            android:id="@+id/textPosition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@id/imagePosition"
+            app:layout_constraintTop_toBottomOf="@+id/textTitlePosition" />
 
-    <TextView
-        android:id="@+id/textIntroduce"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Giới thiệu công ty"
-        android:textColor="@color/secondary_text"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textTitleIntroduce" />
+        <TextView
+            android:id="@+id/textTitleIntroduce"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Giới thiệu công ty"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textPosition" />
 
-    <TextView
-        android:id="@+id/textListJob"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Việc làm cùng công ty"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textIntroduce" />
+        <TextView
+            android:id="@+id/textIntroduce"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Giới thiệu công ty"
+            android:textColor="@color/secondary_text"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textTitleIntroduce" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcvJobCompany"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textListJob" />
+        <TextView
+            android:id="@+id/textListJob"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Việc làm cùng công ty"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textIntroduce" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvJobCompany"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textListJob" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

@@ -1,41 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <ImageView
-        android:id="@+id/imageSearch"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_centerVertical="true"
-        android:src="@drawable/ic_search"
-        android:tint="@color/secondary_text" />
+    android:layout_height="wrap_content"
+    android:background="@drawable/custom_background_bottom_sheet">
 
     <TextView
-        android:id="@+id/textKeyWord"
+        android:id="@+id/textExperience"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="15dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_toRightOf="@id/imageSearch"
-        android:text="Android"
         android:textColor="@color/black"
         android:textSize="20sp" />
 
     <ImageView
-        android:id="@+id/imageRemove"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:id="@+id/imageCheck"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_alignParentRight="true"
+        android:tint="@color/green"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_remove"
-        android:tint="@color/secondary_text" />
+        android:visibility="invisible"
+        android:src="@drawable/ic_check" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.7dp"
-        android:layout_below="@id/textKeyWord"
+        android:layout_below="@id/textExperience"
         android:background="@color/border" />
+
 </RelativeLayout>

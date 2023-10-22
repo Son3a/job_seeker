@@ -93,5 +93,5 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:2.5.0"
 
     //custom layout manager
-    implementation 'com.github.DingMouRen:LayoutManagerGroup:1e6f4f96eb'
+    implementation 'com.github.eddykwang:MaterialScrollPicker:1.0a'
 }

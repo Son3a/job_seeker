@@ -19,9 +19,9 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/textKeySearch"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/textKeySearch"
-            app:layout_constraintBottom_toBottomOf="@id/textKeySearch"/>
+            app:layout_constraintTop_toTopOf="@+id/textKeySearch" />
 
 
         <EditText
@@ -61,8 +61,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/layoutSearch"
-            android:translationZ="100dp"
             android:orientation="vertical"
+            android:translationZ="100dp"
             android:visibility="gone">
 
             <ImageView

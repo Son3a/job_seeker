@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/custom_background_bottom_sheet"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chọn tỉnh thành"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/textKeyPosition"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/background_search_job"
+        android:drawableLeft="@drawable/ic_search"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/secondary_text"
+        android:gravity="center_vertical"
+        android:imeOptions="actionSearch"
+        app:queryHint="Tìm kiếm..."
+        android:maxLines="1"
+        android:paddingEnd="20dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/secondary_text"
+        android:textCursorDrawable="@null"
+        android:textSize="18sp"
+        android:visibility="visible"
+        android:layout_below="@id/textTitle" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="2dp"
+        android:layout_alignParentRight="true"
+        android:backgroundTint="@color/background_text"
+        app:cardCornerRadius="100dp">
+
+        <ImageView
+            android:id="@+id/imageClose"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_remove"
+            android:tint="@color/secondary_text" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvPosition"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textKeyPosition"
+        android:layout_marginTop="20dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+</RelativeLayout>

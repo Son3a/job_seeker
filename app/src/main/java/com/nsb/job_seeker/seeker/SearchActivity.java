@@ -1,31 +1,20 @@
 package com.nsb.job_seeker.seeker;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 
-import com.google.android.material.button.MaterialButton;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.KeywordAdapter;
 import com.nsb.job_seeker.common.CustomDialogDelete;
@@ -38,7 +27,6 @@ import com.nsb.job_seeker.room.KeyWord;
 import com.nsb.job_seeker.room.KeywordDatabase;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -110,6 +98,9 @@ public class SearchActivity extends AppCompatActivity implements JobListener, Ke
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 addKeyWordHistory(binding.textKeySearch.getText().toString());
                 Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, SearchResultActivity.class);
+                intent.putExtra("Keyword", binding.textKeySearch.getText().toString());
+                startActivity(intent);
                 return true;
             }
             return false;
@@ -241,113 +232,6 @@ public class SearchActivity extends AppCompatActivity implements JobListener, Ke
 //        });
 //    }
 //
-//    private void findJob(String key, int positionSpnIdOccupation, int positionSpnLocation) throws JSONException {
-//        pbLoading.setVisibility(View.VISIBLE);
-//
-//        String idOccupation[] = new String[0];
-//        String locationWorking[] = new String[0];
-//
-//        if (positionSpnLocation != 0) {
-//            locationWorking = new String[]{spinnerLocation.getSelectedItem().toString()};
-//        }
-//
-//        if ((positionSpnIdOccupation - 1) >= 0) {
-//            idOccupation = new String[]{idTypeJobList.get(positionSpnIdOccupation - 1)};
-//        }
-//
-//        RequestQueue queue = Volley.newRequestQueue(getActivity());
-//        jobResultList.clear();
-//
-//        JSONArray idOccupationParam = new JSONArray(idOccupation);
-//        JSONArray locationWorkingParam = new JSONArray(locationWorking);
-//
-//        JSONObject params = new JSONObject();
-//        params.put("key", key);
-//        params.put("locationWorking", locationWorkingParam);
-//        params.put("idOccupation", idOccupationParam);
-//
-//        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.POST, url, params, new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                try {
-//                    JSONArray listJobs = response.getJSONArray("data");
-//                    String idCompany = "";
-//                    if (listJobs.length() == 0) {
-//                        tvNote.setText("Kết quả tìm kiếm không có");
-//                        tvNote.setVisibility(View.VISIBLE);
-//                        listView.setVisibility(View.GONE);
-//                        pbLoading.setVisibility(View.GONE);
-//                        return;
-//                    }
-//                    for (int i = 0; i < listJobs.length(); i++) {
-//                        JSONObject job = listJobs.getJSONObject(i);
-//                        if (!job.isNull("idCompany")) {
-//                            idCompany = job.getJSONObject("idCompany").getString("name");
-//                        } else {
-//                            idCompany = "";
-//                        }
-//
-//                        String time = Program.setTime(job.getString("postingDate"));
-//                        if (time.equals(null))
-//                            time = "Vừa mới cập nhật";
-//                        else
-//                            time = "Cập nhật " + time + " trước";
-//                        jobResultList.add(new Job(
-//                                job.getString("_id"),
-//                                job.getString("name"),
-//                                idCompany,
-//                                job.getString("locationWorking"),
-//                                job.getString("salary"),
-//                                time
-//                        ));
-//
-//                        System.out.println(jobResultList.get(i).toString());
-//                    }
-//                    jobAdapter.notifyDataSetChanged();
-//                    tvNote.setVisibility(View.GONE);
-//                    listView.setVisibility(View.VISIBLE);
-//                    pbLoading.setVisibility(View.GONE);
-//                    System.out.println("Create Successful!!!");
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                System.out.println(error);
-//            }
-//        }) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                HashMap<String, String> headers = new HashMap<String, String>();
-//                headers.put("Content-Type", "application/json");
-//                return headers;
-//            }
-//        };
-//        sr.setRetryPolicy(new RetryPolicy() {
-//            @Override
-//            public int getCurrentTimeout() {
-//                return 50000;
-//            }
-//
-//            @Override
-//            public int getCurrentRetryCount() {
-//                return 50000;
-//            }
-//
-//            @Override
-//            public void retry(VolleyError error) throws VolleyError {
-//                System.out.println(error);
-//            }
-//        });
-//        queue.add(sr);
-//    }
-//
 //    private void getTypeJob() {
 //
 //        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
@@ -448,5 +332,12 @@ public class SearchActivity extends AppCompatActivity implements JobListener, Ke
             }
         };
         dialogDelete.openDiaLogDelete(getString(R.string.string_delete_one));
+    }
+
+    @Override
+    public void onClickItem(KeyWord keyWord) {
+        Intent intent = new Intent(this, SearchResultActivity.class);
+        intent.putExtra("Keyword", keyWord.getName());
+        startActivity(intent);
     }
 }

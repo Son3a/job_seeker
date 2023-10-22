@@ -28,6 +28,7 @@
     <color name="green">#16B142</color>
     <color name="green_spur">#AEECC0</color>
     <color name="border">#D6D5D5</color>
-    <color name="background">#E4E4E4</color>
+    <color name="background">#f9f9f9</color>
+    <color name="background_text">#f4f5f5</color>
     <color name="transparent">#00000000</color>
 </resources>
