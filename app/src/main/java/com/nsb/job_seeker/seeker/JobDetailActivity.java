@@ -174,11 +174,7 @@ public class JobDetailActivity extends AppCompatActivity {
 
                     salary = Program.formatSalary(salary);
 
-                    String time = Program.setTime(job.getString("updateDate"));
-                    if (time.equals(null))
-                        time = "Vừa mới cập nhật";
-                    else
-                        time = "Cập nhật " + time + " trước";
+                    String time = Program.setTime(job.getString("deadline"));
 
                     binding.textNameJob.setText(job.getString("name"));
                     binding.textNameCompany.setText(nameCompany);
@@ -197,11 +193,8 @@ public class JobDetailActivity extends AppCompatActivity {
                         JSONObject jobRelated = job.getJSONArray("relatedJob").getJSONObject(i);
 
                         if (jobRelated.getString("status").equals("true")) {
-                            time = Program.setTime(jobRelated.getString("updateDate"));
-                            if (time.equals(null))
-                                time = "Vừa mới cập nhật";
-                            else
-                                time = "Cập nhật " + time + " trước";
+                            time = Program.setTime(jobRelated.getString("deadline"));
+
                             listRelatedJob.add(new Job(
                                     job.getString("_id"),
                                     job.getString("name"),

@@ -112,12 +112,15 @@ public class Program {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date timeNow = new Date(System.currentTimeMillis());
         Date create = format.parse(timeCreate);
-        long difference = abs(timeNow.getTime() - create.getTime());
+        long difference = (timeNow.getTime() - create.getTime());
         return difference;
     }
 
-    public static String setTime(String timeCreate) throws ParseException {
-        long time = calculateTime(timeCreate);
+    public static String setTime(String timeDeadline) throws ParseException {
+        long time = calculateTime(timeDeadline);
+        if(time < 0){
+            return null;
+        }
         int s, m, h, date, month, year;
 
         s = (int) (time / 1000);

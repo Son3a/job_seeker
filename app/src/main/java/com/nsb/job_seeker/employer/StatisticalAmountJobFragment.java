@@ -194,11 +194,8 @@ public class StatisticalAmountJobFragment extends Fragment implements JobListene
                                 idCompany = "";
                             }
 
-                            String time = Program.setTime(job.getString("postingDate"));
-                            if (time.equals(null))
-                                time = "Vừa mới cập nhật";
-                            else
-                                time = "Cập nhật " + time + " trước";
+                            String time = Program.setTime(job.getString("deadline"));
+
                             jobResultList.add(new Job(
                                     job.getString("_id"),
                                     job.getString("name"),

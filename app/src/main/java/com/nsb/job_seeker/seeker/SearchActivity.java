@@ -100,6 +100,7 @@ public class SearchActivity extends AppCompatActivity implements JobListener, Ke
                 Toast.makeText(this, "Search", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(this, SearchResultActivity.class);
                 intent.putExtra("Keyword", binding.textKeySearch.getText().toString());
+                finish();
                 startActivity(intent);
                 return true;
             }
@@ -338,6 +339,7 @@ public class SearchActivity extends AppCompatActivity implements JobListener, Ke
     public void onClickItem(KeyWord keyWord) {
         Intent intent = new Intent(this, SearchResultActivity.class);
         intent.putExtra("Keyword", keyWord.getName());
+        finish();
         startActivity(intent);
     }
 }

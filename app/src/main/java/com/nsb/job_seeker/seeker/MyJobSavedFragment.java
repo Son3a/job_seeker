@@ -105,11 +105,8 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
                                         idCompany = "";
                                     }
 
-                                    String time = Program.setTime(job.getString("updateDate"));
-                                    if (time.equals(null))
-                                        time = "Vừa mới cập nhật";
-                                    else
-                                        time = "Cập nhật " + time + " trước";
+                                    String time = Program.setTime(job.getString("deadline"));
+
                                     jobList.add(new Job(
                                             job.getString("_id"),
                                             job.getString("name"),

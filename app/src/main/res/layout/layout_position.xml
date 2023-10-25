@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutPosition"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:maxHeight="500dp"
     android:background="@drawable/custom_background_bottom_sheet"
     android:padding="20dp">
 
@@ -16,33 +18,30 @@
         android:textStyle="bold" />
 
     <androidx.appcompat.widget.SearchView
-        android:id="@+id/textKeyPosition"
+        android:id="@+id/searchPosition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/textTitle"
         android:layout_marginTop="20dp"
+        app:queryBackground="@android:color/transparent"
         android:background="@drawable/background_search_job"
-        android:drawableLeft="@drawable/ic_search"
-        android:drawablePadding="10dp"
-        android:drawableTint="@color/secondary_text"
         android:gravity="center_vertical"
         android:imeOptions="actionSearch"
-        app:queryHint="Tìm kiếm..."
-        android:maxLines="1"
         android:paddingEnd="20dp"
-        android:textColor="@color/black"
-        android:textColorHint="@color/secondary_text"
         android:textCursorDrawable="@null"
         android:textSize="18sp"
+        android:theme="@style/ThemeOverlay.SearchView"
         android:visibility="visible"
-        android:layout_below="@id/textTitle" />
+        app:iconifiedByDefault="false"
+        app:queryHint="Tìm kiếm..." />
 
     <androidx.cardview.widget.CardView
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_alignParentTop="true"
-        android:layout_marginEnd="5dp"
-        android:layout_marginTop="2dp"
         android:layout_alignParentRight="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="5dp"
         android:backgroundTint="@color/background_text"
         app:cardCornerRadius="100dp">
 
@@ -58,8 +57,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvPosition"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textKeyPosition"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/searchPosition"
         android:layout_marginTop="20dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </RelativeLayout>

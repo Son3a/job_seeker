@@ -6,18 +6,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.nsb.job_seeker.databinding.ItemFilterBinding;
-import com.nsb.job_seeker.listener.ExperienceListener;
 import com.nsb.job_seeker.listener.SalaryListener;
 
 import java.util.List;
 
-public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.ExperienceHolder> {
+public class SalaryAdapter extends RecyclerView.Adapter<SalaryAdapter.ExperienceHolder> {
     private final List<String> listExperiences;
-    private final ExperienceListener listener;
+    private final SalaryListener listener;
 
-    public ExperienceAdapter(List<String> listExperiences, ExperienceListener listener) {
+    public SalaryAdapter(List<String> listExperiences, SalaryListener listener) {
         this.listExperiences = listExperiences;
         this.listener = listener;
     }
@@ -54,7 +52,7 @@ public class ExperienceAdapter extends RecyclerView.Adapter<ExperienceAdapter.Ex
         void setData(String data) {
             binding.textExperience.setText(data);
             binding.getRoot().setOnClickListener(v -> {
-                listener.onClickExperience(data);
+                listener.onClickSalary(data);
             });
         }
     }

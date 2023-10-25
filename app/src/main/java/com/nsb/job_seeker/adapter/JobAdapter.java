@@ -75,6 +75,11 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             binding.tvCompany.setText(job.getCompany());
             binding.tvPlace.setText(job.getPlace());
             binding.tvSalary.setText(job.getSalary());
+            if(job.getTime_update() == null){
+                binding.tvTimeUpdated1.setText("Công việc đã hết hạn");
+                binding.tvTimeUpdated.setVisibility(View.INVISIBLE);
+                binding.tvTimeUpdated2.setVisibility(View.INVISIBLE);
+            }
             binding.tvTimeUpdated.setText(job.getTime_update());
 
             if (isVisibleBtnSave == false) { //hide icon
