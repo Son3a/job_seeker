@@ -22,8 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Program {
-    public static final String url_dev = "https://job-seeker-smy5.onrender.com";
-    public static final String url_product = "https://job-seeker-smy5.onrender.com";
+    public static final String url_dev = "https://job-seeker-server.onrender.com";
+
     public static String url_dev_img = url_dev + "/images";
     public static final String ROLE = "role";
     public static final String TOKEN = "token";

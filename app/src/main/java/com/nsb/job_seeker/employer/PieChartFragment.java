@@ -26,6 +26,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.StatisticalPieChartAdapter;
 
@@ -45,7 +46,7 @@ public class PieChartFragment extends Fragment {
     private ArrayList<Integer> listAmountJobs;
     private int sum;
     private ProgressBar pbLoading;
-    private String url = "https://job-seeker-smy5.onrender.com/job/statistical/application-by-occupation";
+    private String url = Program.url_dev + "/job/statistical/application-by-occupation";
 
     @Nullable
     @Override

@@ -48,7 +48,7 @@ public class EditRecruitmentActivity extends AppCompatActivity {
     private ImageView icBack, icUpdateRec;
     private TextView tvTimeCreate, tvTitle;
     private ProgressBar loadingPB;
-    private String url = "https://job-seeker-smy5.onrender.com/job/update";
+    private String url = Program.url_dev + "/job/update";
     private String idJob = "";
     private List<String> nameTypeJobs;
     private List<String> idTypeJobs;
@@ -294,7 +294,7 @@ public class EditRecruitmentActivity extends AppCompatActivity {
 
     private void getTypeJob() {
 
-        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
+        String urlTypeJob = Program.url_dev + "/occupation/list";
         RequestQueue queue = Volley.newRequestQueue(EditRecruitmentActivity.this);
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {

@@ -79,7 +79,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
     }
 
     private void getJobSaved() {
-        String url = "https://job-seeker-smy5.onrender.com/auth/info-user";
+        String url = Program.url_dev + "/auth/info-user";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         pbLoading.setVisibility(View.VISIBLE);
@@ -97,23 +97,22 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
                             for (int i = 0; i < jobsList.length(); i++) {
                                 if(jobsList.getJSONObject(i).isNull("jobId")) break;
                                 JSONObject job = jobsList.getJSONObject(i).getJSONObject("jobId");
-                                Log.d("ABC", job.getString("name"));
                                 if (job.getString("status").equals("true")) {
-                                    if (!job.isNull("idCompany")) {
-                                        idCompany = job.getJSONObject("idCompany").getString("name");
-                                    } else {
-                                        idCompany = "";
-                                    }
-
-                                    String time = Program.setTime(job.getString("deadline"));
-
                                     jobList.add(new Job(
                                             job.getString("_id"),
                                             job.getString("name"),
-                                            idCompany,
+                                            job.getJSONObject("idCompany").getString("name"),
                                             job.getString("locationWorking"),
-                                            Program.formatSalary(job.getString("salary")),
-                                            time
+                                            job.getString("salary"),
+                                            Program.setTime(job.getString("deadline")),
+                                            job.getString("description"),
+                                            job.getString("requirement"),
+                                            job.getJSONObject("idOccupation").getString("name"),
+                                            job.getJSONObject("idCompany").getString("image"),
+                                            job.getString("amount"),
+                                            job.getString("working_form"),
+                                            job.getString("experience"),
+                                            job.getString("gender")
                                     ));
                                 }
                             }
@@ -184,7 +183,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
 
                             @Override
                             public void onPostExecute() {
-                                Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
                             }
                         }.execute();
                     }

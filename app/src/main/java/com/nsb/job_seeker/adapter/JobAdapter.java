@@ -13,6 +13,7 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -75,12 +76,13 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             binding.tvCompany.setText(job.getCompany());
             binding.tvPlace.setText(job.getPlace());
             binding.tvSalary.setText(job.getSalary());
-            if(job.getTime_update() == null){
+            Picasso.get().load(job.getImage()).into(binding.imgJob);
+            if(job.getDeadline() == null){
                 binding.tvTimeUpdated1.setText("Công việc đã hết hạn");
                 binding.tvTimeUpdated.setVisibility(View.INVISIBLE);
                 binding.tvTimeUpdated2.setVisibility(View.INVISIBLE);
             }
-            binding.tvTimeUpdated.setText(job.getTime_update());
+            //binding.tvTimeUpdated.setText(job.getTime_update());
 
             if (isVisibleBtnSave == false) { //hide icon
                 binding.imgSaveJob.setVisibility(View.GONE);

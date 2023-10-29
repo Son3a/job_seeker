@@ -2,6 +2,7 @@ package com.nsb.job_seeker.seeker;
 
 import static java.lang.Math.abs;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -73,6 +74,15 @@ public class JobDetailActivity extends AppCompatActivity {
         changeBtnSubmit();
 
         applyJob();
+
+        gotoAppJob();
+    }
+
+    private void gotoAppJob(){
+        binding.layoutBottomSheet.btnApplyJob.setOnClickListener(v->{
+            Intent intent = new Intent(this, ApplyJobActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void setStateAppBar() {
@@ -149,7 +159,7 @@ public class JobDetailActivity extends AppCompatActivity {
     private void getJobDetail() {
         RequestQueue requestQueue = Volley.newRequestQueue(JobDetailActivity.this);
 
-        String url = "https://job-seeker-smy5.onrender.com/job/detail?id=" + IDJob;
+        String url = Program.url_dev + "/job/detail?id=" + IDJob;
 //        binding.idLoadingPB.setVisibility(View.VISIBLE);
 
         JsonObjectRequest data = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
@@ -193,15 +203,21 @@ public class JobDetailActivity extends AppCompatActivity {
                         JSONObject jobRelated = job.getJSONArray("relatedJob").getJSONObject(i);
 
                         if (jobRelated.getString("status").equals("true")) {
-                            time = Program.setTime(jobRelated.getString("deadline"));
-
                             listRelatedJob.add(new Job(
                                     job.getString("_id"),
                                     job.getString("name"),
-                                    nameCompany,
+                                    job.getJSONObject("idCompany").getString("name"),
                                     job.getString("locationWorking"),
                                     job.getString("salary"),
-                                    time
+                                    Program.setTime(job.getString("deadline")),
+                                    job.getString("description"),
+                                    job.getString("requirement"),
+                                    job.getJSONObject("idOccupation").getString("name"),
+                                    job.getJSONObject("idCompany").getString("image"),
+                                    job.getString("amount"),
+                                    job.getString("working_form"),
+                                    job.getString("experience"),
+                                    job.getString("gender")
                             ));
                         }
                     }
@@ -211,14 +227,18 @@ public class JobDetailActivity extends AppCompatActivity {
                             new Job(
                                     job.getString("_id"),
                                     job.getString("name"),
-                                    nameCompany,
+                                    job.getJSONObject("idCompany").getString("name"),
                                     job.getString("locationWorking"),
-                                    salary,
-                                    time,
-                                    place,
-                                    Program.formatStringToBullet(job.getString("description")),
-                                    Program.formatStringToBullet(job.getString("requirement")),
-                                    typeJob
+                                    job.getString("salary"),
+                                    Program.setTime(job.getString("deadline")),
+                                    job.getString("description"),
+                                    job.getString("requirement"),
+                                    job.getJSONObject("idOccupation").getString("name"),
+                                    job.getJSONObject("idCompany").getString("image"),
+                                    job.getString("amount"),
+                                    job.getString("working_form"),
+                                    job.getString("experience"),
+                                    job.getString("gender")
                             ),
                             IDCompany
                     );

@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -57,6 +58,7 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityLoginBinding;
 import com.nsb.job_seeker.employer.EmployerMainActivity;
+import com.nsb.job_seeker.model.Job;
 import com.nsb.job_seeker.seeker.SeekerMainActivity;
 
 import org.json.JSONArray;
@@ -64,6 +66,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(binding.getRoot());
 
-        Log.d("AppID", BuildConfig.APPLICATION_ID );
+        Log.d("AppID", BuildConfig.APPLICATION_ID);
 
         preferenceManager = new PreferenceManager(this);
 
@@ -241,7 +244,7 @@ public class LoginActivity extends AppCompatActivity {
                     binding.layoutErrorPassword.setVisibility(View.GONE);
                     binding.textPassword.setBackgroundResource(R.drawable.background_edittext_register);
                     try {
-                        postLogin(binding.textEmail.getText().toString().trim(), binding.textPassword.getText().toString().trim());
+                        postLogin();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -258,140 +261,87 @@ public class LoginActivity extends AppCompatActivity {
         return false;
     }
 
-    private void postLogin(String email, String password) throws JSONException {
-        RequestQueue mRequestQueue = Volley.newRequestQueue(LoginActivity.this);
-        //post data
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("username", email);
-        jsonObject.put("password", password);
-        jsonObject.put("tokenDevice", tokenDevice);
+    private void postLogin() throws JSONException {
+        RequestQueue queue = Volley.newRequestQueue(this);
 
         binding.btnLogin.setVisibility(View.GONE);
         binding.pbLoading.setVisibility(View.VISIBLE);
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, base_url + "/login", jsonObject, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
-                    String accessToken = convertedObject.get("accessToken").toString();
-                    String refreshToken = convertedObject.get("refreshToken").toString();
-                    preferenceManager.putString(Program.TOKEN, "Bearer " + accessToken.replace("\"", ""));
-                    preferenceManager.putString(Program.REFRESH_TOKEN, "Bearer " + refreshToken.replace("\"", ""));
-                    Log.d("Process", "Login monggo successfully!");
-                    signIn(email, password);   //login firebase
+        String email = binding.textEmail.getText().toString().trim();
+        String password = binding.textPassword.getText().toString().trim();
 
-                } catch (JSONException e) {
-                    binding.btnLogin.setVisibility(View.VISIBLE);
-                    binding.pbLoading.setVisibility(View.GONE);
-                    Toast.makeText(LoginActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String body;
-                //get status code here
-                binding.btnLogin.setVisibility(View.VISIBLE);
-                binding.pbLoading.setVisibility(View.GONE);
-                if (error.networkResponse != null) {
-                    try {
-                        body = new String(error.networkResponse.data, "UTF-8");
-                        Log.d("ABC", body);
-                        JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
-                        String message = convertedObject.get("message").toString();
+        JSONObject jsonReq = new JSONObject();
+        jsonReq.put("email", email);
+        jsonReq.put("password", password);
 
-                        Toast.makeText(LoginActivity.this, message.substring(1, message.length() - 1), Toast.LENGTH_SHORT).show();
-                    } catch (UnsupportedEncodingException e) {
-                        Log.d("ABC", e.toString());
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        mRequestQueue.add(jsonObjectRequest);
-    }
+        JsonObjectRequest data = new JsonObjectRequest(
+                Request.Method.POST,
+                base_url + "/login",
+                jsonReq,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
+                            JSONObject jsonObject1 = response.getJSONObject("data").getJSONObject("user");
 
-    private void getInfoUser() {
-        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
-        Log.d("Process", "get info");
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, base_url + "/info-user", null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    String role = response.getString("role");
-                    String name = response.getString("name");
-                    String email = response.getString("email");
-                    String phone = response.getString("phone");
-                    String avatar = response.getString("avatar");
-                    binding.btnLogin.setVisibility(View.VISIBLE);
-                    binding.pbLoading.setVisibility(View.GONE);
+                            String accessToken = jsonObject1.get("refreshToken").toString();
+                            preferenceManager.putString(Program.TOKEN, "Bearer " + accessToken.replace("\"", ""));
 
-                    Program.idSavedJobs = new ArrayList<>();
-                    if (role.equals(Program.ADMIN_ROLE)) {
-                        preferenceManager.putString(Program.COMPANY_ID, response.getJSONObject("company").getString("_id"));
-                    } else {
-                        JSONArray listJobFavorite = response.getJSONArray("jobFavourite");
-                        for (int i = 0; i < listJobFavorite.length(); i++) {
-                            if (!listJobFavorite.getJSONObject(i).isNull("jobId")) {
-                                JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
-                                if (jobObject.getString("status").equals("true")) {
-                                    Program.idSavedJobs.add(jobObject.getString("_id"));
+                            String role = jsonObject1.getString("role");
+                            //signIn(email, password);   //login firebase
+                            Program.idSavedJobs = new ArrayList<>();
+                            if (role.equals(Program.ADMIN_ROLE)) {
+                                preferenceManager.putString(Program.COMPANY_ID, response.getJSONObject("company").getString("_id"));
+                            } else {
+                                JSONArray listJobFavorite = jsonObject1.getJSONArray("jobFavourite");
+                                for (int i = 0; i < listJobFavorite.length(); i++) {
+                                    if (!listJobFavorite.getJSONObject(i).isNull("jobId")) {
+                                        JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
+                                        if (jobObject.getString("status").equals("true")) {
+                                            Program.idSavedJobs.add(jobObject.getString("_id"));
+                                        }
+                                    }
                                 }
+                            }
+                            preferenceManager.putArray(Program.idSavedJobs);
+                            preferenceManager.putString(Program.ROLE, role);
+                            preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);
+                            binding.btnLogin.setVisibility(View.VISIBLE);
+                            binding.pbLoading.setVisibility(View.GONE);
+
+                            redirectAfterLogin(role);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error", error.getMessage());
+                        String body;
+                        //get status code here
+                        binding.btnLogin.setVisibility(View.VISIBLE);
+                        binding.pbLoading.setVisibility(View.GONE);
+                        if (error.networkResponse != null) {
+                            try {
+                                body = new String(error.networkResponse.data, "UTF-8");
+                                Log.d("ABC", body);
+                                JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
+                                String message = convertedObject.get("message").toString();
+
+                                Toast.makeText(LoginActivity.this, message.substring(1, message.length() - 1), Toast.LENGTH_SHORT).show();
+                            } catch (UnsupportedEncodingException e) {
+                                Log.d("ABC", e.toString());
+                                e.printStackTrace();
                             }
                         }
                     }
-                    preferenceManager.putArray(Program.idSavedJobs);
-                    preferenceManager.putString(Program.ROLE, role);
-
-
-                    SharedPreferences sharedPreferences = getSharedPreferences(Program.sharedPreferencesName, MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("name", name);
-                    editor.putString("email", email);
-                    editor.putString("phone", phone);
-
-                    editor.commit();
-
-                    preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);//
-                    Program.avatar = avatar;
-                    Log.d("Process", "get info successfully!");
-                    redirectAfterLogin(role);
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.d("Job", "LOI 1 : " + e.toString());
                 }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Error", "err " + error.toString());
-                String body = "";
-                //get status code here
-                if (error.networkResponse != null && error.networkResponse.data != null) {
-                    try {
-                        body = new String(error.networkResponse.data, "UTF-8");
-                        Log.d("ABC", body);
-                    } catch (UnsupportedEncodingException e) {
-                        Log.d("ABC", "LOI 2 : " + e.toString());
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Log.d("Auth", preferenceManager.getString(Program.TOKEN));
-                Map<String, String> params = new HashMap<>();
-                params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
-                return params;
-            }
-        };
-        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+        );
+        data.setRetryPolicy(new RetryPolicy() {
             @Override
             public int getCurrentTimeout() {
                 return 50000;
@@ -404,10 +354,12 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                Log.d("Error", error.toString());
+
             }
         });
-        requestQueue.add(jsonObjectRequest);
+        queue.add(data);
+        ////////////////////////////////////////////////////////////////
+
     }
 
     private void redirectAfterLogin(String role) {
@@ -443,7 +395,6 @@ public class LoginActivity extends AppCompatActivity {
                                 preferenceManager.putString(Program.KEY_IMAGE, documentSnapshot.getString(Program.KEY_IMAGE));
 
                                 Log.d("Process", "Login Firebase successfully");
-                                getInfoUser();
                             }
                         }
                 ).addOnFailureListener(e -> {

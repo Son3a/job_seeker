@@ -22,43 +22,110 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/imageTimeWork"
+            android:id="@+id/imageExperience"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_experience"
             android:tint="@color/green"
-            app:layout_constraintBottom_toBottomOf="@+id/textTimeWork"
+            app:layout_constraintBottom_toBottomOf="@+id/textExperience"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textTitleTimeWork" />
+            app:layout_constraintTop_toTopOf="@id/textTitleExperience" />
 
         <TextView
-            android:id="@+id/textTitleTimeWork"
+            android:id="@+id/textTitleExperience"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Thời gian làm việc"
+            android:text="Kinh nghiệm"
             android:textColor="@color/secondary_text"
             android:textSize="18sp"
-            app:layout_constraintStart_toEndOf="@id/imageTimeWork"
+            app:layout_constraintStart_toEndOf="@id/imageExperience"
             app:layout_constraintTop_toBottomOf="@+id/textTitleGeneration" />
 
         <TextView
-            android:id="@+id/textTimeWork"
+            android:id="@+id/textExperience"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Dưới 1 năm"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/textTitleTimeWork"
-            app:layout_constraintTop_toBottomOf="@+id/textTitleTimeWork" />
+            app:layout_constraintStart_toStartOf="@id/textTitleExperience"
+            app:layout_constraintTop_toBottomOf="@+id/textTitleExperience" />
         <!--    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
+        <ImageView
+            android:id="@+id/imageWorkingForm"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_gender"
+            android:tint="@color/green"
+            app:layout_constraintBottom_toBottomOf="@+id/textWorkingForm"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textTitleWorkingForm" />
+
+        <TextView
+            android:id="@+id/textTitleWorkingForm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Hình thức"
+            android:textColor="@color/secondary_text"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@id/imageWorkingForm"
+            app:layout_constraintTop_toBottomOf="@+id/textExperience" />
+
+        <TextView
+            android:id="@+id/textWorkingForm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Không yêu cầu"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="@id/textTitleGender"
+            app:layout_constraintTop_toBottomOf="@+id/textTitleWorkingForm" />
+
+        <!--    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
+
+        <ImageView
+            android:id="@+id/imageAmount"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_type_job"
+            android:tint="@color/green"
+            app:layout_constraintBottom_toBottomOf="@+id/textAmount"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textTitleAmount" />
+
+        <TextView
+            android:id="@+id/textTitleAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Số lưng ứng tuyển"
+            android:textColor="@color/secondary_text"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@id/imageAmount"
+            app:layout_constraintTop_toBottomOf="@+id/textWorkingForm" />
+
+        <TextView
+            android:id="@+id/textAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Công nghệ thông tin"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="@id/textTitleAmount"
+            app:layout_constraintTop_toBottomOf="@+id/textTitleAmount" />
+
         <ImageView
             android:id="@+id/imageGender"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_gender"
+            android:src="@drawable/ic_type_job"
             android:tint="@color/green"
             app:layout_constraintBottom_toBottomOf="@+id/textTitleGender"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,57 +137,22 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:text="Giới tính"
+            android:text="Số lưng ứng tuyển"
             android:textColor="@color/secondary_text"
             android:textSize="18sp"
             app:layout_constraintStart_toEndOf="@id/imageGender"
-            app:layout_constraintTop_toBottomOf="@+id/textTimeWork" />
+            app:layout_constraintTop_toBottomOf="@+id/textAmount" />
 
         <TextView
             android:id="@+id/textGender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Không yêu cầu"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/textTitleGender"
-            app:layout_constraintTop_toBottomOf="@+id/textTitleGender" />
-
-        <!--    \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-->
-
-        <ImageView
-            android:id="@+id/imageTypeJob"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_type_job"
-            android:tint="@color/green"
-            app:layout_constraintBottom_toBottomOf="@+id/textTitleTypeJob"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textTypeJob" />
-
-        <TextView
-            android:id="@+id/textTitleTypeJob"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:text="Ngành nghề"
-            android:textColor="@color/secondary_text"
-            android:textSize="18sp"
-            app:layout_constraintStart_toEndOf="@id/imageGender"
-            app:layout_constraintTop_toBottomOf="@+id/textGender" />
-
-        <TextView
-            android:id="@+id/textTypeJob"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="Công nghệ thông tin"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@id/textTitleTypeJob"
-            app:layout_constraintTop_toBottomOf="@+id/textTitleTypeJob" />
+            android:textStyle="normal"
+            app:layout_constraintStart_toStartOf="@id/textTitleGender"
+            app:layout_constraintTop_toBottomOf="@+id/textTitleGender" />
 
         <TextView
             android:id="@+id/textTitleDescription"
@@ -132,7 +164,7 @@
             android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textTypeJob" />
+            app:layout_constraintTop_toBottomOf="@+id/textGender" />
 
         <TextView
             android:id="@+id/textDescription"

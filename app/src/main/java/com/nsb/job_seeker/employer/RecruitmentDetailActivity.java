@@ -44,7 +44,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
     private TextView tvSalary, tvTypeJob, tvTimeWork, tvTimeUpdated, tvDescJob, tvNameJob, tvPlace, tvDeadLine, tvJobReq;
     private ScrollView layoutBody;
 
-    private String url = "https://job-seeker-smy5.onrender.com/job/detail?id=";
+    private String url = Program.url_dev + "/job/detail?id=";
     private String idJob = "";
 
     private PreferenceManager preferenceManager;
@@ -197,7 +197,7 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
     }
 
     private void deleteRecruitmentAPI() throws JSONException {
-        String urlDeleteRecruitment = "https://job-seeker-smy5.onrender.com/job/delete";
+        String urlDeleteRecruitment = Program.url_dev + "/job/delete";
         String access_token = preferenceManager.getString(Program.TOKEN);
         Log.d("ABC", "check token : " + access_token);
         RequestQueue queue = Volley.newRequestQueue(RecruitmentDetailActivity.this);

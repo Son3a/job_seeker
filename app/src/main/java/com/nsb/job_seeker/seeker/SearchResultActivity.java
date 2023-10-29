@@ -424,7 +424,7 @@ public class SearchResultActivity extends AppCompatActivity implements JobListen
 
     private void findJob(String key) throws JSONException {
         binding.pbLoading.setVisibility(View.VISIBLE);
-        String url = "https://job-seeker-smy5.onrender.com/job/list/search";
+        String url = Program.url_dev + "/job/list/search";
 
         jobList.clear();
         String idOccupation[] = new String[0];
@@ -469,22 +469,21 @@ public class SearchResultActivity extends AppCompatActivity implements JobListen
                     for (int i = 0; i < listJobs.length(); i++) {
                         JSONObject job = listJobs.getJSONObject(i);
                         if (job.getString("status").equals("true")) {
-
-                            if (!job.isNull("idCompany")) {
-                                idCompany = job.getJSONObject("idCompany").getString("name");
-                            } else {
-                                idCompany = "";
-                            }
-
-                            String time = Program.setTime(job.getString("deadline"));
-
                             jobList.add(new Job(
                                     job.getString("_id"),
                                     job.getString("name"),
-                                    idCompany,
+                                    job.getJSONObject("idCompany").getString("name"),
                                     job.getString("locationWorking"),
                                     job.getString("salary"),
-                                    time
+                                    Program.setTime(job.getString("deadline")),
+                                    job.getString("description"),
+                                    job.getString("requirement"),
+                                    job.getJSONObject("idOccupation").getString("name"),
+                                    job.getJSONObject("idCompany").getString("image"),
+                                    job.getString("amount"),
+                                    job.getString("working_form"),
+                                    job.getString("experience"),
+                                    job.getString("gender")
                             ));
                         }
                     }

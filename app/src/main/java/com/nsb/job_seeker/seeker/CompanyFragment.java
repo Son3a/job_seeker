@@ -71,7 +71,7 @@ public class CompanyFragment extends Fragment implements JobListener {
     private void getInfoCompany() {
 //        pbLoading.setVisibility(View.VISIBLE);
 
-        String urlCompany = "https://job-seeker-smy5.onrender.com/company/detail?id=" + getArguments().getString(Program.COMPANY_ID);
+        String urlCompany = Program.url_dev + "/company/detail?id=" + getArguments().getString(Program.COMPANY_ID);
 
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
@@ -119,7 +119,7 @@ public class CompanyFragment extends Fragment implements JobListener {
     }
 
     private void getListJobOfCompany() {
-        String url = "https://job-seeker-smy5.onrender.com/job/list/company/";
+        String url = Program.url_dev + "/job/list/company/";
         url += getArguments().getString(Program.COMPANY_ID);
 
         Log.d("CompanyId", getArguments().getString(Program.COMPANY_ID));
@@ -138,20 +138,21 @@ public class CompanyFragment extends Fragment implements JobListener {
                             for (int i = 0; i < jobsList.length(); i++) {
                                 JSONObject job = jobsList.getJSONObject(i);
                                 if (job.getString("status").equals("true")) {
-                                    String time = Program.setTime(job.getString("deadline"));
-
-                                    if (time.equals(null)) {
-                                        time = "Hết hạn";
-                                    } else {
-                                        time = "Còn " + time;
-                                    }
                                     listJobCompany.add(new Job(
                                             job.getString("_id"),
                                             job.getString("name"),
-                                            idCompany,
+                                            job.getJSONObject("idCompany").getString("name"),
                                             job.getString("locationWorking"),
                                             job.getString("salary"),
-                                            time
+                                            Program.setTime(job.getString("deadline")),
+                                            job.getString("description"),
+                                            job.getString("requirement"),
+                                            job.getJSONObject("idOccupation").getString("name"),
+                                            job.getJSONObject("idCompany").getString("image"),
+                                            job.getString("amount"),
+                                            job.getString("working_form"),
+                                            job.getString("experience"),
+                                            job.getString("gender")
                                     ));
                                 }
                             }

@@ -41,7 +41,7 @@ public class RecruitmentsFragment extends Fragment {
     private View recruitmentView;
     private TextView amountRec;
     private ProgressBar pbLoading;
-    private String Url = "https://job-seeker-smy5.onrender.com/job/list/company/";
+    private String Url = Program.url_dev + "/job/list/company/";
     private PreferenceManager preferenceManager;
     private RecruitmentAdapter recruitmentAdapter;
 

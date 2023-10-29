@@ -90,7 +90,7 @@ public class StatisticalAmountJobFragment extends Fragment implements JobListene
     }
 
     private void getTypeJob() {
-        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
+        String urlTypeJob = Program.url_dev + "/occupation/list";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
@@ -173,7 +173,7 @@ public class StatisticalAmountJobFragment extends Fragment implements JobListene
 
     private void findJobByIdTypeJob(String nameTypeJob) {
         pbLoading.setVisibility(View.VISIBLE);
-        String url = "https://job-seeker-smy5.onrender.com/job/list/search";
+        String url = Program.url_dev + "/job/list/search";
         jobResultList.clear();
 
         RequestQueue queue = Volley.newRequestQueue(getActivity());
@@ -188,21 +188,21 @@ public class StatisticalAmountJobFragment extends Fragment implements JobListene
                     for (int i = 0; i < listJobs.length(); i++) {
                         JSONObject job = listJobs.getJSONObject(i);
                         if (job.getString("status").equals("true")) {
-                            if (!job.isNull("idCompany")) {
-                                idCompany = job.getJSONObject("idCompany").getString("name");
-                            } else {
-                                idCompany = "";
-                            }
-
-                            String time = Program.setTime(job.getString("deadline"));
-
                             jobResultList.add(new Job(
                                     job.getString("_id"),
                                     job.getString("name"),
-                                    idCompany,
+                                    job.getJSONObject("idCompany").getString("name"),
                                     job.getString("locationWorking"),
-                                    Program.formatSalary(job.getString("salary")),
-                                    time
+                                    job.getString("salary"),
+                                    Program.setTime(job.getString("deadline")),
+                                    job.getString("description"),
+                                    job.getString("requirement"),
+                                    job.getJSONObject("idOccupation").getString("name"),
+                                    job.getJSONObject("idCompany").getString("image"),
+                                    job.getString("amount"),
+                                    job.getString("working_form"),
+                                    job.getString("experience"),
+                                    job.getString("gender")
                             ));
                         }
                     }

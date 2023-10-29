@@ -11,11 +11,6 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -26,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -36,11 +30,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
-import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.common.RealPathUtil;
 import com.nsb.job_seeker.common.VolleyMultipartRequest;
+import com.nsb.job_seeker.databinding.ActivitySeekerApplyJobBinding;
 import com.nsb.job_seeker.model.DataPart;
 
 import java.io.ByteArrayOutputStream;
@@ -53,15 +47,12 @@ import java.util.Map;
 
 
 public class ApplyJobActivity extends AppCompatActivity {
+    private ActivitySeekerApplyJobBinding binding;
     private static final int MY_REQUEST_CODE = 10;
     private static final String TAG = ApplyJobActivity.class.getName();
-    private ImageView imgBack;
-    private Button btnSendCv;
-    private TextView tvUploadCV;
-    private ProgressBar pbLoading;
     private Uri mUri;
     private String fileName;
-    private String url = "https://job-seeker-smy5.onrender.com/application/create";
+    private String url = Program.url_dev + "/application/create";
     private PreferenceManager preferenceManager;
 
     private ActivityResultLauncher<Intent> mActivityResultLauncher = registerForActivityResult(
@@ -79,16 +70,17 @@ public class ApplyJobActivity extends AppCompatActivity {
                         mUri = uri;
                         String path = RealPathUtil.getPath(ApplyJobActivity.this, uri);
                         fileName = path.substring(path.lastIndexOf("/") + 1);
-                        tvUploadCV.setText(fileName);
+                        binding.textFileName.setText(fileName);
+                        binding.layoutInfo.setVisibility(View.VISIBLE);
                     }
                 }
             });
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        binding = ActivitySeekerApplyJobBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_seeker_apply_job);
+        setContentView(binding.getRoot());
 
         setControl();
         try {
@@ -99,11 +91,6 @@ public class ApplyJobActivity extends AppCompatActivity {
     }
 
     private void setControl() {
-        tvUploadCV = findViewById(R.id.tv_upload_cv);
-        imgBack = findViewById(R.id.ic_back);
-        btnSendCv = findViewById(R.id.btn_send_cv);
-        pbLoading = findViewById(R.id.idLoadingPB);
-
         preferenceManager = new PreferenceManager(this);
     }
 
@@ -113,10 +100,20 @@ public class ApplyJobActivity extends AppCompatActivity {
         clickOpenFile();
 
         clickCreateApplication();
+
+        removeFile();
+    }
+
+    private void removeFile(){
+        binding.imageRemoveFile.setOnClickListener(v->{
+            binding.textFileName.setText("");
+            mUri = null;
+            binding.layoutInfo.setVisibility(View.GONE);
+        });
     }
 
     private void back() {
-        imgBack.setOnClickListener(new View.OnClickListener() {
+        binding.icBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -125,19 +122,19 @@ public class ApplyJobActivity extends AppCompatActivity {
     }
 
     private void clickCreateApplication() {
-        btnSendCv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Toast.makeText(ApplyJobActivity.this, fileName + "\n" + mUri, Toast.LENGTH_SHORT).show();
-                uploadPDF(fileName, mUri);
-            }
-        });
+//        binding.btnSendCv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                Toast.makeText(ApplyJobActivity.this, fileName + "\n" + mUri, Toast.LENGTH_SHORT).show();
+//                uploadPDF(fileName, mUri);
+//            }
+//        });
     }
 
     private void uploadPDF(final String pdfname, Uri pdffile) {
         String access_token = preferenceManager.getString(Program.TOKEN);
         String idJob = getIntent().getExtras().getString("idJob");
-        pbLoading.setVisibility(View.VISIBLE);
+        binding.idLoadingPB.setVisibility(View.VISIBLE);
         RequestQueue rQueue = Volley.newRequestQueue(ApplyJobActivity.this);
 
         InputStream iStream = null;
@@ -150,7 +147,7 @@ public class ApplyJobActivity extends AppCompatActivity {
                     new Response.Listener<NetworkResponse>() {
                         @Override
                         public void onResponse(NetworkResponse response) {
-                            pbLoading.setVisibility(View.GONE);
+                            binding.idLoadingPB.setVisibility(View.GONE);
                             Toast.makeText(ApplyJobActivity.this, "Apply thành công!", Toast.LENGTH_SHORT).show();
                         }
                     },
@@ -163,7 +160,7 @@ public class ApplyJobActivity extends AppCompatActivity {
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(i);
                             }
-                            pbLoading.setVisibility(View.GONE);
+                            binding.idLoadingPB.setVisibility(View.GONE);
                             Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }) {
@@ -212,8 +209,6 @@ public class ApplyJobActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public byte[] getBytes(InputStream inputStream) throws IOException {
@@ -229,7 +224,7 @@ public class ApplyJobActivity extends AppCompatActivity {
     }
 
     private void clickOpenFile() {
-        tvUploadCV.setOnClickListener(new View.OnClickListener() {
+        binding.btnUploadCV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onClickRequestPermision();
@@ -257,7 +252,7 @@ public class ApplyJobActivity extends AppCompatActivity {
 
     private void openStorge() {
         Intent i = new Intent();
-        i.setType("application/pdf");
+        i.setType("application/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
         mActivityResultLauncher.launch(Intent.createChooser(i, "Select file"));
     }
@@ -284,6 +279,4 @@ public class ApplyJobActivity extends AppCompatActivity {
             }
         }
     }
-
-
 }

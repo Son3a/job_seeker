@@ -8,53 +8,46 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class Job implements Serializable, Parcelable {
-    private String nameJob, company, place, salary, time_update, id, locationCompany, desJob, reqJob, typeJob;
+    private String id, nameJob, company, place, salary, deadline, desJob, reqJob,
+            typeJob, image, amountRecruitment, workingForm, experience, gender;
 
     public Job() {
     }
 
-    public Job(String nameJob, String company, String place, String salary, String time_update) {
+    public Job(String id, String nameJob, String company, String place, String salary, String deadline,
+               String desJob, String reqJob, String typeJob, String image,
+               String amountRecruitment, String workingForm, String experience, String gender) {
         this.nameJob = nameJob;
         this.company = company;
         this.place = place;
         this.salary = salary;
-        this.time_update = time_update;
-    }
-
-    public Job(String id, String nameJob, String company, String place, String salary, String time_update) {
+        this.deadline = deadline;
         this.id = id;
-        this.nameJob = nameJob;
-        this.company = company;
-        this.place = place;
-        this.salary = salary;
-        this.time_update = time_update;
-    }
-
-    public Job(String id, String nameJob, String company, String place, String salary, String time_update,
-               String locationCompany, String desJob, String reqJob, String typeJob) {
-        this.id = id;
-        this.nameJob = nameJob;
-        this.company = company;
-        this.place = place;
-        this.salary = salary;
-        this.time_update = time_update;
-        this.locationCompany = locationCompany;
         this.desJob = desJob;
         this.reqJob = reqJob;
         this.typeJob = typeJob;
+        this.image = image;
+        this.amountRecruitment = amountRecruitment;
+        this.workingForm = workingForm;
+        this.experience = experience;
+        this.gender = gender;
     }
 
     protected Job(Parcel in) {
+        id = in.readString();
         nameJob = in.readString();
         company = in.readString();
         place = in.readString();
         salary = in.readString();
-        time_update = in.readString();
-        id = in.readString();
-        locationCompany = in.readString();
+        deadline = in.readString();
         desJob = in.readString();
         reqJob = in.readString();
         typeJob = in.readString();
+        image = in.readString();
+        amountRecruitment = in.readString();
+        workingForm = in.readString();
+        experience = in.readString();
+        gender = in.readString();
     }
 
     public static final Creator<Job> CREATOR = new Creator<Job>() {
@@ -109,22 +102,6 @@ public class Job implements Serializable, Parcelable {
         this.salary = salary;
     }
 
-    public String getTime_update() {
-        return time_update;
-    }
-
-    public void setTime_update(String time_update) {
-        this.time_update = time_update;
-    }
-
-    public String getLocationCompany() {
-        return locationCompany;
-    }
-
-    public void setLocationCompany(String locationCompany) {
-        this.locationCompany = locationCompany;
-    }
-
     public String getDesJob() {
         return desJob;
     }
@@ -149,6 +126,54 @@ public class Job implements Serializable, Parcelable {
         this.typeJob = typeJob;
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
+    }
+
+    public String getAmountRecruitment() {
+        return amountRecruitment;
+    }
+
+    public void setAmountRecruitment(String amountRecruitment) {
+        this.amountRecruitment = amountRecruitment;
+    }
+
+    public String getWorkingForm() {
+        return workingForm;
+    }
+
+    public void setWorkingForm(String workingForm) {
+        this.workingForm = workingForm;
+    }
+
+    public String getExperience() {
+        return experience;
+    }
+
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     @Override
     public String toString() {
         return "Job{" +
@@ -156,7 +181,6 @@ public class Job implements Serializable, Parcelable {
                 ", company='" + company + '\'' +
                 ", place='" + place + '\'' +
                 ", salary='" + salary + '\'' +
-                ", time_update='" + time_update + '\'' +
                 '}';
     }
 
@@ -167,15 +191,19 @@ public class Job implements Serializable, Parcelable {
 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(id);
         dest.writeString(nameJob);
         dest.writeString(company);
         dest.writeString(place);
         dest.writeString(salary);
-        dest.writeString(time_update);
-        dest.writeString(id);
-        dest.writeString(locationCompany);
+        dest.writeString(deadline);
         dest.writeString(desJob);
         dest.writeString(reqJob);
         dest.writeString(typeJob);
+        dest.writeString(image);
+        dest.writeString(amountRecruitment);
+        dest.writeString(workingForm);
+        dest.writeString(experience);
+        dest.writeString(gender);
     }
 }

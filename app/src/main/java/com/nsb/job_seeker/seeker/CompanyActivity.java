@@ -49,7 +49,7 @@ public class CompanyActivity extends AppCompatActivity implements JobListener {
     private ImageView icBack;
     private TextView tvNameCompany, tvAboutCompany, tvLocationOfCompany, tvTypeCompany, tvPhone, tvAmountEmployer;
     private String IDCompany = "";
-    private String url = "https://job-seeker-smy5.onrender.com/job/list/company/";
+    private String url = Program.url_dev + "/job/list/company/";
     private FloatingActionButton fabMessage;
     private String emailReceiver;
     private User userReceive;
@@ -96,7 +96,7 @@ public class CompanyActivity extends AppCompatActivity implements JobListener {
     private void getInfoCompany() {
         pbLoading.setVisibility(View.VISIBLE);
         Bundle bundle = getIntent().getExtras();
-        String urlCompany = "https://job-seeker-smy5.onrender.com/company/detail?id=" + bundle.getString("idCompany");
+        String urlCompany = Program.url_dev + "/company/detail?id=" + bundle.getString("idCompany");
 
         RequestQueue queue = Volley.newRequestQueue(CompanyActivity.this);
 
@@ -171,25 +171,26 @@ public class CompanyActivity extends AppCompatActivity implements JobListener {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String idCompany = "";
                             JSONArray jobsList = response.getJSONArray("data");
                             for (int i = 0; i < jobsList.length(); i++) {
                                 JSONObject job = jobsList.getJSONObject(i);
                                 if (job.getString("status").equals("true")) {
-                                    String time = Program.setTime(job.getString("deadline"));
 
-                                    if (time.equals(null)) {
-                                        time = "Hết hạn";
-                                    } else {
-                                        time = "Còn " + time;
-                                    }
                                     jobList.add(new Job(
                                             job.getString("_id"),
                                             job.getString("name"),
-                                            idCompany,
+                                            job.getJSONObject("idCompany").getString("name"),
                                             job.getString("locationWorking"),
                                             job.getString("salary"),
-                                            time
+                                            Program.setTime(job.getString("deadline")),
+                                            job.getString("description"),
+                                            job.getString("requirement"),
+                                            job.getJSONObject("idOccupation").getString("name"),
+                                            job.getJSONObject("idCompany").getString("image"),
+                                            job.getString("amount"),
+                                            job.getString("working_form"),
+                                            job.getString("experience"),
+                                            job.getString("gender")
                                     ));
                                 }
                             }

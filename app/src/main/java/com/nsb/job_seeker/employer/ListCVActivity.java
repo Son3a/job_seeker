@@ -43,7 +43,7 @@ public class ListCVActivity extends AppCompatActivity {
     private ArrayList<String> listFile;
     private ImageView icBack;
     private TextView tvNotifyEmpty, tvAmountJob;
-    private String url = "https://job-seeker-smy5.onrender.com/application/get-by-jobid?jobid=";
+    private String url = Program.url_dev + "/application/get-by-jobid?jobid=";
     private PreferenceManager preferenceManager;
 
     @Override

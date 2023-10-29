@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.KeywordAdapter;
 import com.nsb.job_seeker.common.CustomDialogDelete;
@@ -32,7 +33,7 @@ import java.util.List;
 
 public class SearchActivity extends AppCompatActivity implements JobListener, KeywordListener {
     private ActivitySeekerSearchBinding binding;
-    private String url = "https://job-seeker-smy5.onrender.com/job/list/search";
+    private String url = Program.url_dev + "/job/list/search";
     boolean isKeyboardShowing = false;
     private List<KeyWord> keyWordList;
     private KeywordAdapter keywordAdapter;

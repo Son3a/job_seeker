@@ -133,11 +133,9 @@ public class RegisterActivity extends AppCompatActivity {
         binding.btnRegister.setVisibility(View.GONE);
         binding.pbLoading.setVisibility(View.VISIBLE);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("username", "");
-        jsonObject.put("password", binding.textPassword);
-        jsonObject.put("name", binding.textName);
-        jsonObject.put("phone", "");
-        jsonObject.put("email", binding.textEmail);
+        jsonObject.put("password", binding.textPassword.getText().toString());
+        jsonObject.put("name", binding.textName.getText().toString());
+        jsonObject.put("email", binding.textEmail.getText().toString());
 
         binding.btnRegister.setVisibility(View.GONE);
         binding.pbLoading.setVisibility(View.VISIBLE);

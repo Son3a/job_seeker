@@ -64,7 +64,7 @@ public class UpdateNewsFragment extends Fragment {
     private ImageView icCancel, icCreateRec;
     private TextView tvTimeCreate;
     private ProgressBar loadingPB;
-    private String urlCreate = "https://job-seeker-smy5.onrender.com/job/create";
+    private String urlCreate = Program.url_dev + "/job/create";
     private List<String> nameTypeJobs;
     private List<String> idTypeJobs;
     private PreferenceManager preferenceManager;
@@ -472,7 +472,7 @@ public class UpdateNewsFragment extends Fragment {
 
     private void getTypeJob() {
 
-        String urlTypeJob = "https://job-seeker-smy5.onrender.com/occupation/list";
+        String urlTypeJob = Program.url_dev + "/occupation/list";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {

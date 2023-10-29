@@ -10,4 +10,8 @@
     <string name="web_client_id">569828007420-42i93un9pbqabmi88k2qjin4o40c9pg0.apps.googleusercontent.com</string>
     <string name="string_delete_all">Bạn có chắc chắn muốn xóa lịch sử tìm kiếm gần đây không?</string>
     <string name="string_delete_one">Bạn có chắc muốn xóa từ khóa này khỏi danh sách tìm kiếm gần đây không?</string>
+    <string name="string_letter_of_recommendation">Viết giới thiệu ngắn gọi về bản thân (điểm mạnh, điểm yếu) và nếu rõ mong muốn, lý do làm việc tại công ty này. Đây là cách gâu ấn tượng với nhà tuyển dụng nếu bạn chưa có kinh nghiệm lm việc (hoặc CV không tốt).</string>
+    <string name="string_warning_1">1. Ứng viên nên lựa chọn ứng tuyển bằng CV Online và viết thêm mong muốn tại phần thư giới thiệu để được nhà tuyển dụng xem CV sớm hơn.</string>
+    <string name="string_warning_2">2. TopJop khuyên tất cả các bạn hãy luôn cẩn trọng trong quá trình tìm việc và chủ động nghiên ứ về thông tin công ty, vị trí việc làm trước khi ứng tuyển. Ứng viên cần có trách nhiệm  với hành vi ứng tuyển của mình. Nếu bạn gặp phải tin tuyển dụng hoặc nhận được liên lạc đáng ngờ cuủa nhà tuyển dụng, hãy báo cáo ngay cho TopJob qua email hotro@topjop.vn để được hỗ trợ kịp thời.</string>
+    <string name="string_warning_3">3. Tìm hiểu thêm kinh nghiệm phòng tránh lừa đảo tại đây.</string>
 </resources>

@@ -9,13 +9,15 @@
     android:paddingTop="15dp"
     android:paddingBottom="10dp">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cvImageJob"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         app:cardCornerRadius="10dp"
-        app:cardElevation="10dp"
+        android:backgroundTint="@color/white"
+        app:strokeWidth="0.5dp"
+        app:strokeColor="@color/border"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -27,7 +29,7 @@
 
             android:layout_weight="0.8"
             android:src="@drawable/ic_launcher_background" />
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_content"
@@ -53,14 +55,15 @@
             android:id="@+id/tv_company"
             style="@style/text_view_job"
             android:text="Xgame Studio"
-            android:textSize="18sp"
+            android:layout_marginTop="5dp"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_name_job" />
 
         <TextView
             android:id="@+id/tv_place"
             style="@style/text_view_job"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:drawableLeft="@drawable/ic_baseline_location_on_24"
             android:drawablePadding="10dp"
             android:drawableTint="@color/green"
@@ -71,7 +74,7 @@
         <TextView
             android:id="@+id/tv_salary"
             style="@style/text_view_job"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="3dp"
             android:drawableLeft="@drawable/ic_baseline_attach_money"
             android:drawablePadding="10dp"
             android:drawableTint="@color/green"
@@ -85,23 +88,22 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_not_save"
         android:tag="not save"
         android:tint="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tv_name_job" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/layout_line"
         android:layout_width="0dp"
-        android:layout_height="1dp"
+        android:layout_height="0.7dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
-        android:background="#61837F7F"
+        android:background="#61BCB9B9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout_content" />
