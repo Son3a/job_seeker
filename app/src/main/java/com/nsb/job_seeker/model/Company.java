@@ -1,8 +1,14 @@
 package com.nsb.job_seeker.model;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Company implements Serializable {
+import androidx.annotation.NonNull;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class Company implements Serializable, Parcelable {
     String id, name, isDelete, link, image, totalEmployee, about, address, location, idUser, phone;
 
     public Company(String id, String name, String isDelete, String link, String image, String totalEmployee,
@@ -19,6 +25,32 @@ public class Company implements Serializable {
         this.idUser = idUser;
         this.phone = phone;
     }
+
+    protected Company(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        isDelete = in.readString();
+        link = in.readString();
+        image = in.readString();
+        totalEmployee = in.readString();
+        about = in.readString();
+        address = in.readString();
+        location = in.readString();
+        idUser = in.readString();
+        phone = in.readString();
+    }
+
+    public static final Creator<Company> CREATOR = new Creator<Company>() {
+        @Override
+        public Company createFromParcel(Parcel in) {
+            return new Company(in);
+        }
+
+        @Override
+        public Company[] newArray(int size) {
+            return new Company[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -106,5 +138,25 @@ public class Company implements Serializable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeString(isDelete);
+        parcel.writeString(link);
+        parcel.writeString(image);
+        parcel.writeString(totalEmployee);
+        parcel.writeString(about);
+        parcel.writeString(address);
+        parcel.writeString(location);
+        parcel.writeString(idUser);
+        parcel.writeString(phone);
     }
 }

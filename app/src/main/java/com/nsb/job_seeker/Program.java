@@ -60,6 +60,7 @@ public class Program {
     public static final String REMOTE_MSG_REGISTRATION_IDS = "registration_ids";
     public static final String JOB_MODEL = "jobModel";
     public static final String LIST_RELATED_JOB = "listRelatedJob";
+    public static final String COMPANY_MODEL = "companyModel";
     public static List<String> idSavedJobs;
 
     public static String avatar;
@@ -108,17 +109,17 @@ public class Program {
         }
     }
 
-    public static long calculateTime(String timeCreate) throws ParseException {
+    public static long calculateTime(String deadline) throws ParseException {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date timeNow = new Date(System.currentTimeMillis());
-        Date create = format.parse(timeCreate);
-        long difference = (timeNow.getTime() - create.getTime());
+        Date create = format.parse(deadline);
+        long difference = (create.getTime() - timeNow.getTime());
         return difference;
     }
 
     public static String setTime(String timeDeadline) throws ParseException {
         long time = calculateTime(timeDeadline);
-        if(time < 0){
+        if (time < 0) {
             return null;
         }
         int s, m, h, date, month, year;

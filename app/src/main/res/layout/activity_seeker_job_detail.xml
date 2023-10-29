@@ -29,8 +29,8 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/white"
                 android:translationZ="100dp"
-                app:layout_collapseMode="pin"
                 android:visibility="invisible"
+                app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:titleTextColor="@android:color/white">
@@ -69,7 +69,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="10dp"
-                        android:padding="5dp"
+                        android:padding="8dp"
                         android:src="@drawable/ic_dots"
                         android:tint="@color/black" />
 
@@ -105,7 +105,8 @@
                         android:id="@+id/imageBack"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:padding="5dp"
+                        android:layout_gravity="center"
+                        android:padding="8dp"
                         android:src="@drawable/ic_back"
                         android:tint="@color/black" />
                 </androidx.cardview.widget.CardView>
@@ -134,6 +135,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="-40dp"
+                    android:backgroundTint="@color/white"
                     app:cardCornerRadius="10dp"
                     app:layout_constraintEnd_toEndOf="@+id/layoutNameJob"
                     app:layout_constraintStart_toStartOf="@+id/layoutNameJob"
@@ -143,18 +145,18 @@
                         android:id="@+id/imageCompany"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/company"
+                        android:scaleType="centerInside"
                         android:translationZ="100dp" />
                 </androidx.cardview.widget.CardView>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/layoutNameJob"
                     android:layout_width="0dp"
-                    android:layout_height="300dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:background="@drawable/background_border"
                     android:paddingTop="40dp"
+                    android:paddingBottom="15dp"
                     app:layout_constraintEnd_toEndOf="@id/cvExpand"
                     app:layout_constraintStart_toStartOf="@id/cvBack"
                     app:layout_constraintTop_toBottomOf="@id/cvBack">
@@ -164,7 +166,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:text="Fresher Android"
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -177,7 +178,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="FPT Software"
                         android:textColor="@color/black"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -185,33 +185,35 @@
                         app:layout_constraintTop_toBottomOf="@id/textNameJob" />
 
                     <View
+                        android:id="@+id/layoutLineVertical"
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="15dp"
+                        android:layout_margin="15dp"
                         android:background="@color/border"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/textNameCompany" />
 
-                    <LinearLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginTop="15dp"
                         android:orientation="horizontal"
-                        app:layout_constraintBottom_toBottomOf="parent">
+                        app:layout_constraintTop_toBottomOf="@+id/layoutLineVertical">
 
                         <LinearLayout
+                            android:id="@+id/layoutSalary"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
                             android:gravity="center_horizontal"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/layoutLine"
+                            app:layout_constraintStart_toStartOf="parent">
 
                             <ImageView
                                 android:id="@+id/imageSalary"
-                                android:layout_width="60dp"
-                                android:layout_height="60dp"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
                                 android:src="@drawable/ic_salary"
                                 android:tint="@color/green" />
 
@@ -221,30 +223,42 @@
                                 android:layout_marginTop="10dp"
                                 android:text="Mức lương"
                                 android:textColor="@color/secondary_text"
-                                android:textSize="18sp" />
+                                android:textSize="16sp" />
 
                             <TextView
                                 android:id="@+id/textSalary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="5dp"
-                                android:text="6 - 8 triệu"
                                 android:textColor="@color/green"
-                                android:textSize="18sp"
+                                android:textSize="17sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
 
+                        <View
+                            android:id="@+id/layoutLine"
+                            android:layout_width="0.5dp"
+                            android:layout_height="0dp"
+                            android:background="@color/border"
+                            app:layout_constraintBottom_toBottomOf="@id/layoutPosition"
+                            app:layout_constraintEnd_toStartOf="@id/layoutPosition"
+                            app:layout_constraintStart_toEndOf="@id/layoutSalary"
+                            app:layout_constraintTop_toTopOf="@id/layoutPosition" />
+
                         <LinearLayout
+                            android:id="@+id/layoutPosition"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.5"
                             android:gravity="center_horizontal"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/layoutLine">
 
                             <ImageView
                                 android:id="@+id/imagePosition"
-                                android:layout_width="60dp"
-                                android:layout_height="60dp"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
                                 android:src="@drawable/ic_position"
                                 android:tint="@color/green" />
 
@@ -254,19 +268,18 @@
                                 android:layout_marginTop="10dp"
                                 android:text="Địa điểm"
                                 android:textColor="@color/secondary_text"
-                                android:textSize="18sp" />
+                                android:textSize="16sp" />
 
                             <TextView
                                 android:id="@+id/textPosition"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="5dp"
-                                android:text="Hà Nội"
                                 android:textColor="@color/green"
-                                android:textSize="18sp"
+                                android:textSize="17sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
-                    </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -290,21 +303,20 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_marginTop="15dp"
+        android:layout_marginBottom="80dp"
+        android:background="@color/white"
         android:paddingStart="15dp"
         android:paddingEnd="15dp"
-        android:background="@color/white"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <include
         android:id="@+id/layoutBottomSheet"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_gravity="bottom"
         layout="@layout/layout_save_job"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:layout_alignParentBottom="true" />
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

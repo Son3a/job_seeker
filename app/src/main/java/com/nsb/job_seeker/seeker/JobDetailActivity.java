@@ -4,6 +4,7 @@ import static java.lang.Math.abs;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -19,7 +20,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.adapter.JobDetailAdapter;
 import com.nsb.job_seeker.databinding.ActivitySeekerJobDetailBinding;
+import com.nsb.job_seeker.model.Company;
 import com.nsb.job_seeker.model.Job;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,8 +81,8 @@ public class JobDetailActivity extends AppCompatActivity {
         gotoAppJob();
     }
 
-    private void gotoAppJob(){
-        binding.layoutBottomSheet.btnApplyJob.setOnClickListener(v->{
+    private void gotoAppJob() {
+        binding.layoutBottomSheet.btnApplyJob.setOnClickListener(v -> {
             Intent intent = new Intent(this, ApplyJobActivity.class);
             startActivity(intent);
         });
@@ -97,8 +100,8 @@ public class JobDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void setViewAdapter(List<Job> listRelatedJob, Job job, String idCompany) {
-        jobDetailAdapter = new JobDetailAdapter(JobDetailActivity.this, listRelatedJob, job, idCompany);
+    private void setViewAdapter(List<Job> listRelatedJob, Job job, Company company) {
+        jobDetailAdapter = new JobDetailAdapter(JobDetailActivity.this, listRelatedJob, job, company);
         binding.viewPager.setAdapter(jobDetailAdapter);
     }
 
@@ -175,29 +178,11 @@ public class JobDetailActivity extends AppCompatActivity {
                         IDCompany = job.getJSONObject("idCompany").getString("_id");
                     }
 
-                    String typeJob = "";
-                    if (!job.isNull("idOccupation")) {
-                        typeJob = job.getJSONObject("idOccupation").getString("name");
-                    }
-
-                    String salary = job.getString("salary");
-
-                    salary = Program.formatSalary(salary);
-
-                    String time = Program.setTime(job.getString("deadline"));
-
                     binding.textNameJob.setText(job.getString("name"));
                     binding.textNameCompany.setText(nameCompany);
                     binding.textPosition.setText(place);
-                    binding.textSalary.setText(salary);
-//                    tvTimeJob.setText(job.getString("hourWorking"));
-//                    tvExperience.setText("Không cần kinh nghiệm");
-//                    tvTimeUpdated.setText(time);
-//                    tvAddress.setText("• " + job.getString("locationWorking"));
-//                    tvDescJob.setText(Program.formatStringToBullet(job.getString("description")));
-//                    tvReqSkill.setText(Program.formatStringToBullet(job.getString("requirement")));
-
-//                    binding.idLoadingPB.setVisibility(View.GONE);
+                    binding.textSalary.setText(job.getString("salary"));
+                    Picasso.get().load(job.getJSONObject("idCompany").getString("image")).into(binding.imageCompany);
 
                     for (int i = 0; i < job.getJSONArray("relatedJob").length(); i++) {
                         JSONObject jobRelated = job.getJSONArray("relatedJob").getJSONObject(i);
@@ -222,6 +207,20 @@ public class JobDetailActivity extends AppCompatActivity {
                         }
                     }
 
+                    Company company = new Company(
+                            job.getJSONObject("idCompany").getString("_id"),
+                            job.getJSONObject("idCompany").getString("name"),
+                            job.getJSONObject("idCompany").getString("isDelete"),
+                            job.getJSONObject("idCompany").getString("link"),
+                            job.getJSONObject("idCompany").getString("image"),
+                            job.getJSONObject("idCompany").getString("totalEmployee"),
+                            job.getJSONObject("idCompany").getString("about"),
+                            job.getJSONObject("idCompany").getString("address"),
+                            job.getJSONObject("idCompany").getString("location"),
+                            job.getJSONObject("idCompany").getString("idUser"),
+                            job.getJSONObject("idCompany").getString("phone")
+                    );
+
                     setViewAdapter(
                             listRelatedJob,
                             new Job(
@@ -240,21 +239,23 @@ public class JobDetailActivity extends AppCompatActivity {
                                     job.getString("experience"),
                                     job.getString("gender")
                             ),
-                            IDCompany
+                            company
                     );
 
                     //setContentView(R.layout.activity_seeker_job_detail);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.d("Error", e.getMessage());
                 } catch (ParseException e) {
                     e.printStackTrace();
+                    Log.d("Error", e.getMessage());
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                System.out.println(error);
+                Log.d("Error", error.getMessage());;
             }
         });
         data.setRetryPolicy(new RetryPolicy() {

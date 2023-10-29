@@ -6,6 +6,7 @@
     android:background="@color/white"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -53,6 +54,38 @@
             app:layout_constraintStart_toEndOf="@id/imagePosition"
             app:layout_constraintTop_toBottomOf="@+id/textTitlePosition" />
 
+        <ImageView
+            android:id="@+id/imageLink"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_star"
+            android:tint="@color/green"
+            app:layout_constraintBottom_toBottomOf="@+id/textLink"
+            app:layout_constraintStart_toStartOf="@+id/textNameCompany"
+            app:layout_constraintTop_toTopOf="@+id/textTitleLink" />
+
+        <TextView
+            android:id="@+id/textTitleLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Website công ty"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/imageLink"
+            app:layout_constraintTop_toBottomOf="@+id/textPosition" />
+
+        <TextView
+            android:id="@+id/textLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:textColor="@color/green"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@id/imageLink"
+            app:layout_constraintTop_toBottomOf="@+id/textTitleLink" />
+
         <TextView
             android:id="@+id/textTitleIntroduce"
             android:layout_width="match_parent"
@@ -63,7 +96,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textPosition" />
+            app:layout_constraintTop_toBottomOf="@id/textLink" />
 
         <TextView
             android:id="@+id/textIntroduce"

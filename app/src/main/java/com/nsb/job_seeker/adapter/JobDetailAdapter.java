@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.nsb.job_seeker.Program;
+import com.nsb.job_seeker.model.Company;
 import com.nsb.job_seeker.model.Job;
 import com.nsb.job_seeker.seeker.CompanyFragment;
 import com.nsb.job_seeker.seeker.InfoJobDetailFragment;
@@ -24,15 +25,15 @@ public class JobDetailAdapter extends FragmentStateAdapter {
 
     private Job job;
     private List<Job> listRelatedJob;
-    private String idCompany;
+    private Company company;
     private InfoJobDetailFragment infoJobDetailFragment = new InfoJobDetailFragment();
     private JobRelativeFragment jobRelativeFragment = new JobRelativeFragment();
     private CompanyFragment companyFragment = new CompanyFragment();
 
-    public JobDetailAdapter(@NonNull FragmentActivity fragmentActivity, List<Job> listRelatedJob, Job job, String idCompany) {
+    public JobDetailAdapter(@NonNull FragmentActivity fragmentActivity, List<Job> listRelatedJob, Job job, Company company) {
         super(fragmentActivity);
         this.job = job;
-        this.idCompany = idCompany;
+        this.company = company;
         this.listRelatedJob = listRelatedJob;
     }
 
@@ -53,7 +54,7 @@ public class JobDetailAdapter extends FragmentStateAdapter {
                 return jobRelativeFragment;
             case 2:
                 bundle = new Bundle();
-                bundle.putSerializable(Program.COMPANY_ID, idCompany);
+                bundle.putSerializable(Program.COMPANY_MODEL, company);
                 companyFragment.setArguments(bundle);
                 return companyFragment;
             default:

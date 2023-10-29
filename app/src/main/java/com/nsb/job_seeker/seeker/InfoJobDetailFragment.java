@@ -19,6 +19,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.databinding.FragmentInfoJobDetailBinding;
 import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONException;
@@ -27,23 +28,21 @@ import org.json.JSONObject;
 import java.text.ParseException;
 
 public class InfoJobDetailFragment extends Fragment {
-    private View view;
-    private TextView tvDescJob, tvReq, tvTypeJob;
+    private FragmentInfoJobDetailBinding binding;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_info_job_detail, container, false);
+        binding = FragmentInfoJobDetailBinding.inflate(getLayoutInflater());
+
         init();
         setEvent();
 
-        return view;
+        return binding.getRoot();
     }
 
     private void init() {
-        tvTypeJob = view.findViewById(R.id.textTypeJob);
-        tvDescJob = view.findViewById(R.id.textDescription);
-        tvReq = view.findViewById(R.id.textRequire);
+
     }
 
     private void setEvent() {
@@ -53,8 +52,11 @@ public class InfoJobDetailFragment extends Fragment {
     private void loadInfo() {
         Job job = (Job) getArguments().getSerializable(Program.JOB_MODEL);
 
-        tvReq.setText(job.getReqJob());
-        tvDescJob.setText(job.getDesJob());
-        tvTypeJob.setText(job.getTypeJob());
+        binding.textExperience.setText(job.getExperience());
+        binding.textWorkingForm.setText(job.getWorkingForm());
+        binding.textAmount.setText(job.getAmountRecruitment() + " người");
+        binding.textGender.setText(job.getGender());
+        binding.textRequire.setText(Program.formatStringToBullet(job.getReqJob()));
+        binding.textDescription.setText(Program.formatStringToBullet(job.getDesJob()));
     }
 }

@@ -23,9 +23,12 @@ import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobAdapter;
+import com.nsb.job_seeker.databinding.FragmentCompanyBinding;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
+import com.nsb.job_seeker.model.Company;
 import com.nsb.job_seeker.model.Job;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,31 +39,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompanyFragment extends Fragment implements JobListener {
-    private View view;
-    private TextView textNameCompany, textAddress, textIntroduce;
+    private FragmentCompanyBinding binding;
+
     private List<Job> listJobCompany;
     private JobAdapter jobAdapter;
-    private RecyclerView rcvRelatedJob;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_company, container, false);
+        binding = FragmentCompanyBinding.inflate(getLayoutInflater());
 
         init();
         setEvent();
 
-        return view;
+        return binding.getRoot();
     }
 
     private void init() {
         listJobCompany = new ArrayList<>();
-        textAddress = view.findViewById(R.id.textPosition);
-        textNameCompany = view.findViewById(R.id.textNameCompany);
-        textIntroduce = view.findViewById(R.id.textIntroduce);
-        rcvRelatedJob = view.findViewById(R.id.rcvJobCompany);
+
         jobAdapter = new JobAdapter(listJobCompany, this, true);
-        rcvRelatedJob.setAdapter(jobAdapter);
+        binding.rcvJobCompany.setAdapter(jobAdapter);
+
+        Picasso.get().load("https://res-console.cloudinary.com/dnstykqpa/thumbnails/v1/image/upload/v1698590814/am9ic2Vla2VyL0JMT0tQQVJUSV9td3hhc2w=/grid_landscape")
+                .into(binding.image);
     }
 
     private void setEvent() {
@@ -69,60 +71,19 @@ public class CompanyFragment extends Fragment implements JobListener {
     }
 
     private void getInfoCompany() {
-//        pbLoading.setVisibility(View.VISIBLE);
-
-        String urlCompany = Program.url_dev + "/company/detail?id=" + getArguments().getString(Program.COMPANY_ID);
-
-        RequestQueue queue = Volley.newRequestQueue(getActivity());
-
-        JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
-                urlCompany,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject jsonObject = response.getJSONObject("data");
-                            textNameCompany.setText(jsonObject.getString("name"));
-                            textIntroduce.setText(jsonObject.getString("about"));
-                            textAddress.setText(jsonObject.getString("location"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        //pbLoading.setVisibility(View.GONE);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        System.out.println(error);
-                    }
-                }
-        );
-        data.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-
-            }
-        });
-        queue.add(data);
+        Company company = (Company) getArguments().getSerializable(Program.COMPANY_MODEL);
+        binding.textNameCompany.setText(company.getName());
+        binding.textPosition.setText(company.getAddress());
+        binding.textLink.setText(company.getLink());
+        binding.textIntroduce.setText(company.getAbout());
     }
 
     private void getListJobOfCompany() {
         String url = Program.url_dev + "/job/list/company/";
-        url += getArguments().getString(Program.COMPANY_ID);
 
-        Log.d("CompanyId", getArguments().getString(Program.COMPANY_ID));
+        Company company = (Company) getArguments().getSerializable(Program.COMPANY_MODEL);
+
+        url += company.getId();
 
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
@@ -133,7 +94,6 @@ public class CompanyFragment extends Fragment implements JobListener {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String idCompany = "";
                             JSONArray jobsList = response.getJSONArray("data");
                             for (int i = 0; i < jobsList.length(); i++) {
                                 JSONObject job = jobsList.getJSONObject(i);
