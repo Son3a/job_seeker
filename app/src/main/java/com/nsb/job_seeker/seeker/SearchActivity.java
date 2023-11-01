@@ -313,7 +313,7 @@ public class SearchActivity extends AppCompatActivity implements JobListener, Ke
     }
 
     @Override
-    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding binding) {
+    public void onSave(Job job, int position, ListViewItemJobBinding binding) {
 
     }
 

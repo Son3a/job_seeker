@@ -70,7 +70,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
         jobList = new ArrayList<>();
         preferenceManager = new PreferenceManager(getActivity());
 
-        jobAdapter = new JobAdapter(jobList, this, true, true);
+        jobAdapter = new JobAdapter(jobList, this, true);
         listViewJobSaved.setAdapter(jobAdapter);
     }
 
@@ -98,6 +98,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
                                 if(jobsList.getJSONObject(i).isNull("jobId")) break;
                                 JSONObject job = jobsList.getJSONObject(i).getJSONObject("jobId");
                                 if (job.getString("status").equals("true")) {
+                                    Log.d("Job", job.getString("_id"));
                                     jobList.add(new Job(
                                             job.getString("_id"),
                                             job.getString("name"),
@@ -133,13 +134,14 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
-                            Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getActivity(), LoginActivity.class);
-                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            preferenceManager.clear();
-                            startActivity(i);
-                        }
+                        Log.d("Error", error.getMessage());
+//                        if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
+//                            Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+//                            Intent i = new Intent(getActivity(), LoginActivity.class);
+//                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                            preferenceManager.clear();
+//                            startActivity(i);
+//                        }
                         System.out.println(error);
                     }
                 }
@@ -165,6 +167,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
+                Log.d("Error", error.getMessage());
                 if(error.networkResponse != null) {
                     if (error.networkResponse.statusCode == 401) {
 
@@ -202,7 +205,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding binding) {
+    public void onSave(Job job, int position, ListViewItemJobBinding binding) {
 
     }
 }

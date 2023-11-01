@@ -84,6 +84,7 @@ public class JobDetailActivity extends AppCompatActivity {
     private void gotoAppJob() {
         binding.layoutBottomSheet.btnApplyJob.setOnClickListener(v -> {
             Intent intent = new Intent(this, ApplyJobActivity.class);
+            intent.putExtra("idJob",IDJob);
             startActivity(intent);
         });
     }

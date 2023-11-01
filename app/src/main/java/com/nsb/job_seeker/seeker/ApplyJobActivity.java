@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -30,12 +31,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.nsb.job_seeker.Program;
+import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.common.RealPathUtil;
 import com.nsb.job_seeker.common.VolleyMultipartRequest;
 import com.nsb.job_seeker.databinding.ActivitySeekerApplyJobBinding;
 import com.nsb.job_seeker.model.DataPart;
+
+import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -99,13 +103,64 @@ public class ApplyJobActivity extends AppCompatActivity {
 
         clickOpenFile();
 
-        clickCreateApplication();
-
         removeFile();
+
+        clickApply();
     }
 
-    private void removeFile(){
-        binding.imageRemoveFile.setOnClickListener(v->{
+    private void clickApply() {
+        binding.btnApply.setOnClickListener(v -> {
+            //validate email
+            if (isEmpty(binding.textEmailSeeker)) {
+                binding.layoutErrorEmail.setVisibility(View.VISIBLE);
+                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_error);
+            } else {
+                binding.layoutErrorEmail.setVisibility(View.GONE);
+                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+            }
+
+            //validate password
+            if (isEmpty(binding.textPhoneSeeker)) {
+                binding.layoutErrorPhone.setVisibility(View.VISIBLE);
+                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_error);
+            } else {
+                binding.layoutErrorPhone.setVisibility(View.GONE);
+                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+            }
+
+            //validate name
+            if (isEmpty(binding.textNameSeeker)) {
+                binding.layoutErrorName.setVisibility(View.VISIBLE);
+                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_error);
+            } else {
+                binding.layoutErrorName.setVisibility(View.GONE);
+                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+            }
+
+            if (!isEmpty(binding.textNameSeeker) && !isEmpty(binding.textPhoneSeeker) && !isEmpty(binding.textEmailSeeker)) {
+                binding.layoutErrorName.setVisibility(View.GONE);
+                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+                binding.layoutErrorPhone.setVisibility(View.GONE);
+                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+                binding.layoutErrorEmail.setVisibility(View.GONE);
+                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+
+                uploadPDF(fileName, mUri);
+            }
+        });
+
+    }
+
+
+    private boolean isEmpty(EditText editText) {
+        if (editText.getText().toString().isEmpty() || editText.getText().toString().trim().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
+    private void removeFile() {
+        binding.imageRemoveFile.setOnClickListener(v -> {
             binding.textFileName.setText("");
             mUri = null;
             binding.layoutInfo.setVisibility(View.GONE);
@@ -121,19 +176,10 @@ public class ApplyJobActivity extends AppCompatActivity {
         });
     }
 
-    private void clickCreateApplication() {
-//        binding.btnSendCv.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                Toast.makeText(ApplyJobActivity.this, fileName + "\n" + mUri, Toast.LENGTH_SHORT).show();
-//                uploadPDF(fileName, mUri);
-//            }
-//        });
-    }
-
     private void uploadPDF(final String pdfname, Uri pdffile) {
         String access_token = preferenceManager.getString(Program.TOKEN);
         String idJob = getIntent().getExtras().getString("idJob");
+        Log.d("idJob", idJob);
         binding.idLoadingPB.setVisibility(View.VISIBLE);
         RequestQueue rQueue = Volley.newRequestQueue(ApplyJobActivity.this);
 
@@ -154,7 +200,7 @@ public class ApplyJobActivity extends AppCompatActivity {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            if (error.networkResponse.statusCode == 401 ) {
+                            if (error.networkResponse.statusCode == 401) {
                                 Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
                                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -181,6 +227,13 @@ public class ApplyJobActivity extends AppCompatActivity {
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
                     params.put("idJob", idJob);
+                    params.put("nameSeeker", binding.textNameSeeker.getText().toString().trim());
+                    params.put("phoneSeeker", binding.textPhoneSeeker.getText().toString().trim());
+                    params.put("emailSeeker", binding.textEmailSeeker.getText().toString().trim());
+                    if (binding.textLetterOfRecommendation.getText() != null &&
+                            !binding.textLetterOfRecommendation.getText().toString().trim().equals("")) {
+                        params.put("letterRecommendation", binding.textLetterOfRecommendation.getText().toString().trim());
+                    }
                     return params;
                 }
 
@@ -252,7 +305,7 @@ public class ApplyJobActivity extends AppCompatActivity {
 
     private void openStorge() {
         Intent i = new Intent();
-        i.setType("application/*");
+        i.setType("*/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
         mActivityResultLauncher.launch(Intent.createChooser(i, "Select file"));
     }

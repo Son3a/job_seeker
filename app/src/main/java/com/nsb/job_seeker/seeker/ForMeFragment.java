@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.android.volley.AuthFailureError;
@@ -193,7 +194,7 @@ public class ForMeFragment extends Fragment implements JobListener {
         });
     }
 
-    private void saveJob(String jobId, int position, ListViewItemJobBinding itemJobBinding, boolean isSaveView) throws JSONException {
+    private void saveJob(String jobId, int position, ListViewItemJobBinding itemJobBinding) throws JSONException {
         String base_url = Program.url_dev + "/job";
         itemJobBinding.layoutItemJob.animate()
                 .setDuration(300)
@@ -209,6 +210,7 @@ public class ForMeFragment extends Fragment implements JobListener {
         RequestQueue mRequestQueue = Volley.newRequestQueue(getContext());
         //post data
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("jobId", jobId);
 //        pbLoading.setVisibility(View.VISIBLE);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PATCH, base_url + "/list-job-favourite", jsonObject, new Response.Listener<JSONObject>() {
@@ -216,27 +218,41 @@ public class ForMeFragment extends Fragment implements JobListener {
             public void onResponse(JSONObject response) {
                 try {
                     String message = response.getString("message");
-//                    dialogNotification.openDialogNotification(message.substring( 0, message.length() - 1 ), getContext());
-//                    pbLoading.setVisibility(View.GONE);
-                    if (isSaveView) {
-                        Program.idSavedJobs.remove(position);
-                        jobList.remove(position);
-                        itemJobBinding.imgSaveJob.setTag("not save");
-                        jobAdapter.notifyDataSetChanged();
+                    String status = response.getString("status");
+
+                    if (status.equals("1")) {
+                        itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_saved);
+                        itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.green));
+                        itemJobBinding.imgSaveJob.setTag("save");
+                        Program.idSavedJobs.add(jobId);
                     } else {
-                        if (itemJobBinding.imgSaveJob.getTag().equals("not save")) {
-                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_saved);
-                            itemJobBinding.imgSaveJob.setTag("save");
-                            Program.idSavedJobs.add(jobId);
-                        } else {
-                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
-                            Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
-                            itemJobBinding.imgSaveJob.setTag("not save");
-                        }
-                        itemJobBinding.layoutItemJob.setVisibility(View.VISIBLE);
+                        itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
+                        Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
+                        itemJobBinding.imgSaveJob.setTag("not save");
+                        itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.secondary_text));
                     }
-                    preferenceManager.putArray(Program.idSavedJobs);
-                    Log.d("SavedJob", Program.idSavedJobs.toString());
+//                    pbLoading.setVisibility(View.GONE);
+//                    if (isSaveView) {
+//                        Program.idSavedJobs.remove(position);
+//                        jobList.remove(position);
+//                        itemJobBinding.imgSaveJob.setTag("not save");
+//                        itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.secondary_text));
+//                        jobAdapter.notifyDataSetChanged();
+//                    } else {
+//                        if (itemJobBinding.imgSaveJob.getTag().equals("not save")) {
+//                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_saved);
+//                            itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.green));
+//                            itemJobBinding.imgSaveJob.setTag("save");
+//                            Program.idSavedJobs.add(jobId);
+//                        } else {
+//                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
+//                            Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
+//                            itemJobBinding.imgSaveJob.setTag("not save");
+//                            itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.secondary_text));
+//                        }
+                    itemJobBinding.layoutItemJob.setVisibility(View.VISIBLE);
+//                    }
+
 
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -275,7 +291,6 @@ public class ForMeFragment extends Fragment implements JobListener {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
                 params.put("Authorization", preferenceManager.getString(Program.TOKEN));
@@ -334,9 +349,9 @@ public class ForMeFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding listViewItemJobBinding) {
+    public void onSave(Job job, int position, ListViewItemJobBinding listViewItemJobBinding) {
         try {
-            saveJob(job.getId(), position, listViewItemJobBinding, isSaveView);
+            saveJob(job.getId(), position, listViewItemJobBinding);
         } catch (JSONException e) {
             e.printStackTrace();
         }

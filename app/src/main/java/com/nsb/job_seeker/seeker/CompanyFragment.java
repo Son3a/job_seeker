@@ -60,9 +60,6 @@ public class CompanyFragment extends Fragment implements JobListener {
 
         jobAdapter = new JobAdapter(listJobCompany, this, true);
         binding.rcvJobCompany.setAdapter(jobAdapter);
-
-        Picasso.get().load("https://res-console.cloudinary.com/dnstykqpa/thumbnails/v1/image/upload/v1698590814/am9ic2Vla2VyL0JMT0tQQVJUSV9td3hhc2w=/grid_landscape")
-                .into(binding.image);
     }
 
     private void setEvent() {
@@ -163,7 +160,7 @@ public class CompanyFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding binding) {
+    public void onSave(Job job, int position, ListViewItemJobBinding binding) {
 
     }
 }

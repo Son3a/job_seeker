@@ -182,7 +182,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onSave(Job job, int position, boolean isSaveView, ListViewItemJobBinding binding) {
+    public void onSave(Job job, int position, ListViewItemJobBinding binding) {
 
     }
 }
