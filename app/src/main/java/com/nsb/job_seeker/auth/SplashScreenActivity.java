@@ -33,7 +33,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         public void run() {
             preferenceManager = new PreferenceManager(SplashScreenActivity.this);
             if (preferenceManager.getBoolean(Program.KEY_IS_SIGNED_IN)) {
-                Program.idSavedJobs = preferenceManager.getArray(Program.LIST_SAVED_JOB);
+
                 redirectAfterLogin(preferenceManager.getString(Program.ROLE));
             } else {
                 finish();

@@ -20,7 +20,6 @@ import java.util.List;
 public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
 
     private boolean isVisibleBtnSave;
-    private boolean isSaveView = false;
     private final List<Job> jobList;
     private final JobListener listener;
 
@@ -28,13 +27,6 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
         this.isVisibleBtnSave = isVisibleBtnSave;
         this.jobList = jobList;
         this.listener = listener;
-    }
-
-    public JobAdapter(List<Job> jobList, JobListener listener, boolean isVisibleBtnSave, boolean isSaveView) {
-        this.isVisibleBtnSave = isVisibleBtnSave;
-        this.jobList = jobList;
-        this.listener = listener;
-        this.isSaveView = isSaveView;
     }
 
     @NonNull
@@ -53,7 +45,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
         holder.setData(jobList.get(position));
 
         holder.binding.imgSaveJob.setOnClickListener(v -> {
-            listener.onSave(jobList.get(position), position, isSaveView, holder.binding);
+            listener.onSave(jobList.get(position), position, holder.binding);
         });
     }
 
@@ -77,7 +69,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             binding.tvPlace.setText(job.getPlace());
             binding.tvSalary.setText(job.getSalary());
             Picasso.get().load(job.getImage()).into(binding.imgJob);
-            if(job.getDeadline() == null){
+            if (job.getDeadline() == null) {
                 binding.tvTimeUpdated1.setText("Công việc đã hết hạn");
                 binding.tvTimeUpdated.setVisibility(View.INVISIBLE);
                 binding.tvTimeUpdated2.setVisibility(View.INVISIBLE);
@@ -87,19 +79,12 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             if (isVisibleBtnSave == false) { //hide icon
                 binding.imgSaveJob.setVisibility(View.GONE);
             }
-
-            if (isSaveView) {
+            if (Program.idSavedJobs.contains(job.getId())) {
                 binding.imgSaveJob.setImageResource(R.drawable.ic_saved);
-                binding.imgSaveJob.setTag("save");
             } else {
-                if (Program.idSavedJobs.contains(job.getId())) {
-                    binding.imgSaveJob.setImageResource(R.drawable.ic_saved);
-                    binding.imgSaveJob.setTag("save");
-                } else {
-                    binding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
-                    binding.imgSaveJob.setTag("not save");
-                }
+                binding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
             }
+
 
             binding.getRoot().setOnClickListener(v -> {
                 listener.onClick(job);
