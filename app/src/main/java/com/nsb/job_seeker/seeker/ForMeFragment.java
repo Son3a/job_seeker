@@ -231,9 +231,6 @@ public class ForMeFragment extends Fragment implements JobListener {
                     }
 
                     itemJobBinding.layoutItemJob.setVisibility(View.VISIBLE);
-//                    }
-
-
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
 //                    pbLoading.setVisibility(View.GONE);

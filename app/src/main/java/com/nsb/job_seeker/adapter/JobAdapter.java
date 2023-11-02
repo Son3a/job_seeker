@@ -24,13 +24,13 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
     private boolean isVisibleBtnSave;
     private final List<Job> jobList;
     private final JobListener listener;
-    private Context context;
+    private final Context context;
 
     public JobAdapter(Context context, List<Job> jobList, JobListener listener, boolean isVisibleBtnSave) {
+        this.context = context;
         this.isVisibleBtnSave = isVisibleBtnSave;
         this.jobList = jobList;
         this.listener = listener;
-        this.context = context;
     }
 
     @NonNull
@@ -88,7 +88,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
                 binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.green));
             } else {
                 binding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
-                binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.green));
+                binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.secondary_text));
             }
 
 

@@ -96,6 +96,8 @@ public class LoginActivity extends AppCompatActivity {
         preferenceManager = new PreferenceManager(this);
 
         if (preferenceManager.getBoolean(Program.KEY_IS_SIGNED_IN)) {
+
+            Program.idSavedJobs = preferenceManager.getArray(Program.LIST_SAVED_JOB);
             redirectAfterLogin(preferenceManager.getString(Program.ROLE));
         }
         initGoogle();
@@ -302,6 +304,7 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 }
                             }
+                            preferenceManager.putArray(Program.idSavedJobs);
                             preferenceManager.putString(Program.ROLE, role);
                             preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);
                             binding.btnLogin.setVisibility(View.VISIBLE);
