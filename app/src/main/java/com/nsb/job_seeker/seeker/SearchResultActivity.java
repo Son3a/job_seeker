@@ -538,7 +538,7 @@ public class SearchResultActivity extends AppCompatActivity implements JobListen
     }
 
     @Override
-    public void onSave(Job job, int position, ListViewItemJobBinding binding) {
+    public void onSave(Job job, ListViewItemJobBinding binding) {
 
     }
 

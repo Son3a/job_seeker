@@ -43,23 +43,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         preferenceManager = new PreferenceManager(SplashScreenActivity.this);
 
-        new Handler().postDelayed(runnable, 2000);
+        getInfo();
     }
 
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            preferenceManager = new PreferenceManager(SplashScreenActivity.this);
-            if (preferenceManager.getBoolean(Program.KEY_IS_SIGNED_IN)) {
-                getInfo(preferenceManager.getString(Program.TOKEN));
-            } else {
-                finish();
-                startActivity(new Intent(SplashScreenActivity.this, PreviousLoginActivity.class));
-            }
-        }
-    };
-
-    private void getInfo(String token) {
+    private void getInfo() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         String url = "https://job-seeker-server.onrender.com/auth/info-user";
 
@@ -85,8 +72,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
-                    Toast.makeText(SplashScreenActivity.this, "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                if (error.networkResponse.data != null && (error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 400)) {
                     Intent i = new Intent(SplashScreenActivity.this, LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     preferenceManager.clear();
@@ -98,7 +84,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", token);
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
                 return params;
             }
         };
@@ -116,8 +102,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
-                    Toast.makeText(SplashScreenActivity.this, "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                if (error.networkResponse.data != null && (error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 400)) {
                     Intent i = new Intent(SplashScreenActivity.this, LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     preferenceManager.clear();

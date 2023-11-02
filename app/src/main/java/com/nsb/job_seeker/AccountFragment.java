@@ -125,8 +125,7 @@ public class AccountFragment extends Fragment {
                 NetworkResponse statusCode = error.networkResponse;
                 if (statusCode.data != null) {
                     try {
-                        if (error.networkResponse.statusCode == 401) {
-                            Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
+                        if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
                             Intent i = new Intent(getActivity(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             preferenceManager.clear();
@@ -168,14 +167,11 @@ public class AccountFragment extends Fragment {
             @Override
             public void retry(VolleyError error) throws VolleyError {
                 Log.d("Error", error.getMessage());
-                if (error.networkResponse.data != null) {
-                    if (error.networkResponse.statusCode == 401) {
-                        Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                        Intent i = new Intent(getActivity(), LoginActivity.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        preferenceManager.clear();
-                        startActivity(i);
-                    }
+                if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
+                    Intent i = new Intent(getActivity(), LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    preferenceManager.clear();
+                    startActivity(i);
                 }
             }
         });

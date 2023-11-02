@@ -201,9 +201,9 @@ public class ApplyJobActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             if (error.networkResponse.statusCode == 401) {
-                                Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
                                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                preferenceManager.clear();
                                 startActivity(i);
                             }
                             binding.idLoadingPB.setVisibility(View.GONE);

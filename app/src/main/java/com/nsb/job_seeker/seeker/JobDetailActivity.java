@@ -2,14 +2,20 @@ package com.nsb.job_seeker.seeker;
 
 import static java.lang.Math.abs;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.RetryPolicy;
@@ -17,9 +23,16 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.tabs.TabLayout;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
+import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobDetailAdapter;
+import com.nsb.job_seeker.auth.LoginActivity;
+import com.nsb.job_seeker.common.CustomToast;
+import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivitySeekerJobDetailBinding;
+import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.model.Company;
 import com.nsb.job_seeker.model.Job;
 import com.squareup.picasso.Picasso;
@@ -27,9 +40,12 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JobDetailActivity extends AppCompatActivity {
     private ActivitySeekerJobDetailBinding binding;
@@ -37,6 +53,7 @@ public class JobDetailActivity extends AppCompatActivity {
     private String IDJob = "";
     private JobDetailAdapter jobDetailAdapter;
     private List<Job> listRelatedJob;
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,6 +76,7 @@ public class JobDetailActivity extends AppCompatActivity {
         }
         IDJob = bundle.getString("id");
         listRelatedJob = new ArrayList<>();
+        preferenceManager = new PreferenceManager(this);
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Thông tin"));
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công việc liên quan"));
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công ty"));
@@ -79,6 +97,15 @@ public class JobDetailActivity extends AppCompatActivity {
         applyJob();
 
         gotoAppJob();
+
+        clickSaveJob();
+    }
+
+    private void hideLayout(int visible){
+        binding.layoutHeader1.setVisibility(visible);
+        binding.tabLayout.setVisibility(visible);
+        binding.layoutBottomSheet.getRoot().setVisibility(visible);
+        binding.viewPager.setVisibility(visible);
     }
 
     private void gotoAppJob() {
@@ -160,11 +187,117 @@ public class JobDetailActivity extends AppCompatActivity {
 //        }
     }
 
+    private void clickSaveJob(){
+        binding.layoutBottomSheet.cvSaveJob.setOnClickListener(v->{
+            try {
+                saveJob(IDJob);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void saveJob(String jobId) throws JSONException {
+        String base_url = Program.url_dev + "/job";
+
+        RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+        //post data
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("jobId", jobId);
+//        pbLoading.setVisibility(View.VISIBLE);
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PATCH, base_url + "/list-job-favourite", jsonObject, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    String status = response.getString("status");
+
+                    if (status.equals("1")) {
+                        binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_saved);
+                        binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.green));
+                        Program.idSavedJobs.add(jobId);
+                    } else {
+                        binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_not_save);
+                        Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
+                        binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.secondary_text));
+                        CustomToast.makeText(JobDetailActivity.this, "Bạn đã bỏ lưu công việc!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                    }
+
+                } catch (JSONException e) {
+                    Toast.makeText(JobDetailActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
+//                    pbLoading.setVisibility(View.GONE);
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                String body;
+                //get status code here
+                String statusCode = String.valueOf(error.networkResponse.statusCode);
+                if (error.networkResponse.data != null) {
+                    try {
+                        if (error.networkResponse.statusCode == 401) {
+                            Intent i = new Intent(JobDetailActivity.this, LoginActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
+                        body = new String(error.networkResponse.data, "UTF-8");
+                        JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
+                        String message = convertedObject.get("message").toString();
+
+                        Toast.makeText(JobDetailActivity.this, message.substring(1, message.length() - 1), Toast.LENGTH_SHORT).show();
+                        //pbLoading.setVisibility(View.GONE);
+                        Log.d("ABC", body);
+                    } catch (UnsupportedEncodingException e) {
+                        //pbLoading.setVisibility(View.GONE);
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("Content-Type", "application/json; charset=UTF-8");
+                params.put("Authorization", preferenceManager.getString(Program.TOKEN));
+                return params;
+            }
+
+            ;
+        };
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
+                    Intent i = new Intent(JobDetailActivity.this, LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    preferenceManager.clear();
+                    startActivity(i);
+                }
+            }
+        });
+        mRequestQueue.add(jsonObjectRequest);
+    }
+
     private void getJobDetail() {
         RequestQueue requestQueue = Volley.newRequestQueue(JobDetailActivity.this);
 
         String url = Program.url_dev + "/job/detail?id=" + IDJob;
 //        binding.idLoadingPB.setVisibility(View.VISIBLE);
+        hideLayout(View.INVISIBLE);
 
         JsonObjectRequest data = new JsonObjectRequest(url, new Response.Listener<JSONObject>() {
             @Override
@@ -243,7 +376,7 @@ public class JobDetailActivity extends AppCompatActivity {
                             company
                     );
 
-                    //setContentView(R.layout.activity_seeker_job_detail);
+                    hideLayout(View.VISIBLE);
 
                 } catch (JSONException e) {
                     e.printStackTrace();

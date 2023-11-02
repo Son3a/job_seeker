@@ -49,7 +49,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
         holder.setData(jobList.get(position));
 
         holder.binding.imgSaveJob.setOnClickListener(v -> {
-            listener.onSave(jobList.get(position), position, holder.binding);
+            listener.onSave(jobList.get(position), holder.binding);
         });
     }
 

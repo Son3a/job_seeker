@@ -194,6 +194,7 @@
                         app:layout_constraintTop_toBottomOf="@id/textNameCompany" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layoutHeader1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="15dp"
@@ -294,7 +295,7 @@
             app:tabGravity="fill"
             app:tabIndicatorColor="@color/green"
             app:tabMaxWidth="0dp"
-            app:tabMode="fixed"
+            app:tabMode="scrollable"
             app:tabSelectedTextColor="@color/green"
             app:tabTextAppearance="@style/CustomTextAppearance"
             app:tabTextColor="@color/secondary_text" />

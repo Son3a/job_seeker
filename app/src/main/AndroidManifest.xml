@@ -54,7 +54,6 @@
         <activity android:name=".employer.RecruitmentDetailActivity" />
         <activity android:name=".employer.ListCVActivity" />
         <activity android:name=".employer.EditRecruitmentActivity" />
-        <activity android:name=".seeker.CompanyActivity" />
         <activity
             android:name=".auth.SetNewPassword"
             android:exported="false"

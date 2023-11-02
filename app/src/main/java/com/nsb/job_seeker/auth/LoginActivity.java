@@ -283,7 +283,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
-                            JSONObject jsonObject1 = response.getJSONObject("data").getJSONObject("user");
+                            JSONObject jsonObject1 = response.getJSONObject("data");
 
                             String accessToken = jsonObject1.get("refreshToken").toString();
                             preferenceManager.putString(Program.TOKEN, "Bearer " + accessToken.replace("\"", ""));

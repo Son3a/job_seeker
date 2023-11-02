@@ -264,7 +264,6 @@ public class UpdateNewsFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
-                    Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(getActivity(), LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     preferenceManager.clear();
@@ -294,7 +293,12 @@ public class UpdateNewsFragment extends Fragment {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-
+                if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
+                    Intent i = new Intent(getContext(), LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    preferenceManager.clear();
+                    startActivity(i);
+                }
             }
         });
         queue.add(sr);

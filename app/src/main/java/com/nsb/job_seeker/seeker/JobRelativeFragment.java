@@ -1,5 +1,6 @@
 package com.nsb.job_seeker.seeker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,11 +49,13 @@ public class JobRelativeFragment extends Fragment implements JobListener {
 
     @Override
     public void onClick(Job job) {
-
+        Intent i = new Intent(getContext(), JobDetailActivity.class);
+        i.putExtra("id", job.getId());
+        startActivity(i);
     }
 
     @Override
-    public void onSave(Job job, int position, ListViewItemJobBinding binding) {
+    public void onSave(Job job, ListViewItemJobBinding binding) {
 
     }
 }

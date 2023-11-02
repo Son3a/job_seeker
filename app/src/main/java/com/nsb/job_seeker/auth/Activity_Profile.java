@@ -214,9 +214,9 @@ public class Activity_Profile extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
-                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
                             Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            preferenceManager.clear();
                             startActivity(i);
                         }
                         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();

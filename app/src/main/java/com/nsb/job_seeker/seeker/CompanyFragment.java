@@ -1,6 +1,7 @@
 package com.nsb.job_seeker.seeker;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -65,6 +66,7 @@ public class CompanyFragment extends Fragment implements JobListener {
     private void setEvent() {
         getInfoCompany();
         getListJobOfCompany();
+        clickLinkCompany();
     }
 
     private void getInfoCompany() {
@@ -148,19 +150,24 @@ public class CompanyFragment extends Fragment implements JobListener {
         queue.add(data);
     }
 
+    private void clickLinkCompany(){
+        binding.textLink.setOnClickListener(v->{
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(binding.textLink.getText().toString()));
+            startActivity(i);
+        });
+    }
+
     @Override
     public void onClick(Job job) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("id", job);
-
         Intent intent = new Intent(getActivity(), JobDetailActivity.class);
-        intent.putExtras(bundle);
+        intent.putExtra("id", job.getId());
         getActivity().finish();
         startActivity(intent);
     }
 
     @Override
-    public void onSave(Job job, int position, ListViewItemJobBinding binding) {
+    public void onSave(Job job, ListViewItemJobBinding binding) {
 
     }
 }

@@ -30,6 +30,7 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.auth.LoginActivity;
 import com.nsb.job_seeker.common.AsyncTasks;
+import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.FragmentSeekerForMeBinding;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
@@ -49,7 +50,6 @@ import java.util.Map;
 
 public class ForMeFragment extends Fragment implements JobListener {
     FragmentSeekerForMeBinding binding;
-    private String url = Program.url_dev + "/job/list/sort-by-date";
     private PreferenceManager preferenceManager;
     private JobAdapter jobAdapter;
 
@@ -78,9 +78,16 @@ public class ForMeFragment extends Fragment implements JobListener {
     }
 
     private void setEvent() {
-        getNewJobs(url);
+        getNewJobs();
         setStateAppBar();
         gotoSearch();
+        refreshContent();
+    }
+
+    private void refreshContent() {
+        binding.layoutRefresh.setOnRefreshListener(() -> {
+            getNewJobs();
+        });
     }
 
     private void gotoSearch() {
@@ -93,12 +100,10 @@ public class ForMeFragment extends Fragment implements JobListener {
         });
     }
 
-    private void getNewJobs(String url) {
+    private void getNewJobs() {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-//        List<String> listSavedJob = preferenceManager.getArray(Program.LIST_SAVED_JOB);
-//        Log.d("itemSave", listSavedJob.toString());
-
-        //pbLoading.setVisibility(View.VISIBLE);
+        String url = Program.url_dev + "/job/list/sort-by-date";
+        jobList.clear();
         JsonObjectRequest data = new JsonObjectRequest(
                 url,
                 new Response.Listener<JSONObject>() {
@@ -133,6 +138,7 @@ public class ForMeFragment extends Fragment implements JobListener {
                                 }
                             }
                             jobAdapter.notifyDataSetChanged();
+                            binding.layoutRefresh.setRefreshing(false);
                             //pbLoading.setVisibility(View.GONE);
 
                         } catch (JSONException e) {
@@ -194,7 +200,7 @@ public class ForMeFragment extends Fragment implements JobListener {
         });
     }
 
-    private void saveJob(String jobId, int position, ListViewItemJobBinding itemJobBinding) throws JSONException {
+    private void saveJob(String jobId, ListViewItemJobBinding itemJobBinding) throws JSONException {
         String base_url = Program.url_dev + "/job";
         itemJobBinding.layoutItemJob.animate()
                 .setDuration(300)
@@ -228,6 +234,7 @@ public class ForMeFragment extends Fragment implements JobListener {
                         itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
                         Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
                         itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.secondary_text));
+                        CustomToast.makeText(getContext(), "Bạn đã bỏ lưu công việc!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                     }
 
                     itemJobBinding.layoutItemJob.setVisibility(View.VISIBLE);
@@ -245,13 +252,12 @@ public class ForMeFragment extends Fragment implements JobListener {
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
                 if (error.networkResponse.data != null) {
                     try {
-//                        if (error.networkResponse.statusCode == 401) {
-//                            Toast.makeText(context.getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-//                            Intent i = new Intent(context.getApplicationContext(), MainActivity.class);
-//                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                            preferenceManager.clear();
-//                            context.startActivity(i);
-//                        }
+                        if (error.networkResponse.statusCode == 401) {
+                            Intent i = new Intent(getContext(), LoginActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
                         body = new String(error.networkResponse.data, "UTF-8");
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
@@ -289,28 +295,11 @@ public class ForMeFragment extends Fragment implements JobListener {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if (error.networkResponse != null) {
-                    if (error.networkResponse.statusCode == 401) {
-
-                        new AsyncTasks() {
-                            @Override
-                            public void onPreExecute() {
-                            }
-
-                            @Override
-                            public void doInBackground() {
-                                Intent i = new Intent(getActivity(), LoginActivity.class);
-                                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                preferenceManager.clear();
-                                startActivity(i);
-                            }
-
-                            @Override
-                            public void onPostExecute() {
-                                Toast.makeText(getActivity(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            }
-                        }.execute();
-                    }
+                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
+                    Intent i = new Intent(getActivity(), LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    preferenceManager.clear();
+                    startActivity(i);
                 }
             }
         });
@@ -326,9 +315,9 @@ public class ForMeFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onSave(Job job, int position, ListViewItemJobBinding listViewItemJobBinding) {
+    public void onSave(Job job, ListViewItemJobBinding listViewItemJobBinding) {
         try {
-            saveJob(job.getId(), position, listViewItemJobBinding);
+            saveJob(job.getId(), listViewItemJobBinding);
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -227,9 +227,8 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
 //                String statusCode = String.valueOf(error.networkResponse.statusCode);
                 if (error.networkResponse.data != null) {
                     try {
-                        if (error.networkResponse.statusCode == 401) {
-                            Toast.makeText(getApplicationContext(), "Hết phiên đăng nhập", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                        if(error.networkResponse.statusCode == 401){
+                            Intent i = new Intent(RecruitmentDetailActivity.this, LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             preferenceManager.clear();
                             startActivity(i);
@@ -265,7 +264,12 @@ public class RecruitmentDetailActivity extends AppCompatActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-
+                if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
+                    Intent i = new Intent(RecruitmentDetailActivity.this, LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    preferenceManager.clear();
+                    startActivity(i);
+                }
             }
         });
         queue.add(sr);

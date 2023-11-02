@@ -58,9 +58,6 @@ public class JobDetailAdapter extends FragmentStateAdapter {
                 companyFragment.setArguments(bundle);
                 return companyFragment;
             default:
-                bundle = new Bundle();
-                bundle.putSerializable(Program.JOB_MODEL, job);
-                infoJobDetailFragment.setArguments(bundle);
                 return infoJobDetailFragment;
         }
     }
