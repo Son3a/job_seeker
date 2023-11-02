@@ -1,11 +1,13 @@
 package com.nsb.job_seeker.adapter;
 
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nsb.job_seeker.Program;
@@ -22,11 +24,13 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
     private boolean isVisibleBtnSave;
     private final List<Job> jobList;
     private final JobListener listener;
+    private Context context;
 
-    public JobAdapter(List<Job> jobList, JobListener listener, boolean isVisibleBtnSave) {
+    public JobAdapter(Context context, List<Job> jobList, JobListener listener, boolean isVisibleBtnSave) {
         this.isVisibleBtnSave = isVisibleBtnSave;
         this.jobList = jobList;
         this.listener = listener;
+        this.context = context;
     }
 
     @NonNull
@@ -81,8 +85,10 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             }
             if (Program.idSavedJobs.contains(job.getId())) {
                 binding.imgSaveJob.setImageResource(R.drawable.ic_saved);
+                binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.green));
             } else {
                 binding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
+                binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.green));
             }
 
 

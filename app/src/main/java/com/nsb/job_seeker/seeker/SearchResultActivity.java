@@ -96,7 +96,7 @@ public class SearchResultActivity extends AppCompatActivity implements JobListen
 
     private void init() {
         jobList = new ArrayList<>();
-        jobAdapter = new JobAdapter(jobList, this, true);
+        jobAdapter = new JobAdapter(this, jobList, this, true);
         binding.rcvResultSearch.setAdapter(jobAdapter);
         layoutBottomPosition = getLayoutInflater().inflate(R.layout.layout_position, null);
         searchView = layoutBottomPosition.findViewById(R.id.searchPosition);

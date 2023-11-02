@@ -58,7 +58,7 @@ public class CompanyFragment extends Fragment implements JobListener {
     private void init() {
         listJobCompany = new ArrayList<>();
 
-        jobAdapter = new JobAdapter(listJobCompany, this, true);
+        jobAdapter = new JobAdapter(getContext(), listJobCompany, this, true);
         binding.rcvJobCompany.setAdapter(jobAdapter);
     }
 

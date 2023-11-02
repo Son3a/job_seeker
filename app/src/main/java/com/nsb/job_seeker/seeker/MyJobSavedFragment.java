@@ -70,7 +70,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
         jobList = new ArrayList<>();
         preferenceManager = new PreferenceManager(getActivity());
 
-        jobAdapter = new JobAdapter(jobList, this, true);
+        jobAdapter = new JobAdapter(getContext(), jobList, this, true);
         listViewJobSaved.setAdapter(jobAdapter);
     }
 
