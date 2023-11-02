@@ -70,7 +70,7 @@ public class ForMeFragment extends Fragment implements JobListener {
         jobList = new ArrayList<Job>();
 
         preferenceManager = new PreferenceManager(getActivity());
-        jobAdapter = new JobAdapter(jobList, this, true);
+        jobAdapter = new JobAdapter(getContext(), jobList, this, true);
         //   PickerLayoutManager pickerLayoutManager = new PickerLayoutManager();
         binding.lvJob.setClipChildren(false);
 
@@ -223,37 +223,14 @@ public class ForMeFragment extends Fragment implements JobListener {
                     if (status.equals("1")) {
                         itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_saved);
                         itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.green));
-                        itemJobBinding.imgSaveJob.setTag("save");
                         Program.idSavedJobs.add(jobId);
                     } else {
                         itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
                         Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
-                        itemJobBinding.imgSaveJob.setTag("not save");
                         itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.secondary_text));
                     }
-//                    pbLoading.setVisibility(View.GONE);
-//                    if (isSaveView) {
-//                        Program.idSavedJobs.remove(position);
-//                        jobList.remove(position);
-//                        itemJobBinding.imgSaveJob.setTag("not save");
-//                        itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.secondary_text));
-//                        jobAdapter.notifyDataSetChanged();
-//                    } else {
-//                        if (itemJobBinding.imgSaveJob.getTag().equals("not save")) {
-//                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_saved);
-//                            itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.green));
-//                            itemJobBinding.imgSaveJob.setTag("save");
-//                            Program.idSavedJobs.add(jobId);
-//                        } else {
-//                            itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
-//                            Program.idSavedJobs.remove(Program.idSavedJobs.size() - 1);
-//                            itemJobBinding.imgSaveJob.setTag("not save");
-//                            itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.secondary_text));
-//                        }
+
                     itemJobBinding.layoutItemJob.setVisibility(View.VISIBLE);
-//                    }
-
-
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
 //                    pbLoading.setVisibility(View.GONE);

@@ -80,7 +80,7 @@ public class StatisticalAmountJobFragment extends Fragment implements JobListene
         idTypeJobs = new ArrayList<>();
         jobResultList = new ArrayList<Job>();
 
-        jobAdapter = new JobAdapter(jobResultList, this, false);
+        jobAdapter = new JobAdapter(getContext(), jobResultList, this, false);
         listView.setAdapter(jobAdapter);
     }
 

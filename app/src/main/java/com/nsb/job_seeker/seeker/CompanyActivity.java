@@ -81,7 +81,7 @@ public class CompanyActivity extends AppCompatActivity implements JobListener {
         jobList = new ArrayList<>();
         userReceive = new User();
 
-        jobAdapter = new JobAdapter(jobList, this, true);
+        jobAdapter = new JobAdapter(this, jobList, this, true);
         listView.setAdapter(jobAdapter);
     }
 

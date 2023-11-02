@@ -290,20 +290,20 @@ public class LoginActivity extends AppCompatActivity {
 
                             String role = jsonObject1.getString("role");
                             //signIn(email, password);   //login firebase
-//                            Program.idSavedJobs = new ArrayList<>();
-//                            if (role.equals(Program.ADMIN_ROLE)) {
-//                                preferenceManager.putString(Program.COMPANY_ID, response.getJSONObject("company").getString("_id"));
-//                            } else {
-//                                JSONArray listJobFavorite = jsonObject1.getJSONArray("jobFavourite");
-//                                for (int i = 0; i < listJobFavorite.length(); i++) {
-//                                    if (!listJobFavorite.getJSONObject(i).isNull("jobId")) {
-//                                        JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
-//                                        if (jobObject.getString("status").equals("true")) {
-//                                            Program.idSavedJobs.add(jobObject.getString("_id"));
-//                                        }
-//                                    }
-//                                }
-//                            }
+                            Program.idSavedJobs = new ArrayList<>();
+                            if (role.equals(Program.ADMIN_ROLE)) {
+                                preferenceManager.putString(Program.COMPANY_ID, response.getJSONObject("company").getString("_id"));
+                            } else {
+                                JSONArray listJobFavorite = jsonObject1.getJSONArray("jobFavourite");
+                                for (int i = 0; i < listJobFavorite.length(); i++) {
+                                    if (!listJobFavorite.getJSONObject(i).isNull("jobId")) {
+                                        JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
+                                        if (jobObject.getString("status").equals("true")) {
+                                            Program.idSavedJobs.add(jobObject.getString("_id"));
+                                        }
+                                    }
+                                }
+                            }
                             preferenceManager.putArray(Program.idSavedJobs);
                             preferenceManager.putString(Program.ROLE, role);
                             preferenceManager.putBoolean(Program.KEY_IS_SIGNED_IN, true);

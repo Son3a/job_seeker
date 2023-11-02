@@ -24,6 +24,7 @@ public class JobRelativeFragment extends Fragment implements JobListener {
     private FragmentJobRelativeBinding binding;
     private JobAdapter jobAdapter;
     private List<Job> listRelatedJob;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,13 +36,13 @@ public class JobRelativeFragment extends Fragment implements JobListener {
         return binding.getRoot();
     }
 
-    private void init(){
+    private void init() {
         listRelatedJob = getArguments().getParcelableArrayList(Program.LIST_RELATED_JOB);
-        jobAdapter = new JobAdapter(listRelatedJob, this, true);
+        jobAdapter = new JobAdapter(getContext(), listRelatedJob, this, true);
         binding.rcvRelatedJob.setAdapter(jobAdapter);
     }
 
-    private void setEvent(){
+    private void setEvent() {
 
     }
 

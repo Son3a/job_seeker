@@ -70,7 +70,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
         jobList = new ArrayList<>();
         preferenceManager = new PreferenceManager(getActivity());
 
-        jobAdapter = new JobAdapter(jobList, this, true);
+        jobAdapter = new JobAdapter(getContext(), jobList, this, true);
         listViewJobSaved.setAdapter(jobAdapter);
     }
 
@@ -90,10 +90,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String idCompany = "";
                             JSONArray jobsList = response.getJSONArray("jobFavourite");
-//                            Log.d("ABC", String.valueOf(jobsList));
-
                             for (int i = 0; i < jobsList.length(); i++) {
                                 if(jobsList.getJSONObject(i).isNull("jobId")) break;
                                 JSONObject job = jobsList.getJSONObject(i).getJSONObject("jobId");
@@ -108,7 +105,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
                                             Program.setTime(job.getString("deadline")),
                                             job.getString("description"),
                                             job.getString("requirement"),
-                                            job.getJSONObject("idOccupation").getString("name"),
+                                            "",
                                             job.getJSONObject("idCompany").getString("image"),
                                             job.getString("amount"),
                                             job.getString("working_form"),

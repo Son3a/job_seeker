@@ -69,7 +69,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
 
         preferenceManager = new PreferenceManager(getActivity());
 
-        jobAdapter = new JobAdapter(jobListApplied, this, false);
+        jobAdapter = new JobAdapter(getContext(), jobListApplied, this, false);
         listView.setAdapter(jobAdapter);
     }
 
