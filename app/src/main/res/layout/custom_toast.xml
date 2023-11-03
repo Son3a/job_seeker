@@ -3,7 +3,7 @@
     android:id="@+id/layoutToast"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/layout_toast"
+    android:background="@drawable/layout_toast_success"
     android:paddingTop="20dp"
     android:paddingBottom="20dp">
 

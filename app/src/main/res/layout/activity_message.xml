@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@drawable/image_background"
-    tools:context=".message.activity.MessageFragment">
+    tools:context=".activity.messenger.MessageFragment">
 
     <TextView
         android:id="@+id/textName"

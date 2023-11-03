@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_app"
-    tools:context=".auth.PreviousLoginActivity">
+    tools:context=".activity.PreviousLoginActivity">
 
     <LinearLayout
         android:id="@+id/layoutText"
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="JOB"
-            android:textColor="@color/green"
+            android:textColor="#f4466b"
             android:textSize="40sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -37,9 +37,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/layoutText"
-        android:layout_marginTop="60dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
         android:text="Kết nối thành công"
-        android:textColor="@color/green"
+        android:textColor="#f4466b"
         android:textSize="20sp" />
+
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/pbLoading"
+        style="@style/SpinKitView.Small.ThreeBounce"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textVisitPage"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        app:SpinKit_Color="@color/white" />
 </RelativeLayout>

@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.nsb.job_seeker.Program;
+import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
@@ -83,7 +83,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             if (isVisibleBtnSave == false) { //hide icon
                 binding.imgSaveJob.setVisibility(View.GONE);
             }
-            if (Program.idSavedJobs.contains(job.getId())) {
+            if (Constant.idSavedJobs.contains(job.getId())) {
                 binding.imgSaveJob.setImageResource(R.drawable.ic_saved);
                 binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.green));
             } else {

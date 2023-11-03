@@ -22,73 +22,73 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".seeker.SearchResultActivity"
+            android:name=".activity.seeker.SearchResultActivity"
             android:exported="false" />
         <activity
-            android:name=".seeker.SearchActivity"
+            android:name=".activity.seeker.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".auth.PreviousLoginActivity"
+            android:name=".activity.PreviousLoginActivity"
             android:exported="false" />
         <activity
-            android:name=".auth.LoginActivity"
+            android:name=".activity.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".auth.Activity_Profile"
+            android:name=".activity.Activity_Profile"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.Activity_ChangePassword"
+            android:name=".activity.Activity_ChangePassword"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity android:name=".seeker.ApplyJobActivity" />
-        <activity android:name=".seeker.JobDetailActivity" />
-        <activity android:name=".employer.StatisticalJobActivity" />
-        <activity android:name=".seeker.SeekerMainActivity" />
-        <activity android:name=".employer.RecruitmentDetailActivity" />
-        <activity android:name=".employer.ListCVActivity" />
-        <activity android:name=".employer.EditRecruitmentActivity" />
+        <activity android:name=".activity.seeker.ApplyJobActivity" />
+        <activity android:name=".activity.seeker.JobDetailActivity" />
+        <activity android:name=".activity.admin.StatisticalJobActivity" />
+        <activity android:name=".activity.seeker.SeekerMainActivity" />
+        <activity android:name=".activity.admin.RecruitmentDetailActivity" />
+        <activity android:name=".activity.admin.ListCVActivity" />
+        <activity android:name=".activity.admin.EditRecruitmentActivity" />
         <activity
-            android:name=".auth.SetNewPassword"
+            android:name=".activity.SetNewPassword"
             android:exported="false"
-            android:parentActivityName=".auth.ConfirmOTP">
+            android:parentActivityName=".activity.ConfirmOTP">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.ConfirmOTP"
+            android:name=".activity.ConfirmOTP"
             android:exported="false"
-            android:parentActivityName=".auth.ForgotActivity">
+            android:parentActivityName=".activity.ForgotActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.ForgotActivity"
+            android:name=".activity.ForgotActivity"
             android:exported="false"
-            android:parentActivityName=".auth.LoginActivity">
+            android:parentActivityName=".activity.LoginActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.RegisterActivity"
+            android:name=".activity.RegisterActivity"
             android:exported="false"
             android:label="Đăng Ký"
-            android:parentActivityName=".auth.LoginActivity">
+            android:parentActivityName=".activity.LoginActivity">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".auth.SplashScreenActivity"
+            android:name=".activity.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -101,10 +101,10 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".employer.EmployerMainActivity"
+            android:name=".activity.admin.EmployerMainActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".message.activity.ChatActivity"
+            android:name=".activity.messenger.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize">
             <meta-data
@@ -112,14 +112,14 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".message.activity.UserActivity"
+            android:name=".activity.messenger.UserActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".message.activity.MessageFragment"
+            android:name=".activity.messenger.MessageFragment"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -127,7 +127,7 @@
         </activity>
 
         <service
-            android:name=".message.firebase.MessageService"
+            android:name=".service.MessageService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

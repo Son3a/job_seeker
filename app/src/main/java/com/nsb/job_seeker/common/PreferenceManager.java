@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
-import com.nsb.job_seeker.Program;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,7 @@ public class PreferenceManager {
     private final SharedPreferences sharedPreferences;
 
     public PreferenceManager(Context context) {
-        sharedPreferences = context.getSharedPreferences(Program.sharedPreferencesName, Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences(Constant.sharedPreferencesName, Context.MODE_PRIVATE);
     }
 
 
@@ -41,7 +40,7 @@ public class PreferenceManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         String json = gson.toJson(list);
-        editor.putString(Program.LIST_SAVED_JOB, json);
+        editor.putString(Constant.LIST_SAVED_JOB, json);
         editor.apply();
     }
 

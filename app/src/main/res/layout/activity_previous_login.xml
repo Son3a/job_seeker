@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_app"
-    tools:context=".auth.PreviousLoginActivity">
+    tools:context=".activity.PreviousLoginActivity">
 
     <LinearLayout
         android:id="@+id/layoutText"

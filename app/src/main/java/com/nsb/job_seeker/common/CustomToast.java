@@ -5,8 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,21 +40,20 @@ public class CustomToast extends Toast {
         l1.setText(message);
 
         if (type == 1) {
-            relativeLayout.setBackgroundResource(R.drawable.layout_toast);
+            relativeLayout.setBackgroundResource(R.drawable.layout_toast_success);
+        } else if (type == 2) {
+            relativeLayout.setBackgroundResource(R.drawable.layout_toast_warning);
         }
-//        } else if (type == 2) {
-//            linearLayout.setBackgroundResource(R.drawable.warning_shape);
-//            img.setImageResource(R.drawable.ic_pan_tool_black_24dp);
-//        } else if (type == 3) {
+//        else if (type == 3) {
 //            linearLayout.setBackgroundResource(R.drawable.error_shape);
 //            img.setImageResource(R.drawable.ic_clear_black_24dp);
 //        } else if (type == 4) {
 //            linearLayout.setBackgroundResource(R.drawable.confusing_shape);
 //            img.setImageResource(R.drawable.ic_refresh_black_24dp);
 //        }
-            toast.setView(layout);
-            return toast;
-        }
+        toast.setView(layout);
+        return toast;
+    }
 //
 //        public static Toast makeText (Context context, String message,int duration, int type,
 //        int ImageResource){
@@ -82,4 +79,4 @@ public class CustomToast extends Toast {
 //            toast.setView(layout);
 //            return toast;
 //        }
-    }
+}

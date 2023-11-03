@@ -50,15 +50,22 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="25dp">
 
-        <ImageView
-            android:id="@+id/ivChooseAvatar"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/rounded_outline"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_account"
-            app:tint="@color/secondary_text" />
+            android:backgroundTint="@color/white"
+            app:cardCornerRadius="100dp">
+
+            <ImageView
+                android:id="@+id/imageAvatar"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:background="@drawable/rounded_outline"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_account" />
+        </androidx.cardview.widget.CardView>
+
 
         <TextView
             android:id="@+id/txtName"
@@ -80,7 +87,8 @@
             android:ems="10"
             android:paddingHorizontal="8dp"
             android:textColor="@color/black"
-            android:textColorHint="@color/secondary_text" />
+            android:textColorHint="@color/secondary_text"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:id="@+id/layoutErrorName"
@@ -123,7 +131,7 @@
             android:text="Email"
             android:textColor="@color/secondary_text" />
 
-        <EditText
+        <TextView
             android:id="@+id/textEmail"
             android:layout_width="match_parent"
             android:layout_height="46dp"
@@ -131,11 +139,11 @@
             android:background="@drawable/custom_input"
             android:drawableStart="@drawable/custom_icon_email"
             android:drawablePadding="12dp"
-            android:ems="10"
+            android:gravity="center_vertical"
             android:inputType="textEmailAddress"
             android:paddingHorizontal="8dp"
             android:textColor="@color/black"
-            android:textColorHint="@color/secondary_text" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/txtPhone"
@@ -158,7 +166,8 @@
             android:inputType="phone"
             android:paddingHorizontal="8dp"
             android:textColor="@color/black"
-            android:textColorHint="@color/secondary_text" />
+            android:textColorHint="@color/secondary_text"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:id="@+id/layoutErrorPhone"

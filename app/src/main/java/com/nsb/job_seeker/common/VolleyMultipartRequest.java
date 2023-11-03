@@ -105,6 +105,9 @@ public class VolleyMultipartRequest extends Request<NetworkResponse> {
     @Override
     public void deliverError(VolleyError error) {
         mErrorListener.onErrorResponse(error);
+        if (error instanceof com.android.volley.NoConnectionError) {
+
+        }
     }
 
     /**

@@ -7,7 +7,7 @@
     android:layout_gravity="bottom"
     android:orientation="vertical"
     android:background="@color/white"
-    tools:context=".seeker.SeekerMainActivity">
+    tools:context=".activity.seeker.SeekerMainActivity">
 
     <FrameLayout
         android:id="@+id/container"
