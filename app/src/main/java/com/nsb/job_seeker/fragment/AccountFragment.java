@@ -32,9 +32,9 @@ import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.Activity_ChangePassword;
 import com.nsb.job_seeker.activity.DialogNotification;
-import com.nsb.job_seeker.activity.LoadingDialog;
 import com.nsb.job_seeker.activity.LoginActivity;
 import com.nsb.job_seeker.activity.Activity_Profile;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 
 import org.json.JSONObject;
@@ -143,8 +143,6 @@ public class AccountFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                loadingDialog.dismissDialog();
-
             }
         }) {
             @Override
@@ -155,30 +153,28 @@ public class AccountFragment extends Fragment {
                 return params;
             }
         };
-        jsonObjectRequest.setRetryPolicy(new
+        jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
 
-                                                 RetryPolicy() {
-                                                     @Override
-                                                     public int getCurrentTimeout() {
-                                                         return 50000;
-                                                     }
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
 
-                                                     @Override
-                                                     public int getCurrentRetryCount() {
-                                                         return 50000;
-                                                     }
-
-                                                     @Override
-                                                     public void retry(VolleyError error) throws VolleyError {
-                                                         Log.d("Error", error.getMessage());
-                                                         if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
-                                                             Intent i = new Intent(getActivity(), LoginActivity.class);
-                                                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                             preferenceManager.clear();
-                                                             startActivity(i);
-                                                         }
-                                                     }
-                                                 });
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                Log.d("Error", error.getMessage());
+                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
+                    Intent i = new Intent(getActivity(), LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    preferenceManager.clear();
+                    startActivity(i);
+                }
+            }
+        });
         mRequestQueue.add(jsonObjectRequest);
     }
 

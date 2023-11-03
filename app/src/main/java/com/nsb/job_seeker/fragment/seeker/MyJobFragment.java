@@ -23,6 +23,7 @@ public class MyJobFragment extends Fragment {
     //    private ViewPager2 viewPager2;
     private MyJobAppliedFragment myJobAppliedFragment;
     private MyJobSavedFragment myJobSavedFragment;
+    private Fragment activeFragment;
 
     private List<Job> jobListApplied;
 
@@ -43,6 +44,7 @@ public class MyJobFragment extends Fragment {
 
         myJobSavedFragment = new MyJobSavedFragment();
         myJobAppliedFragment = new MyJobAppliedFragment();
+        activeFragment = new MyJobSavedFragment();
         jobListApplied = new ArrayList<>();
     }
 
@@ -51,15 +53,24 @@ public class MyJobFragment extends Fragment {
     }
 
     private void setTabLayout() {
-        getParentFragmentManager().beginTransaction().replace(R.id.container_my_job, myJobSavedFragment).commit();
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_my_job, myJobSavedFragment)
+                .addToBackStack(null)
+                .commit();
 
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
-                    getParentFragmentManager().beginTransaction().replace(R.id.container_my_job, myJobSavedFragment).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container_my_job, myJobSavedFragment)
+                            .addToBackStack(null)
+                            .commit();
                 } else {
-                    getParentFragmentManager().beginTransaction().replace(R.id.container_my_job, myJobAppliedFragment).commit();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container_my_job, myJobAppliedFragment)
+                            .addToBackStack(null)
+                            .commit();
                 }
             }
 

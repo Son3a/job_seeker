@@ -27,7 +27,9 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
 import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.activity.LoginActivity;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.databinding.FragmentSeekerSavedJobBinding;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;
@@ -43,45 +45,48 @@ import java.util.List;
 import java.util.Map;
 
 public class MyJobSavedFragment extends Fragment implements JobListener {
-    private View savedJobView;
-    private RecyclerView listViewJobSaved;
-    private ProgressBar pbLoading;
-    private TextView tvNotify;
+    private FragmentSeekerSavedJobBinding binding;
     private List<Job> jobList;
     private PreferenceManager preferenceManager;
     private JobAdapter jobAdapter;
+    private LoadingDialog loadingDialog;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        savedJobView = inflater.inflate(R.layout.fragment_seeker_saved_job, container, false);
+        binding = FragmentSeekerSavedJobBinding.inflate(getLayoutInflater());
 
         setControl();
         setEvent();
-        return savedJobView;
+        return binding.getRoot();
     }
 
     private void setControl() {
-        listViewJobSaved = savedJobView.findViewById(R.id.lv_job_saved);
-        pbLoading = savedJobView.findViewById(R.id.idLoadingPB);
-        tvNotify = savedJobView.findViewById(R.id.tv_notify);
-
         jobList = new ArrayList<>();
         preferenceManager = new PreferenceManager(getActivity());
 
         jobAdapter = new JobAdapter(getContext(), jobList, this, true);
-        listViewJobSaved.setAdapter(jobAdapter);
+        binding.lvJobSaved.setAdapter(jobAdapter);
+        loadingDialog = new LoadingDialog(getContext());
     }
 
     private void setEvent() {
         getJobSaved();
+        refreshContent();
+    }
+
+    private void refreshContent() {
+        binding.layoutRefresh.setOnRefreshListener(() -> {
+            binding.layoutRefresh.setRefreshing(false);
+            getJobSaved();
+        });
     }
 
     private void getJobSaved() {
         String url = Constant.url_dev + "/auth/info-user";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-
-        pbLoading.setVisibility(View.VISIBLE);
+        jobList.clear();
+        loadingDialog.showDialog();
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
                 url,
                 null,
@@ -114,12 +119,11 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
                                 }
                             }
 
-                            pbLoading.setVisibility(View.GONE);
-                            if (jobsList.length() == 0) {
-                                tvNotify.setVisibility(View.VISIBLE);
-                            } else {
-                                jobAdapter.notifyDataSetChanged();
-                            }
+                            loadingDialog.hideDialog();
+                            jobAdapter.notifyDataSetChanged();
+//                            if (jobsList.length() == 0) {
+//                                tvNotify.setVisibility(View.VISIBLE);
+//                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {

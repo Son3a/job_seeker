@@ -286,19 +286,25 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tab_layout"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/layoutHeader"
-            android:background="@color/white"
-            app:tabGravity="fill"
-            app:tabIndicatorColor="@color/green"
-            app:tabMaxWidth="0dp"
-            app:tabMode="scrollable"
-            app:tabSelectedTextColor="@color/green"
-            app:tabTextAppearance="@style/CustomTextAppearance"
-            app:tabTextColor="@color/secondary_text" />
+            android:background="@color/white">
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:tabGravity="fill"
+                app:tabIndicatorColor="@color/green"
+                app:tabMaxWidth="0dp"
+                app:tabMode="scrollable"
+                app:tabSelectedTextColor="@color/green"
+                app:tabTextAppearance="@style/CustomTextAppearance"
+                app:tabTextColor="@color/secondary_text" />
+        </FrameLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager2.widget.ViewPager2

@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityRegisterBinding;
 

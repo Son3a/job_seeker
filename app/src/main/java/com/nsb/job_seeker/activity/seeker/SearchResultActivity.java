@@ -15,6 +15,7 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -111,6 +112,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
         String key = getIntent().getStringExtra("Keyword");
         binding.textKeySearch.setText(key);
 
+        back();
         findJob(key);
         getProvinceApi();
         openBottomExperience();
@@ -122,8 +124,15 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
         hideKeyBoard();
         eventKeyBoard();
         clickDeleteHistory();
+        closeBottomPosition();
+        closeBottomSalary();
     }
 
+    private void back(){
+        binding.imageBack.setOnClickListener(v->{
+            finish();
+        });
+    }
 
     private void clickDeleteHistory() {
         binding.textDeleteAll.setOnClickListener(v -> {
@@ -326,6 +335,20 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
     private void openBottomSalary() {
         binding.textSalary.setOnClickListener(v -> {
             bottomSheetSalary.show();
+        });
+    }
+
+    private void closeBottomSalary(){
+        ImageView imageClose = bottomSheetSalary.findViewById(R.id.imageClose);
+        imageClose.setOnClickListener(v->{
+            bottomSheetSalary.dismiss();
+        });
+    }
+
+    private void closeBottomPosition(){
+        ImageView imageClose = bottomSheetPosition.findViewById(R.id.imageClose);
+        imageClose.setOnClickListener(v->{
+            bottomSheetPosition.dismiss();
         });
     }
 

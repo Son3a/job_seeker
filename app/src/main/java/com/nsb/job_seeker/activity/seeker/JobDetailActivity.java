@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import com.nsb.job_seeker.activity.BaseActivity;
 import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
@@ -23,10 +22,11 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.adapter.JobDetailAdapter;
+import com.nsb.job_seeker.activity.BaseActivity;
 import com.nsb.job_seeker.activity.LoginActivity;
+import com.nsb.job_seeker.adapter.JobDetailAdapter;
+import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivitySeekerJobDetailBinding;

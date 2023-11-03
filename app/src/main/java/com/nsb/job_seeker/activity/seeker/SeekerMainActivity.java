@@ -1,6 +1,10 @@
 package com.nsb.job_seeker.activity.seeker;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.nsb.job_seeker.activity.BaseActivity;
 
 import android.app.Dialog;
@@ -24,13 +28,10 @@ public class SeekerMainActivity extends BaseActivity {
     public static BottomNavigationView bottomNavigationView;
 
     private NewsJobFragment newsJobFragment;
-    private SearchActivity searchFragment;
     private MyJobFragment myJobFragment;
     private MessageFragment messageFragment;
     private AccountFragment accountFragment;
-    private MovableFloatingActionButton fabMessenger;
     private Dialog dialogMessage;
-    private FloatingActionButton fabMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,6 @@ public class SeekerMainActivity extends BaseActivity {
 //        fabMessenger = findViewById(R.id.fab_messenger);
 
         newsJobFragment = new NewsJobFragment();
-        searchFragment = new SearchActivity();
         myJobFragment = new MyJobFragment();
         messageFragment = new MessageFragment();
         accountFragment = new AccountFragment();
@@ -56,14 +56,13 @@ public class SeekerMainActivity extends BaseActivity {
         dialogMessage = new Dialog(this);
         dialogMessage.setContentView(R.layout.layout_message);
         dialogMessage.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        fabMessage = dialogMessage.findViewById(R.id.fab_messenger);
-
-        myJobFragment = new MyJobFragment();
     }
 
     private void setEvent() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, newsJobFragment).commit();
-
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, newsJobFragment)
+                .addToBackStack(null)
+                .commit();
 //        BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.menu_notifiation);
 //        badgeDrawable.setVisible(true);
 //        badgeDrawable.setNumber(10);
@@ -73,19 +72,28 @@ public class SeekerMainActivity extends BaseActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_forme:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, newsJobFragment).commit();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, newsJobFragment)
+                                .addToBackStack(null)
+                                .commit();
                         return true;
-//                    case R.id.menu_search:
-//                        getSupportFragmentManager().beginTransaction().replace(R.id.container, searchFragment).commit();
-//                        return true;
                     case R.id.menu_myjob:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, myJobFragment).commit();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, myJobFragment)
+                                .addToBackStack(null)
+                                .commit();
                         return true;
                     case R.id.menu_message:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, messageFragment).commit();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, messageFragment)
+                                .addToBackStack(null)
+                                .commit();
                         return true;
                     case R.id.menu_account:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.container, accountFragment).commit();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.container, accountFragment)
+                                .addToBackStack(null)
+                                .commit();
                         return true;
                 }
                 return false;
@@ -108,7 +116,7 @@ public class SeekerMainActivity extends BaseActivity {
 //        });
     }
 
-    private void closeMessenger(){
+    private void closeMessenger() {
 //        fabMessage.setOnClickListener(v->{
 //            if(dialogMessage.isShowing()){
 //                dialogMessage.dismiss();

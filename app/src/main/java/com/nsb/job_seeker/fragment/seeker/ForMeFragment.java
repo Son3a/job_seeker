@@ -25,13 +25,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.activity.LoginActivity;
 import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
 import com.nsb.job_seeker.activity.seeker.SearchActivity;
 import com.nsb.job_seeker.activity.seeker.SeekerMainActivity;
 import com.nsb.job_seeker.adapter.JobAdapter;
-import com.nsb.job_seeker.activity.LoginActivity;
+import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.FragmentSeekerForMeBinding;
@@ -70,12 +70,10 @@ public class ForMeFragment extends Fragment implements JobListener {
 
     private void setControl() {
         jobList = new ArrayList<Job>();
-
         preferenceManager = new PreferenceManager(getActivity());
         jobAdapter = new JobAdapter(getContext(), jobList, this, true);
         //   PickerLayoutManager pickerLayoutManager = new PickerLayoutManager();
-        binding.lvJob.setClipChildren(false);
-
+//        binding.lvJob.setClipChildren(false);
         binding.lvJob.setAdapter(jobAdapter);
     }
 
@@ -94,9 +92,9 @@ public class ForMeFragment extends Fragment implements JobListener {
     }
 
     private void refreshContent() {
-//        binding.layoutRefresh.setOnRefreshListener(() -> {
-//            getNewJobs();
-//        });
+        binding.layoutRefresh.setOnRefreshListener(() -> {
+            getNewJobs();
+        });
     }
 
     private void gotoSearch() {
@@ -121,10 +119,6 @@ public class ForMeFragment extends Fragment implements JobListener {
                         try {
                             String idCompany = "";
                             JSONArray jobsList = response.getJSONArray("data");
-//                            int lenghJobs = jobsList.length();
-//                            if (Constant.calculateTime(jobsList.getJSONObject(0).getString("updateDate")) >= (7 * 24 * 60 * 60 * 1000)) {      //check time update job if it > 1 week to show on news
-//                                lenghJobs = 10;
-//                            }
                             for (int i = 0; i < jobsList.length(); i++) {
                                 JSONObject job = jobsList.getJSONObject(i);
                                 if (job.getString("status").equals("true")) {
@@ -147,7 +141,7 @@ public class ForMeFragment extends Fragment implements JobListener {
                                 }
                             }
                             jobAdapter.notifyDataSetChanged();
-                           // binding.layoutRefresh.setRefreshing(false);
+                            binding.layoutRefresh.setRefreshing(false);
                             //pbLoading.setVisibility(View.GONE);
 
                         } catch (JSONException e) {

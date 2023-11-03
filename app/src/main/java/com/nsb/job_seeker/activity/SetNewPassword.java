@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.LoadingDialog;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +71,6 @@ public class SetNewPassword extends BaseActivity {
             public void onClick(View v) {
                 try {
                     if (edtPassword.getText().toString().equals(edtPasswordConfirm.getText().toString())) {
-                        loadingDialog.startLoadingDialog();
                         confirmResetPassword();
                     } else {
                         dialogNotification.openDialogNotification("Mật khẩu xác nhận không khớp !", SetNewPassword.this);
@@ -96,7 +96,6 @@ public class SetNewPassword extends BaseActivity {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, base_url + "/confirm-password", jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                loadingDialog.dismissDialog();
                 try {
                     txtWarningResetPassword.setVisibility(View.GONE);
                     String message = response.getString("message");
@@ -113,7 +112,6 @@ public class SetNewPassword extends BaseActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                loadingDialog.dismissDialog();
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);

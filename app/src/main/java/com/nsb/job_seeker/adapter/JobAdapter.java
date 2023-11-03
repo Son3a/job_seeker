@@ -10,8 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;

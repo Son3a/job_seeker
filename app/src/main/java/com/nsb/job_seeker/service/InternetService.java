@@ -14,14 +14,19 @@ import android.widget.Toast;
 import com.nsb.job_seeker.common.CustomToast;
 
 public class InternetService extends BroadcastReceiver {
+    private boolean isConnected;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())) {
             if (isNetWorkAvailable(context)) {
-                CustomToast.makeText(context, "Hệ thống đã kết nối!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                if(isConnected == true) {
+                    CustomToast.makeText(context, "Hệ thống đã kết nối!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                }
+                isConnected = false;
 //                ((Activity) context).startActivity(((Activity) context).getIntent());
             } else {
                 CustomToast.makeText(context, "Hệ thống mất kết nối!", CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
+                isConnected = true;
             }
         }
     }

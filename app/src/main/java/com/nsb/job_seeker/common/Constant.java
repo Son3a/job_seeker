@@ -63,7 +63,7 @@ public class Constant {
     public static final String LIST_RELATED_JOB = "listRelatedJob";
     public static final String COMPANY_MODEL = "companyModel";
     public static List<String> idSavedJobs;
-    public static Boolean isAvailableNetwork;
+    public static final String AVATAR = "avatar";
 
     public static String avatar;
 

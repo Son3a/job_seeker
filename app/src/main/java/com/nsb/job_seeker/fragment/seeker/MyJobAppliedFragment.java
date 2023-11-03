@@ -25,7 +25,9 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
 import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.activity.LoginActivity;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.databinding.FragmentSeekerAppliedJobBinding;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;
@@ -34,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,47 +45,51 @@ import java.util.List;
 import java.util.Map;
 
 public class MyJobAppliedFragment extends Fragment implements JobListener {
-    private MyJobAppliedFragment myJobAppliedFragment;
-    private View appliedJobView;
-    private ProgressBar pbLoading;
+    private FragmentSeekerAppliedJobBinding binding;
     private List<Job> jobListApplied;
-    private RecyclerView listView;
-    private TextView tvNotify;
     private PreferenceManager preferenceManager;
     private JobAdapter jobAdapter;
+    private LoadingDialog loadingDialog;
+
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        appliedJobView = inflater.inflate(R.layout.fragment_seeker_applied_job, container, false);
+        binding = FragmentSeekerAppliedJobBinding.inflate(getLayoutInflater());
 
         setControl();
         setEvent();
-        return appliedJobView;
+
+        return binding.getRoot();
     }
 
     private void setControl() {
-        pbLoading = appliedJobView.findViewById(R.id.idLoadingPB);
+        loadingDialog = new LoadingDialog(getContext());
         jobListApplied = new ArrayList<>();
-        listView = appliedJobView.findViewById(R.id.lv_job_applied);
-        tvNotify = appliedJobView.findViewById(R.id.tv_notify);
-
         preferenceManager = new PreferenceManager(getActivity());
-
         jobAdapter = new JobAdapter(getContext(), jobListApplied, this, false);
-        listView.setAdapter(jobAdapter);
+        binding.lvJobApplied.setAdapter(jobAdapter);
     }
 
     private void setEvent() {
         getJobApplied();
+        refreshContent();
+    }
+
+    private void refreshContent() {
+        binding.layoutRefresh.setOnRefreshListener(() -> {
+            binding.layoutRefresh.setRefreshing(false);
+            getJobApplied();
+        });
     }
 
     private void getJobApplied() {
         String url = Constant.url_dev + "/application/get-by-userid";
         String token = preferenceManager.getString(Constant.TOKEN);
+        jobListApplied.clear();
         RequestQueue queue = Volley.newRequestQueue(getActivity());
 
-        pbLoading.setVisibility(View.VISIBLE);
+        loadingDialog.showDialog();
         JsonObjectRequest data = new JsonObjectRequest(
                 url,
                 new Response.Listener<JSONObject>() {
@@ -101,7 +108,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
                                         Constant.setTime(job.getString("deadline")),
                                         job.getString("description"),
                                         job.getString("requirement"),
-                                       "",
+                                        "",
                                         job.getJSONObject("idCompany").getString("image"),
                                         job.getString("amount"),
                                         job.getString("working_form"),
@@ -110,12 +117,12 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
                                 ));
 
                             }
-                            if (jobsList.length() == 0) {
-                                tvNotify.setVisibility(View.VISIBLE);
-                            } else {
-                                jobAdapter.notifyDataSetChanged();
-                            }
-                            pbLoading.setVisibility(View.GONE);
+//                            if (jobsList.length() == 0) {
+//                                tvNotify.setVisibility(View.VISIBLE);
+//                            }
+                            binding.layoutRefresh.setRefreshing(false);
+                            jobAdapter.notifyDataSetChanged();
+                            loadingDialog.hideDialog();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
@@ -128,8 +135,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
                     public void onErrorResponse(VolleyError error) {
                         if (error instanceof com.android.volley.NoConnectionError) {
 
-                        } else
-                        if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
+                        } else if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
                             Intent i = new Intent(getActivity(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             preferenceManager.clear();
@@ -160,7 +166,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
+                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
                     Intent i = new Intent(getContext(), LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     preferenceManager.clear();

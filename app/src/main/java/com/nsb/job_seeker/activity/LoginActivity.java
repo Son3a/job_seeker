@@ -45,6 +45,7 @@ import com.google.gson.JsonObject;
 import com.nsb.job_seeker.BuildConfig;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityLoginBinding;
 import com.nsb.job_seeker.activity.admin.EmployerMainActivity;
@@ -290,7 +291,7 @@ public class LoginActivity extends BaseActivity {
                                     }
                                 }
                             }
-                            preferenceManager.putArray(Constant.idSavedJobs);
+                            preferenceManager.putString(Constant.AVATAR, jsonObject1.getString("avatar"));
                             preferenceManager.putString(Constant.ROLE, role);
                             preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
                             binding.btnLogin.setVisibility(View.VISIBLE);
