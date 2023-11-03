@@ -25,8 +25,8 @@
     <color name="error">#B00020</color>
     <color name="received_message_bacground">#090D16</color>
 
-    <color name="green">#16B142</color>
-    <color name="green_spur">#AEECC0</color>
+    <color name="green">#00456f</color>
+    <color name="green_spur">#8CB8D3</color>
     <color name="border">#D6D5D5</color>
     <color name="background">#f9f9f9</color>
     <color name="background_text">#f4f5f5</color>

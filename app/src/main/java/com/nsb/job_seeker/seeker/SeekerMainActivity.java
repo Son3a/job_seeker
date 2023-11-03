@@ -20,7 +20,7 @@ import com.nsb.job_seeker.common.MovableFloatingActionButton;
 import com.nsb.job_seeker.message.activity.MessageFragment;
 
 public class SeekerMainActivity extends AppCompatActivity {
-    private BottomNavigationView bottomNavigationView;
+    public static BottomNavigationView bottomNavigationView;
 
     private NewsJobFragment newsJobFragment;
     private SearchActivity searchFragment;

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -27,7 +28,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.databinding.ActivityChangePasswordBinding;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,57 +40,86 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Activity_ChangePassword extends AppCompatActivity {
-    private Button btnChangePassword;
-    private TextInputEditText tieConfirmPassword, tiePassword, tiePasswordCurrent;
-    private LoadingDialog loadingDialog;
-    private DialogNotification dialogNotification = null;
+    private ActivityChangePasswordBinding binding;
     private String base_url = Program.url_dev + "/auth";
-    private RequestQueue mRequestQueue;
-    private StringRequest mStringRequest;
-    private ImageView imgBack;
+
     private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        binding = ActivityChangePasswordBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_password);
-        this.loadingDialog = new LoadingDialog(Activity_ChangePassword.this);
+        setContentView(binding.getRoot());
+
         setControl();
         setEvent();
     }
 
     private void setControl() {
-        btnChangePassword = findViewById(R.id.btnChangePassword);
-        tiePassword = findViewById(R.id.tiePassword);
-        tieConfirmPassword = findViewById(R.id.tieConfirmPassword);
-        tiePasswordCurrent = findViewById(R.id.tiePasswordCurrent);
-        imgBack = findViewById(R.id.backArrow);
         preferenceManager = new PreferenceManager(getApplicationContext());
     }
 
     private void setEvent() {
-        imgBack.setOnClickListener(v -> onBackPressed());
-        btnChangePassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (tiePassword.getText().toString().equals("") || tieConfirmPassword.getText().toString().equals("") || tiePasswordCurrent.getText().toString().equals("")) {
-                    dialogNotification.openDialogNotification("Không được bỏ trống ô nào !", Activity_ChangePassword.this);
-                } else if (!tiePassword.getText().toString().equals(tieConfirmPassword.getText().toString())) {
-                    dialogNotification.openDialogNotification("Xác nhận mật khẩu không khớp, vui lòng nhập lại !", Activity_ChangePassword.this);
-                } else {
-                    try {
-                        loadingDialog.startLoadingDialog();
-                        changPasswordService(tiePasswordCurrent.getText().toString(), tieConfirmPassword.getText().toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+        binding.icBack.setOnClickListener(v -> onBackPressed());
+        binding.btnSave.setOnClickListener(v -> {
+            if (isEmpty(binding.textCurrentPW)) {
+                binding.layoutErrorCurrentPW.setVisibility(View.VISIBLE);
+            } else {
+                binding.layoutErrorCurrentPW.setVisibility(View.GONE);
+            }
+            if (isEmpty(binding.textNewPW)) {
+                binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
+            } else {
+                binding.layoutErrorNewPW.setVisibility(View.GONE);
+
+            }
+            if (isEmpty(binding.textConfirmPW)) {
+                binding.textErrorConfirmPW.setText("Vui lòng nhập lại mật khẩu mới");
+                binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
+            } else {
+                binding.layoutErrorConfirmPW.setVisibility(View.GONE);
+
+            }
+            if(!binding.textConfirmPW.getText().toString().trim().equals(binding.textNewPW.getText().toString().trim())){
+                binding.textErrorConfirmPW.setText("Mật khẩu xác nhận không khớp!");
+                binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
+            }
+            if (!isEmpty(binding.textConfirmPW) && !isEmpty(binding.textNewPW) && !isEmpty(binding.textCurrentPW)) {
+                binding.textErrorConfirmPW.setText("Vui lòng nhập lại mật khẩu mới");
+                binding.layoutErrorCurrentPW.setVisibility(View.GONE);
+                binding.layoutErrorNewPW.setVisibility(View.GONE);
+                binding.layoutErrorConfirmPW.setVisibility(View.GONE);
+                try {
+                    changPasswordService(binding.textCurrentPW.getText().toString(), binding.textNewPW.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
+//            if (binding.tiePassword.getText().toString().equals("") || binding.tieConfirmPassword.getText().toString().equals("")
+//                     || binding.tiePasswordCurrent.getText().toString().equals("")) {
+//                dialogNotification.openDialogNotification("Không được bỏ trống ô nào !", Activity_ChangePassword.this);
+//            } else if (!tiePassword.getText().toString().equals(tieConfirmPassword.getText().toString())) {
+//                dialogNotification.openDialogNotification("Xác nhận mật khẩu không khớp, vui lòng nhập lại !", Activity_ChangePassword.this);
+//            } else {
+//                try {
+//                    loadingDialog.startLoadingDialog();
+//                    changPasswordService(tiePasswordCurrent.getText().toString(), tieConfirmPassword.getText().toString());
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
         });
     }
 
+    private boolean isEmpty(EditText editText) {
+        if (editText.getText().toString().isEmpty() || editText.getText().toString().trim().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
     private void changPasswordService(String password, String newPassword) throws JSONException {
-        mRequestQueue = Volley.newRequestQueue(Activity_ChangePassword.this);
+        RequestQueue mRequestQueue = Volley.newRequestQueue(Activity_ChangePassword.this);
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("password", password);
@@ -104,7 +136,6 @@ public class Activity_ChangePassword extends AppCompatActivity {
                     Log.d("ABC", e.toString());
                     e.printStackTrace();
                 }
-                loadingDialog.dismissDialog();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -116,7 +147,7 @@ public class Activity_ChangePassword extends AppCompatActivity {
 
                 if (error.networkResponse.data != null) {
                     try {
-                        if(error.networkResponse.statusCode == 401){
+                        if (error.networkResponse.statusCode == 401) {
                             Intent i = new Intent(Activity_ChangePassword.this, LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             preferenceManager.clear();
@@ -126,13 +157,10 @@ public class Activity_ChangePassword extends AppCompatActivity {
                         Log.d("ABC", body);
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
-
-                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), Activity_ChangePassword.this);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
                 }
-                loadingDialog.dismissDialog();
 
             }
         }) {
@@ -160,7 +188,7 @@ public class Activity_ChangePassword extends AppCompatActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if(error.networkResponse.data != null & error.networkResponse.statusCode == 401){
+                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
                     Intent i = new Intent(Activity_ChangePassword.this, LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     preferenceManager.clear();
@@ -181,7 +209,8 @@ public class Activity_ChangePassword extends AppCompatActivity {
         updates.put(Program.KEY_PASSWORD, newPassword);
         documentReference.update(updates)
                 .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+                    CustomToast.makeText(Activity_ChangePassword.this,"Đổi mật khẩu thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                    finish();
                     Log.d("ABC", "Firebase: Successfully!");
                 })
                 .addOnFailureListener(e -> Log.d("Error", e.getMessage()));

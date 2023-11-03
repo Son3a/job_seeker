@@ -3,15 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@drawable/image_background">
 
     <ImageView
         android:id="@+id/imageHeader"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_alignParentTop="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/image_header_detail" />
+        android:scaleType="centerCrop" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/layoutHeader"
@@ -50,6 +49,7 @@
                 <ImageView
                     android:id="@+id/imageAvatar"
                     android:layout_width="match_parent"
+                    android:tint="@color/secondary_text"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_account" />
@@ -86,7 +86,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/layoutHeader"
-        android:background="@color/background"
+        android:background="@null"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout

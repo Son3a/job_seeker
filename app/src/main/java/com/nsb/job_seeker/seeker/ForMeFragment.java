@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -25,6 +27,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nsb.job_seeker.AccountFragment;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobAdapter;
@@ -82,12 +85,19 @@ public class ForMeFragment extends Fragment implements JobListener {
         setStateAppBar();
         gotoSearch();
         refreshContent();
+        gotoAccount();
+    }
+
+    private void gotoAccount() {
+        binding.layoutWelcome.getRoot().setOnClickListener(v -> {
+            SeekerMainActivity.bottomNavigationView.setSelectedItemId(R.id.menu_account);
+        });
     }
 
     private void refreshContent() {
-        binding.layoutRefresh.setOnRefreshListener(() -> {
-            getNewJobs();
-        });
+//        binding.layoutRefresh.setOnRefreshListener(() -> {
+//            getNewJobs();
+//        });
     }
 
     private void gotoSearch() {
@@ -138,7 +148,7 @@ public class ForMeFragment extends Fragment implements JobListener {
                                 }
                             }
                             jobAdapter.notifyDataSetChanged();
-                            binding.layoutRefresh.setRefreshing(false);
+                           // binding.layoutRefresh.setRefreshing(false);
                             //pbLoading.setVisibility(View.GONE);
 
                         } catch (JSONException e) {

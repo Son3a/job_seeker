@@ -1,9 +1,5 @@
 package com.nsb.job_seeker.auth;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -18,11 +14,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -31,13 +29,14 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.Program;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.databinding.ActivityProfileBinding;
 import com.nsb.job_seeker.helper.VolleyMultipartRequest;
 
 import org.json.JSONException;
@@ -51,17 +50,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Activity_Profile extends AppCompatActivity {
-    private RequestQueue mRequestQueue;
-    private StringRequest mStringRequest;
+    private ActivityProfileBinding binding;
     private String base_url = Program.url_dev + "/auth";
-    private String sharedPreferencesName = "JobSharedPreference";
-    private LoadingDialog loadingDialog;
-    private DialogNotification dialogNotification = null;
-
-    private ImageView imgBack;
-    private EditText edtName, edtEmail, edtPhone;
-    private Button btnChangeProfile;
-    private ImageView ivChooseAvatar;
 
     private static final int REQUEST_PERMISSIONS = 100;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -72,38 +62,65 @@ public class Activity_Profile extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        binding = ActivityProfileBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_profile);
+        setContentView(binding.getRoot());
 
-        this.loadingDialog = new LoadingDialog(Activity_Profile.this);
         setControl();
         initData();
         setEvent();
     }
 
+    private void setControl() {
+        preferenceManager = new PreferenceManager(getApplicationContext());
+
+        new DownloadImageTask((ImageView) findViewById(R.id.ivChooseAvatar))
+                .execute(Program.url_dev_img + "/" + Program.avatar);
+    }
+
     private void setEvent() {
-        imgBack.setOnClickListener(v -> {
+        binding.icBack.setOnClickListener(v -> {
             onBackPressed();
         });
-        btnChangeProfile.setOnClickListener(new View.OnClickListener() {
+        binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (edtName.getText().toString().equals("") || edtEmail.getText().toString().equals("") || edtPhone.getText().toString().equals("")) {
-                    dialogNotification.openDialogNotification("Không được bỏ trống bất kỳ mục nào !", Activity_Profile.this);
+                if (isEmpty(binding.textName)) {
+                    binding.layoutErrorName.setVisibility(View.VISIBLE);
                 } else {
-                    loadingDialog.startLoadingDialog();
+                    binding.layoutErrorName.setVisibility(View.GONE);
+                }
+                if (isEmpty(binding.textPhone)) {
+                    binding.layoutErrorPhone.setVisibility(View.VISIBLE);
+                } else {
+                    binding.layoutErrorPhone.setVisibility(View.GONE);
+
+                }
+
+                if (!isEmpty(binding.textName) && !isEmpty(binding.textPhone)) {
+                    binding.layoutErrorPhone.setVisibility(View.GONE);
+                    binding.layoutErrorName.setVisibility(View.GONE);
                     try {
-                        changProfileService(edtName.getText().toString(), edtEmail.getText().toString(), edtPhone.getText().toString());
+                        changProfileService(binding.textName.getText().toString(), binding.textEmail.getText().toString(), binding.textPhone.getText().toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+//                if (edtName.getText().toString().equals("") || edtEmail.getText().toString().equals("") || edtPhone.getText().toString().equals("")) {
+//                    dialogNotification.openDialogNotification("Không được bỏ trống bất kỳ mục nào !", Activity_Profile.this);
+//                } else {
+//                    loadingDialog.startLoadingDialog();
+//                    try {
+//                        changProfileService(edtName.getText().toString(), edtEmail.getText().toString(), edtPhone.getText().toString());
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
 
             }
         });
 
-        ivChooseAvatar.setOnClickListener(new View.OnClickListener() {
+        binding.ivChooseAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if ((ContextCompat.checkSelfPermission(getApplicationContext(),
@@ -126,6 +143,13 @@ public class Activity_Profile extends AppCompatActivity {
         });
     }
 
+    private boolean isEmpty(EditText editText) {
+        if (editText.getText().toString().isEmpty() || editText.getText().toString().trim().equals("")) {
+            return true;
+        }
+        return false;
+    }
+
     // show file choose to upload
     private void showFileChooser() {
         Intent intent = new Intent();
@@ -146,7 +170,7 @@ public class Activity_Profile extends AppCompatActivity {
                     Log.d("filePath", String.valueOf(filePath));
                     bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), picUri);
                     uploadBitmap(bitmap);
-                    ivChooseAvatar.setImageBitmap(bitmap);
+                    binding.ivChooseAvatar.setImageBitmap(bitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -180,20 +204,6 @@ public class Activity_Profile extends AppCompatActivity {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 80, byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
-    }
-
-
-    private void setControl() {
-        edtName = findViewById(R.id.edtName);
-        edtEmail = findViewById(R.id.edtEmail);
-        edtPhone = findViewById(R.id.edtPhone);
-        btnChangeProfile = findViewById(R.id.btnChangeProfile);
-        ivChooseAvatar = findViewById(R.id.ivChooseAvatar);
-        imgBack = findViewById(R.id.backArrow);
-        preferenceManager = new PreferenceManager(getApplicationContext());
-
-        new DownloadImageTask((ImageView) findViewById(R.id.ivChooseAvatar))
-                .execute(Program.url_dev_img + "/" + Program.avatar);
     }
 
     private void uploadBitmap(final Bitmap bitmap) {
@@ -252,13 +262,13 @@ public class Activity_Profile extends AppCompatActivity {
         String email = sharedPreferences.getString("email", "");
         String phone = sharedPreferences.getString("phone", "");
         Log.d("ABC", name + email + phone);
-        edtName.setText(name);
-        edtPhone.setText(phone);
-        edtEmail.setText(email);
+        binding.textName.setText(name);
+        binding.textPhone.setText(phone);
+        binding.textEmail.setText(email);
     }
 
     private void changProfileService(String name, String email, String phone) throws JSONException {
-        mRequestQueue = Volley.newRequestQueue(Activity_Profile.this);
+        RequestQueue mRequestQueue = Volley.newRequestQueue(Activity_Profile.this);
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", name);
@@ -271,13 +281,11 @@ public class Activity_Profile extends AppCompatActivity {
                 try {
                     String message = response.getString("message");
                     Log.d("ABC", message);
-
-                    dialogNotification.openDialogNotification(message, Activity_Profile.this);
+                    CustomToast.makeText(Activity_Profile.this,"Đổi mật khẩu thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                 } catch (JSONException e) {
                     Log.d("ABC", e.toString());
                     e.printStackTrace();
                 }
-                loadingDialog.dismissDialog();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -289,7 +297,7 @@ public class Activity_Profile extends AppCompatActivity {
 
                 if (error.networkResponse.data != null) {
                     try {
-                        if(error.networkResponse.statusCode == 401) {
+                        if (error.networkResponse.statusCode == 401) {
                             Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
@@ -301,13 +309,10 @@ public class Activity_Profile extends AppCompatActivity {
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
 
-                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), Activity_Profile.this);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
                 }
-                loadingDialog.dismissDialog();
-
             }
         }) {
             @Override

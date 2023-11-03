@@ -101,29 +101,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/layoutBar" />
 
-
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/layoutRefresh"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lv_job"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="15dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/textRecommend">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/lv_job"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:nestedScrollingEnabled="true"
-                    android:orientation="vertical"
-                    android:scrollingCache="true"
-                    android:smoothScrollbar="true"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintTop_toBottomOf="@id/textRecommend" />
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                android:background="@null"
+                android:nestedScrollingEnabled="true"
+                android:orientation="vertical"
+                android:scrollingCache="true"
+                android:smoothScrollbar="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/textRecommend" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
