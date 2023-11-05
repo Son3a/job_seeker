@@ -269,11 +269,7 @@ public class LoginActivity extends BaseActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            Toast.makeText(LoginActivity.this, "Login success", Toast.LENGTH_SHORT).show();
                             JSONObject jsonObject1 = response.getJSONObject("data");
-
-                            String accessToken = jsonObject1.get("refreshToken").toString();
-                            preferenceManager.putString(Constant.TOKEN, "Bearer " + accessToken.replace("\"", ""));
 
                             String role = jsonObject1.getString("role");
                             //signIn(email, password);   //login firebase
@@ -291,7 +287,12 @@ public class LoginActivity extends BaseActivity {
                                     }
                                 }
                             }
+                            String accessToken = jsonObject1.get("refreshToken").toString();
+                            preferenceManager.putString(Constant.TOKEN, "Bearer " + accessToken.replace("\"", ""));
+                            preferenceManager.putString(Constant.NAME, jsonObject1.getString("name"));
                             preferenceManager.putString(Constant.AVATAR, jsonObject1.getString("avatar"));
+                            preferenceManager.putString(Constant.PHONE, jsonObject1.getString("phone"));
+                            preferenceManager.putString(Constant.MAIL, jsonObject1.getString("email"));
                             preferenceManager.putString(Constant.ROLE, role);
                             preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
                             binding.btnLogin.setVisibility(View.VISIBLE);

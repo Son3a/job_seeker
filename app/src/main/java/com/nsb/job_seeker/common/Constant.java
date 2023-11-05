@@ -4,13 +4,21 @@ import static java.lang.Math.abs;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.text.Html;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.nsb.job_seeker.R;
+
+import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -64,6 +72,9 @@ public class Constant {
     public static final String COMPANY_MODEL = "companyModel";
     public static List<String> idSavedJobs;
     public static final String AVATAR = "avatar";
+    public static final String NAME = "NAME_USER";
+    public static final String PHONE = "PHONE_USER";
+    public static final String MAIL = "MAIL_USER";
 
     public static String avatar;
 
@@ -232,5 +243,45 @@ public class Constant {
     public static void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static String encodeImage(Bitmap bitmap) {
+        int previewWidth = 150;
+        int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
+        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
+    }
+
+    public static Bitmap getBitmapFromEncodedString(String encodedImage) {
+        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    public static void eventKeyBoard(View view, EventKeyboard eventKeyboard) {
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Rect r = new Rect();
+                view.getWindowVisibleDisplayFrame(r);
+                int screenHeight = view.getRootView().getHeight();
+
+                // r.bottom is the position above soft keypad or device button.
+                // if keypad is shown, the r.bottom is smaller than that before.
+                int keypadHeight = screenHeight - r.bottom;
+
+                Log.d("TAG", "keypadHeight = " + keypadHeight);
+
+                if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                    // keyboard is opened
+                   eventKeyboard.showKeyboard();
+                } else {
+                    // keyboard is closed
+                    eventKeyboard.hideKeyboard();
+                }
+            }
+        });
     }
 }

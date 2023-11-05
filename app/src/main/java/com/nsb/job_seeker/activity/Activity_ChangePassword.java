@@ -1,13 +1,18 @@
 package com.nsb.job_seeker.activity;
 
+import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.BaseActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+
+import androidx.core.content.ContextCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -23,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
+import com.nsb.job_seeker.common.EventKeyboard;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityChangePasswordBinding;
 
@@ -36,7 +42,7 @@ import java.util.Map;
 public class Activity_ChangePassword extends BaseActivity {
     private ActivityChangePasswordBinding binding;
     private String base_url = Constant.url_dev + "/auth";
-
+    private boolean isKeyboardShowing = false;
     private PreferenceManager preferenceManager;
 
     @Override
@@ -55,30 +61,68 @@ public class Activity_ChangePassword extends BaseActivity {
 
     private void setEvent() {
         binding.icBack.setOnClickListener(v -> onBackPressed());
+        eventKeyBoard();
+        clickChangePW();
+    }
+
+    private void validate() {
+        if (isEmpty(binding.textCurrentPW)) {
+            binding.layoutErrorCurrentPW.setVisibility(View.VISIBLE);
+        } else {
+            binding.layoutErrorCurrentPW.setVisibility(View.GONE);
+        }
+        if (isEmpty(binding.textNewPW)) {
+            binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
+        } else {
+            binding.layoutErrorNewPW.setVisibility(View.GONE);
+
+        }
+        if (isEmpty(binding.textConfirmPW)) {
+            binding.textErrorConfirmPW.setTextColor(ContextCompat.getColor(Activity_ChangePassword.this, R.color.red));
+            binding.textErrorConfirmPW.setText("Vui lòng nhập lại mật khẩu mới");
+            binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
+        } else {
+            binding.layoutErrorConfirmPW.setVisibility(View.GONE);
+
+        }
+        if (binding.textNewPW.getText().toString().trim().equals(binding.textCurrentPW.getText().toString().trim())) {
+            binding.textErrorNewPW.setText("Trùng với mật khẩu hiện tại!");
+            binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void checkDuplicatePW() {
+        binding.textConfirmPW.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (!binding.textConfirmPW.getText().toString().equals(binding.textNewPW.getText().toString())) {
+                    binding.textErrorConfirmPW.setTextColor(ContextCompat.getColor(Activity_ChangePassword.this, R.color.red));
+                    binding.textErrorConfirmPW.setText("Mật khẩu không khớp!");
+                    binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
+                } else {
+                    binding.textErrorConfirmPW.setText("Mật khẩu trùng khớp!");
+                    binding.textErrorConfirmPW.setTextColor(ContextCompat.getColor(Activity_ChangePassword.this, R.color.valid));
+                    binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    private void clickChangePW() {
         binding.btnSave.setOnClickListener(v -> {
-            if (isEmpty(binding.textCurrentPW)) {
-                binding.layoutErrorCurrentPW.setVisibility(View.VISIBLE);
-            } else {
-                binding.layoutErrorCurrentPW.setVisibility(View.GONE);
-            }
-            if (isEmpty(binding.textNewPW)) {
-                binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
-            } else {
-                binding.layoutErrorNewPW.setVisibility(View.GONE);
-
-            }
-            if (isEmpty(binding.textConfirmPW)) {
-                binding.textErrorConfirmPW.setText("Vui lòng nhập lại mật khẩu mới");
-                binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
-            } else {
-                binding.layoutErrorConfirmPW.setVisibility(View.GONE);
-
-            }
-            if(!binding.textConfirmPW.getText().toString().trim().equals(binding.textNewPW.getText().toString().trim())){
-                binding.textErrorConfirmPW.setText("Mật khẩu xác nhận không khớp!");
-                binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
-            }
+            validate();
             if (!isEmpty(binding.textConfirmPW) && !isEmpty(binding.textNewPW) && !isEmpty(binding.textCurrentPW)) {
+                binding.textErrorConfirmPW.setTextColor(ContextCompat.getColor(Activity_ChangePassword.this, R.color.red));
                 binding.textErrorConfirmPW.setText("Vui lòng nhập lại mật khẩu mới");
                 binding.layoutErrorCurrentPW.setVisibility(View.GONE);
                 binding.layoutErrorNewPW.setVisibility(View.GONE);
@@ -89,19 +133,27 @@ public class Activity_ChangePassword extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-//            if (binding.tiePassword.getText().toString().equals("") || binding.tieConfirmPassword.getText().toString().equals("")
-//                     || binding.tiePasswordCurrent.getText().toString().equals("")) {
-//                dialogNotification.openDialogNotification("Không được bỏ trống ô nào !", Activity_ChangePassword.this);
-//            } else if (!tiePassword.getText().toString().equals(tieConfirmPassword.getText().toString())) {
-//                dialogNotification.openDialogNotification("Xác nhận mật khẩu không khớp, vui lòng nhập lại !", Activity_ChangePassword.this);
-//            } else {
-//                try {
-//                    loadingDialog.startLoadingDialog();
-//                    changPasswordService(tiePasswordCurrent.getText().toString(), tieConfirmPassword.getText().toString());
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
+        });
+    }
+
+    private void eventKeyBoard() {
+        Constant.eventKeyBoard(binding.getRoot(), new EventKeyboard() {
+            @Override
+            public void hideKeyboard() {
+                if (isKeyboardShowing) {
+                    binding.textConfirmPW.clearFocus();
+                    binding.textCurrentPW.clearFocus();
+                    binding.textNewPW.clearFocus();
+                    isKeyboardShowing = false;
+                }
+            }
+
+            @Override
+            public void showKeyboard() {
+                if (!isKeyboardShowing) {
+                    isKeyboardShowing = true;
+                }
+            }
         });
     }
 
@@ -158,7 +210,6 @@ public class Activity_ChangePassword extends BaseActivity {
                         e.printStackTrace();
                     }
                 }
-
             }
         }) {
             @Override
@@ -206,7 +257,7 @@ public class Activity_ChangePassword extends BaseActivity {
         updates.put(Constant.KEY_PASSWORD, newPassword);
         documentReference.update(updates)
                 .addOnSuccessListener(unused -> {
-                    CustomToast.makeText(Activity_ChangePassword.this,"Đổi mật khẩu thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                    CustomToast.makeText(Activity_ChangePassword.this, "Đổi mật khẩu thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                     finish();
                     Log.d("ABC", "Firebase: Successfully!");
                 })

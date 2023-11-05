@@ -7,15 +7,15 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-
-import com.nsb.job_seeker.activity.BaseActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -27,8 +27,11 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.activity.seeker.SeekerMainActivity;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
+import com.nsb.job_seeker.common.EventKeyboard;
 import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityProfileBinding;
@@ -36,7 +39,6 @@ import com.nsb.job_seeker.databinding.ActivityProfileBinding;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -49,6 +51,7 @@ public class Activity_Profile extends BaseActivity {
     private String base_url = Constant.url_dev + "/auth";
     private PreferenceManager preferenceManager;
     private LoadingDialog loadingDialog;
+    private boolean isKeyboardShowing = false;
 
     String name, phone, image;
     private String encodeImage = "";
@@ -69,15 +72,45 @@ public class Activity_Profile extends BaseActivity {
     }
 
     private void setEvent() {
-        binding.icBack.setOnClickListener(v -> {
-            onBackPressed();
-        });
+        back();
 
         loadInfo();
 
         clickSave();
 
         openStorage();
+
+        eventKeyBoard();
+    }
+
+    private void eventKeyBoard() {
+        Constant.eventKeyBoard(binding.getRoot(), new EventKeyboard() {
+            @Override
+            public void hideKeyboard() {
+                if (isKeyboardShowing) {
+                    binding.textName.clearFocus();
+                    binding.textPhone.clearFocus();
+                    isKeyboardShowing = false;
+                }
+            }
+
+            @Override
+            public void showKeyboard() {
+                if (!isKeyboardShowing) {
+                    isKeyboardShowing = true;
+                }
+            }
+        });
+    }
+
+    private void back() {
+        binding.btnBack.setOnClickListener(v -> {
+            finish();
+        });
+
+        binding.icBack.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     private boolean checkChange() {
@@ -101,21 +134,6 @@ public class Activity_Profile extends BaseActivity {
         });
     }
 
-    private String encodeImage(Bitmap bitmap) {
-        int previewWidth = 150;
-        int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
-        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, byteArrayOutputStream);
-        byte[] bytes = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(bytes, Base64.DEFAULT);
-    }
-
-    private Bitmap getBitmapFromEncodedString(String encodedImage) {
-        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-    }
-
     private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
@@ -125,7 +143,7 @@ public class Activity_Profile extends BaseActivity {
                             InputStream inputStream = getContentResolver().openInputStream(imageUri);
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             binding.imageAvatar.setImageBitmap(bitmap);
-                            encodeImage = encodeImage(bitmap);
+                            encodeImage = Constant.encodeImage(bitmap);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                         }
@@ -136,7 +154,7 @@ public class Activity_Profile extends BaseActivity {
 
     private void clickSave() {
         binding.btnSave.setOnClickListener(v -> {
-            if (!checkChange()) {
+            if (checkChange()) {
                 if (isEmpty(binding.textName)) {
                     binding.layoutErrorName.setVisibility(View.VISIBLE);
                 } else {
@@ -146,7 +164,6 @@ public class Activity_Profile extends BaseActivity {
                     binding.layoutErrorPhone.setVisibility(View.VISIBLE);
                 } else {
                     binding.layoutErrorPhone.setVisibility(View.GONE);
-
                 }
 
                 if (!isEmpty(binding.textName) && !isEmpty(binding.textPhone)) {
@@ -189,8 +206,9 @@ public class Activity_Profile extends BaseActivity {
                     binding.textEmail.setText(response.getString("email"));
 
                     image = response.getString("avatar");
+                    encodeImage = response.getString("avatar");
                     if (image != null && !image.equals("")) {
-                        binding.imageAvatar.setImageBitmap(getBitmapFromEncodedString(image));
+                        binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(image));
                     }
 
                 } catch (JSONException e) {
@@ -262,7 +280,16 @@ public class Activity_Profile extends BaseActivity {
                 try {
                     String message = response.getString("message");
                     Log.d("ABC", message);
-                    CustomToast.makeText(Activity_Profile.this, "Đổi mật khẩu thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                    preferenceManager.putString(Constant.NAME, name);
+                    preferenceManager.putString(Constant.PHONE, phone);
+                    preferenceManager.putString(Constant.MAIL, email);
+                    preferenceManager.putString(Constant.AVATAR, encodeImage);
+                    CustomToast.makeText(Activity_Profile.this, "Cập nhật thông tin thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+
+                    Intent intent = new Intent(Activity_Profile.this, SeekerMainActivity.class);
+                    intent.putExtra(Constant.AVATAR, encodeImage);
+                    intent.putExtra(Constant.NAME, name);
+                    setResult(RESULT_OK, intent);
                     finish();
                 } catch (JSONException e) {
                     Log.d("ABC", e.toString());

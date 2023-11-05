@@ -4,48 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/custom_background_bottom_sheet"
-    android:paddingStart="20dp"
-    android:paddingTop="10dp"
-    android:paddingEnd="20dp">
+    android:padding="20dp">
 
     <TextView
+        android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Chọn số năm kinh nghiệm"
-        android:textColor="@color/secondary_text"
-        android:textSize="20sp" />
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/textDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <androidx.cardview.widget.CardView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:text="Xong"
-        android:textColor="@color/green"
-        android:textSize="20sp" />
+        android:layout_marginEnd="1dp"
+        android:layout_marginTop="1dp"
+        android:backgroundTint="@color/background_text"
+        app:cardCornerRadius="50dp">
 
-    <com.eddystudio.scrollpicker.ScrollPickerView
-        android:id="@+id/scrollpickerview"
+        <ImageView
+            android:id="@+id/imageClose"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_remove"
+            android:tint="@color/secondary_text"
+            android:translationZ="100dp" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcvExperience"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:layout_below="@id/textDone"
-        android:layout_margin="16dp"
-        app:centerPointerBgColor="@color/red"
-        app:centerPointerHeight="68dp"
-        app:centerPointerWidth="42dp"
-        app:pickerOrientation="vertical"
-        app:pickerViewBgColor="@color/white" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true" />
-
-    <!--    <com.jackandphantom.carouselrecyclerview.CarouselRecyclerview-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:id="@+id/carouselRecyclerview"-->
-    <!--        android:layout_below="@id/textDone"/>-->
-
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textTitle"
+        android:layout_marginTop="15dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </RelativeLayout>
