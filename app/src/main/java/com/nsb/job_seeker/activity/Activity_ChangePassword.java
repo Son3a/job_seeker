@@ -63,6 +63,7 @@ public class Activity_ChangePassword extends BaseActivity {
         binding.icBack.setOnClickListener(v -> onBackPressed());
         eventKeyBoard();
         clickChangePW();
+        checkDuplicatePW();
     }
 
     private void validate() {
@@ -72,6 +73,10 @@ public class Activity_ChangePassword extends BaseActivity {
             binding.layoutErrorCurrentPW.setVisibility(View.GONE);
         }
         if (isEmpty(binding.textNewPW)) {
+            binding.textErrorNewPW.setText("Vui lòng nhập mật khẩu mới!");
+            binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
+        } else if (binding.textNewPW.getText().toString().trim().equals(binding.textCurrentPW.getText().toString().trim())) {
+            binding.textErrorNewPW.setText("Trùng với mật khẩu hiện tại!");
             binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
         } else {
             binding.layoutErrorNewPW.setVisibility(View.GONE);
@@ -85,10 +90,6 @@ public class Activity_ChangePassword extends BaseActivity {
             binding.layoutErrorConfirmPW.setVisibility(View.GONE);
 
         }
-        if (binding.textNewPW.getText().toString().trim().equals(binding.textCurrentPW.getText().toString().trim())) {
-            binding.textErrorNewPW.setText("Trùng với mật khẩu hiện tại!");
-            binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
-        }
     }
 
     private void checkDuplicatePW() {
@@ -101,13 +102,12 @@ public class Activity_ChangePassword extends BaseActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (!binding.textConfirmPW.getText().toString().equals(binding.textNewPW.getText().toString())) {
-                    binding.textErrorConfirmPW.setTextColor(ContextCompat.getColor(Activity_ChangePassword.this, R.color.red));
                     binding.textErrorConfirmPW.setText("Mật khẩu không khớp!");
+                    binding.textCorrectPW.setVisibility(View.GONE);
                     binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
                 } else {
-                    binding.textErrorConfirmPW.setText("Mật khẩu trùng khớp!");
-                    binding.textErrorConfirmPW.setTextColor(ContextCompat.getColor(Activity_ChangePassword.this, R.color.valid));
-                    binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
+                    binding.textCorrectPW.setVisibility(View.VISIBLE);
+                    binding.layoutErrorConfirmPW.setVisibility(View.GONE);
                 }
             }
 

@@ -97,7 +97,6 @@ public class AccountFragment extends Fragment {
 
     private void loadInfo() {
         binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
-        Log.d("Avatar", "avatar: " + preferenceManager.getString(Constant.AVATAR));
         binding.textName.setText(preferenceManager.getString(Constant.NAME));
     }
 
@@ -130,6 +129,7 @@ public class AccountFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 Log.d("ABC", "Monggo: Sign out successfully!");
                 Intent i = new Intent(getContext(), LoginActivity.class);
+                preferenceManager.clear();
                 getActivity().finish();
                 startActivity(i);
                 //signOut();
