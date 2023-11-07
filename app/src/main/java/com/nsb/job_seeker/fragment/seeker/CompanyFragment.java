@@ -143,7 +143,7 @@ public class CompanyFragment extends Fragment implements JobListener {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-
+                throw new VolleyError(error.getMessage());
             }
         });
         queue.add(data);

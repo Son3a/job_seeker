@@ -31,7 +31,7 @@ import java.util.List;
 
 public class Constant {
     public static final String url_dev = "https://job-seeker-server.onrender.com";
-//    public static final String url_dev = "http://172.16.2.26:8000";
+//    public static final String url_dev = "http://192.168.137.1:8000";
 
     public static String url_dev_img = url_dev + "/images";
     public static final String ROLE = "role";
@@ -75,7 +75,7 @@ public class Constant {
     public static final String NAME = "NAME_USER";
     public static final String PHONE = "PHONE_USER";
     public static final String MAIL = "MAIL_USER";
-
+    public static final String BROADCAST_AVATAR = "send_avatar";
     public static String avatar;
 
     public static HashMap<String, String> remoteMsgHeaders = null;

@@ -2,7 +2,10 @@ package com.nsb.job_seeker.fragment.seeker;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +28,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.type.DateTime;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.LoginActivity;
 import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
@@ -46,6 +50,9 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +61,17 @@ public class ForMeFragment extends Fragment implements JobListener {
     FragmentSeekerForMeBinding binding;
     private PreferenceManager preferenceManager;
     private JobAdapter jobAdapter;
-
     public static List<Job> jobList;
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(Constant.BROADCAST_AVATAR.equals(intent.getAction())){
+                String avatar = intent.getStringExtra(Constant.AVATAR);
+                binding.layoutWelcome.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(avatar));
+            }
+        }
+    };
 
     @Nullable
     @Override
@@ -72,8 +88,6 @@ public class ForMeFragment extends Fragment implements JobListener {
         jobList = new ArrayList<Job>();
         preferenceManager = new PreferenceManager(getActivity());
         jobAdapter = new JobAdapter(getContext(), jobList, this, true);
-        //   PickerLayoutManager pickerLayoutManager = new PickerLayoutManager();
-//        binding.lvJob.setClipChildren(false);
         binding.lvJob.setAdapter(jobAdapter);
     }
 
@@ -86,8 +100,28 @@ public class ForMeFragment extends Fragment implements JobListener {
         gotoAccount();
     }
 
-    private void loadAvatar(){
-        binding.layoutWelcome.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
+    private void loadAvatar() {
+        if (preferenceManager.getString(Constant.AVATAR) != null) {
+            binding.layoutWelcome.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
+        }
+
+        binding.layoutWelcome.textName.setText(preferenceManager.getString(Constant.NAME));
+        Date now = new Date();   // given date
+        Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+        calendar.setTime(now);   // assigns calendar to given date
+        int hour = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+        String time;
+        if(hour >= 0 && hour < 6){
+            time = "buổi đêm";
+        } else if(hour >= 6 && hour < 12){
+            time = "buổi sáng";
+        } else if(hour >= 12 && hour < 18){
+            time = "ngày";
+        } else {
+            time = "buổi tối";
+        }
+
+        binding.layoutWelcome.textTime.setText(time);
     }
 
     private void gotoAccount() {
@@ -179,7 +213,7 @@ public class ForMeFragment extends Fragment implements JobListener {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-
+                throw new VolleyError(error.getMessage());
             }
         });
         queue.add(data);
@@ -261,8 +295,7 @@ public class ForMeFragment extends Fragment implements JobListener {
                 //get status code here
                 if (error instanceof com.android.volley.NoConnectionError) {
 
-                } else
-                if (error.networkResponse.data != null) {
+                } else if (error.networkResponse.data != null) {
                     try {
                         if (error.networkResponse.statusCode == 401) {
                             Intent i = new Intent(getContext(), LoginActivity.class);
@@ -307,12 +340,7 @@ public class ForMeFragment extends Fragment implements JobListener {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
-                    Intent i = new Intent(getActivity(), LoginActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    preferenceManager.clear();
-                    startActivity(i);
-                }
+                throw new VolleyError(error.getMessage());
             }
         });
         mRequestQueue.add(jsonObjectRequest);
@@ -333,5 +361,18 @@ public class ForMeFragment extends Fragment implements JobListener {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(Constant.BROADCAST_AVATAR);
+        getContext().registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(broadcastReceiver);
     }
 }

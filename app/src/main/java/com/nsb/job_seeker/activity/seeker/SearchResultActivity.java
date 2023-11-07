@@ -390,7 +390,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                System.out.println(error);
+                throw new VolleyError(error.getMessage());
             }
         });
         queue.add(jsonObjectRequest);
@@ -530,7 +530,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                System.out.println(error);
+                throw new VolleyError(error.getMessage());
             }
         });
         queue.add(sr);

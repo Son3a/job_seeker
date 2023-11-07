@@ -52,7 +52,6 @@ public class Activity_Profile extends BaseActivity {
     private PreferenceManager preferenceManager;
     private LoadingDialog loadingDialog;
     private boolean isKeyboardShowing = false;
-
     String name, phone, image;
     private String encodeImage = "";
 
@@ -190,25 +189,37 @@ public class Activity_Profile extends BaseActivity {
 
     private void loadInfo() {
         String url = Constant.url_dev + "/auth/info-user";
+        binding.layoutContent.setVisibility(View.INVISIBLE);
         loadingDialog.showDialog();
         RequestQueue mRequestQueue = Volley.newRequestQueue(this);
+
+        Log.d("Info", "Load info");
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     loadingDialog.hideDialog();
-                    name = response.getString("name");
-                    phone = response.getString("phone");
+                    binding.layoutContent.setVisibility(View.VISIBLE);
+                    Log.d("Info", "Load info success!");
 
+                    if (response.getString("phone") != null) {
+                        phone = response.getString("phone");
+                        binding.textPhone.setText(phone);
+                    }
+
+                    name = response.getString("name");
                     binding.textName.setText(name);
-                    binding.textPhone.setText(phone);
                     binding.textEmail.setText(response.getString("email"));
 
-                    image = response.getString("avatar");
-                    encodeImage = response.getString("avatar");
-                    if (image != null && !image.equals("")) {
-                        binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(image));
+                    Log.d("Info", "Email + Name: " + name + " " + response.getString("email"));
+
+                    if (response.getString("avatar") != null) {
+                        image = response.getString("avatar");
+                        encodeImage = response.getString("avatar");
+                        if (image != null && !image.equals("")) {
+                            binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(image));
+                        }
                     }
 
                 } catch (JSONException e) {
@@ -220,6 +231,7 @@ public class Activity_Profile extends BaseActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 loadingDialog.hideDialog();
+                binding.layoutContent.setVisibility(View.VISIBLE);
                 if (error instanceof com.android.volley.NoConnectionError) {
 
                 } else if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
@@ -253,13 +265,7 @@ public class Activity_Profile extends BaseActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                loadingDialog.hideDialog();
-                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
-                    Intent i = new Intent(Activity_Profile.this, LoginActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    preferenceManager.clear();
-                    startActivity(i);
-                }
+                throw new VolleyError(error.getMessage());
             }
         });
         mRequestQueue.add(jsonObjectRequest);
@@ -267,6 +273,7 @@ public class Activity_Profile extends BaseActivity {
 
     private void changProfileService(String name, String email, String phone) throws JSONException {
         RequestQueue mRequestQueue = Volley.newRequestQueue(Activity_Profile.this);
+        loadingDialog.showDialog();
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", name);
@@ -278,6 +285,7 @@ public class Activity_Profile extends BaseActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    loadingDialog.hideDialog();
                     String message = response.getString("message");
                     Log.d("ABC", message);
                     preferenceManager.putString(Constant.NAME, name);
@@ -285,6 +293,8 @@ public class Activity_Profile extends BaseActivity {
                     preferenceManager.putString(Constant.MAIL, email);
                     preferenceManager.putString(Constant.AVATAR, encodeImage);
                     CustomToast.makeText(Activity_Profile.this, "Cập nhật thông tin thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+
+                    sendBroadcast(encodeImage);
 
                     Intent intent = new Intent(Activity_Profile.this, SeekerMainActivity.class);
                     intent.putExtra(Constant.AVATAR, encodeImage);
@@ -334,5 +344,11 @@ public class Activity_Profile extends BaseActivity {
         };
         ;
         mRequestQueue.add(jsonObjectRequest);
+    }
+
+    private void sendBroadcast(String avatar) {
+        Intent intent = new Intent(Constant.BROADCAST_AVATAR);
+        intent.putExtra(Constant.AVATAR, avatar);
+        sendBroadcast(intent);
     }
 }

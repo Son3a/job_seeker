@@ -137,7 +137,7 @@ public class StatisticalAmountJobFragment extends Fragment implements JobListene
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                System.out.println(error);
+                throw new VolleyError(error.getMessage());
             }
         });
         queue.add(sr);
@@ -265,7 +265,7 @@ public class StatisticalAmountJobFragment extends Fragment implements JobListene
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                System.out.println(error);
+                throw new VolleyError(error.getMessage());
             }
         });
         queue.add(sr);

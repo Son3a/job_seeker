@@ -2,13 +2,10 @@ package com.nsb.job_seeker.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.nsb.job_seeker.activity.BaseActivity;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,8 +16,9 @@ import com.android.volley.toolbox.Volley;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.common.Constant;
+import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityRegisterBinding;
@@ -130,10 +128,18 @@ public class RegisterActivity extends BaseActivity {
         RequestQueue mRequestQueue = Volley.newRequestQueue(RegisterActivity.this);
         binding.btnRegister.setVisibility(View.GONE);
         binding.pbLoading.setVisibility(View.VISIBLE);
+
+        String role = "admin";
+        if (binding.switchButton.getIsChecked()) {
+            role = "user";
+        }
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("password", binding.textPassword.getText().toString());
         jsonObject.put("name", binding.textName.getText().toString());
         jsonObject.put("email", binding.textEmail.getText().toString());
+        jsonObject.put("phone", "");
+        jsonObject.put("role", role);
 
         binding.btnRegister.setVisibility(View.GONE);
         binding.pbLoading.setVisibility(View.VISIBLE);
@@ -144,12 +150,9 @@ public class RegisterActivity extends BaseActivity {
                 try {
                     JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
                     Log.d("ABC", convertedObject.toString());
-                    String message = response.getString("message");
-
-                    signUp(); // sign up on firebase
-
-                    //dialogNotification.openDialogNotification(message.substring(0, message.length() - 1), RegisterActivity.this);
-
+                    CustomToast.makeText(RegisterActivity.this, "Đăng kí tài khoản thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                    finish();
+//                    signUp(); // sign up on firebase
                 } catch (JSONException e) {
                     binding.btnRegister.setVisibility(View.VISIBLE);
                     binding.pbLoading.setVisibility(View.GONE);
@@ -172,9 +175,7 @@ public class RegisterActivity extends BaseActivity {
                         body = new String(error.networkResponse.data, "UTF-8");
                         JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                         String message = convertedObject.get("message").toString();
-
-                        dialogNotification.openDialogNotification(message.substring(1, message.length() - 1), RegisterActivity.this);
-                        Log.d("ABC", message);
+                        CustomToast.makeText(RegisterActivity.this, message.substring(1, message.length() - 1), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }

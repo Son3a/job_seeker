@@ -24,18 +24,20 @@
                 android:id="@+id/imageAvatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/black"
+                android:src="@drawable/ic_account"
                 android:scaleType="centerCrop" />
         </androidx.cardview.widget.CardView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutText"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginTop="7dp"
             android:layout_marginBottom="7dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="30dp"
             app:layout_constraintStart_toEndOf="@+id/cvImage"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -51,20 +53,20 @@
 
             <TextView
                 android:id="@+id/textName"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Nguyen"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/textHi"
-                app:layout_constraintTop_toTopOf="@id/textHi" />
+                app:layout_constraintTop_toTopOf="@id/textHi"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
             <TextView
                 android:id="@+id/textThank"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Chúc bạn một buổi "
+                android:text="Chúc bạn một "
                 android:textColor="@color/secondary_text"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="@+id/textHi"

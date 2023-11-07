@@ -25,14 +25,30 @@
             android:layout_centerInParent="true"
             android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tv_notify"
-            style="@style/text"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layoutEmpty"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Bạn chưa apply công việc nào"
-            android:visibility="gone" />
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="50dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:src="@drawable/image_empty" />
+
+            <TextView
+                android:id="@+id/textEmpty"
+                style="@style/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bạn chưa apply công việc nào"
+                android:textColor="@color/secondary_text"
+                android:textSize="20sp" />
+        </LinearLayout>
     </RelativeLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

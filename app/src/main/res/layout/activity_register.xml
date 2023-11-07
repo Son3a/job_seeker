@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@color/white"
     android:fillViewport="true">
 
@@ -60,17 +61,35 @@
             android:textColor="@color/black"
             android:textSize="30sp" />
 
+        <com.zires.switchsegmentedcontrol.ZiresSwitchSegmentedControl
+            android:id="@+id/switchButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="center_horizontal"
+            app:cornerRadius="7dp"
+            app:textSize="12sp"
+            app:textToggleLeft="Nguời tìm việc"
+            app:textToggleRight="Nhà tuyển dụng" />
+
         <EditText
             android:id="@+id/textName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textTitle"
+            android:layout_below="@id/switchButton"
             android:layout_marginStart="20dp"
             android:layout_marginTop="15dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/background_edittext_register"
             android:drawableLeft="@drawable/ic_account"
             android:drawablePadding="10dp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:imeOptions="actionNext"
             android:drawableTint="@color/secondary_text"
             android:hint="Họ và tên"
             android:paddingStart="15dp"
@@ -303,24 +322,11 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <com.github.angads25.toggle.widget.LabeledSwitch
-            android:id="@+id/switchButton"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@+id/layoutErrorConfirmPassword"
-            android:layout_centerHorizontal="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:textSize="14sp"
-            app:colorBorder="@color/green"
-            app:on="true" />
-
         <CheckBox
             android:id="@+id/cbxAcceptApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/switchButton"
+            android:layout_below="@+id/layoutErrorConfirmPassword"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
@@ -382,7 +388,7 @@
                 android:id="@+id/textLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đăng nhâp ngay"
+                android:text="Đăng nhập ngay"
                 android:textColor="@color/green"
                 android:textSize="20sp" />
         </LinearLayout>

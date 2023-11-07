@@ -156,7 +156,7 @@ public class RecruitmentsFragment extends Fragment {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-
+                throw new VolleyError(error.getMessage());
             }
         });
         queue.add(data);

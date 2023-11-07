@@ -60,9 +60,11 @@ public class AccountFragment extends Fragment {
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == RESULT_OK) {
                         Intent intent = result.getData();
-                        String avatar = intent.getStringExtra(Constant.AVATAR);
+                        if (intent.getStringExtra(Constant.AVATAR) != null) {
+                            String avatar = intent.getStringExtra(Constant.AVATAR);
+                            binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(avatar));
+                        }
                         String name = intent.getStringExtra(Constant.NAME);
-                        binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(avatar));
                         binding.textName.setText(name);
                     }
                 }
@@ -96,7 +98,10 @@ public class AccountFragment extends Fragment {
     }
 
     private void loadInfo() {
-        binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
+        if (preferenceManager.getString(Constant.AVATAR) != null) {
+            binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
+        }
+
         binding.textName.setText(preferenceManager.getString(Constant.NAME));
     }
 
@@ -183,13 +188,7 @@ public class AccountFragment extends Fragment {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                Log.d("Error", error.getMessage());
-                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
-                    Intent i = new Intent(getActivity(), LoginActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    preferenceManager.clear();
-                    startActivity(i);
-                }
+                throw new VolleyError(error.getMessage());
             }
         });
         mRequestQueue.add(jsonObjectRequest);

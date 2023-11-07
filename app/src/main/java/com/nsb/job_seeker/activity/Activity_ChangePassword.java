@@ -236,12 +236,7 @@ public class Activity_ChangePassword extends BaseActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
-                    Intent i = new Intent(Activity_ChangePassword.this, LoginActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    preferenceManager.clear();
-                    startActivity(i);
-                }
+                throw new VolleyError(error.getMessage());
             }
         });
         mRequestQueue.add(jsonObjectRequest);

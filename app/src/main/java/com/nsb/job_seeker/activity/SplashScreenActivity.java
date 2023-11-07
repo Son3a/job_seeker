@@ -43,7 +43,9 @@ public class SplashScreenActivity extends BaseActivity {
 
     private void getInfo() {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-        String url = "https://job-seeker-server.onrender.com/auth/info-user";
+        String url = Constant.url_dev + "/auth/info-user";
+
+        String token = preferenceManager.getString(Constant.TOKEN);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -61,14 +63,17 @@ public class SplashScreenActivity extends BaseActivity {
                     }
                     redirectAfterLogin(preferenceManager.getString(Constant.ROLE));
                 } catch (JSONException e) {
+                    Log.d("Error", e.toString());
                     e.printStackTrace();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d("Error","Error response "+ error.toString());
                 if (error instanceof com.android.volley.NoConnectionError) {
-
+                    CustomToast.makeText(SplashScreenActivity.this, "Hệ thống đang có lỗi, quý khách vui lòng quay lại sau!",
+                            CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
                 } else if (error.networkResponse.data != null && (error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 400)) {
                     Intent i = new Intent(SplashScreenActivity.this, LoginActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -81,7 +86,7 @@ public class SplashScreenActivity extends BaseActivity {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
-                params.put("Authorization", preferenceManager.getString(Constant.TOKEN));
+                params.put("Authorization", token);
                 return params;
             }
         };
@@ -99,12 +104,7 @@ public class SplashScreenActivity extends BaseActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if (error.networkResponse.data != null && (error.networkResponse.statusCode == 401 || error.networkResponse.statusCode == 400)) {
-                    Intent i = new Intent(SplashScreenActivity.this, LoginActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    preferenceManager.clear();
-                    startActivity(i);
-                }
+                throw new VolleyError(error.getMessage());
             }
         });
         requestQueue.add(jsonObjectRequest);

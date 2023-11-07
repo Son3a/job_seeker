@@ -15,6 +15,7 @@ import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -42,6 +43,7 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.admin.EmployerMainActivity;
 import com.nsb.job_seeker.activity.seeker.SeekerMainActivity;
 import com.nsb.job_seeker.common.Constant;
+import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityLoginBinding;
@@ -226,6 +228,7 @@ public class LoginActivity extends BaseActivity {
                     binding.layoutErrorPassword.setVisibility(View.GONE);
                     binding.textPassword.setBackgroundResource(R.drawable.background_edittext_register);
                     try {
+                        Constant.hideKeyboardFrom(LoginActivity.this, binding.getRoot());
                         postLogin();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -285,9 +288,11 @@ public class LoginActivity extends BaseActivity {
                             String accessToken = jsonObject1.get("refreshToken").toString();
                             preferenceManager.putString(Constant.TOKEN, "Bearer " + accessToken.replace("\"", ""));
                             preferenceManager.putString(Constant.NAME, jsonObject1.getString("name"));
-                            preferenceManager.putString(Constant.AVATAR, jsonObject1.getString("avatar"));
-                            preferenceManager.putString(Constant.PHONE, jsonObject1.getString("phone"));
                             preferenceManager.putString(Constant.MAIL, jsonObject1.getString("email"));
+                            if (!jsonObject1.getString("avatar").isEmpty()) {
+                                preferenceManager.putString(Constant.AVATAR, jsonObject1.getString("avatar"));
+                                preferenceManager.putString(Constant.PHONE, jsonObject1.getString("phone"));
+                            }
                             preferenceManager.putString(Constant.ROLE, role);
                             preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
                             binding.btnLogin.setVisibility(View.VISIBLE);
@@ -303,25 +308,26 @@ public class LoginActivity extends BaseActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("Error", error.getMessage());
+                        Log.d("Error", "Error response: " + error.toString());
                         String body;
                         //get status code here
                         binding.btnLogin.setVisibility(View.VISIBLE);
                         binding.pbLoading.setVisibility(View.GONE);
-                        if (error instanceof com.android.volley.NoConnectionError) {
 
-                        } else if (error.networkResponse != null) {
+                        if (error instanceof com.android.volley.NoConnectionError) {
+                            CustomToast.makeText(LoginActivity.this, "Hệ thống đang có lỗi, quý khách vui lòng quay lại sau!",
+                                    CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
+                        } else if (error instanceof AuthFailureError) {
                             try {
                                 body = new String(error.networkResponse.data, "UTF-8");
-                                Log.d("ABC", body);
                                 JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                                 String message = convertedObject.get("message").toString();
-
-                                Toast.makeText(LoginActivity.this, message.substring(1, message.length() - 1), Toast.LENGTH_SHORT).show();
+                                CustomToast.makeText(LoginActivity.this, message.substring(1, message.length() - 1), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
                             } catch (UnsupportedEncodingException e) {
-                                Log.d("ABC", e.toString());
                                 e.printStackTrace();
                             }
+                        } else if(error instanceof VolleyError){
+                            CustomToast.makeText(LoginActivity.this, error.getMessage(), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
                         }
                     }
                 }
@@ -339,7 +345,7 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-
+                throw new VolleyError("Email hoặc mật khẩu không chính xác!");
             }
         });
         queue.add(data);

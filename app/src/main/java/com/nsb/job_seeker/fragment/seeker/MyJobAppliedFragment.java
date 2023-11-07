@@ -88,7 +88,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
         String token = preferenceManager.getString(Constant.TOKEN);
         jobListApplied.clear();
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-
+        binding.layoutEmpty.setVisibility(View.GONE);
         loadingDialog.showDialog();
         JsonObjectRequest data = new JsonObjectRequest(
                 url,
@@ -117,9 +117,9 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
                                 ));
 
                             }
-//                            if (jobsList.length() == 0) {
-//                                tvNotify.setVisibility(View.VISIBLE);
-//                            }
+                            if (jobsList.length() == 0) {
+                                binding.layoutEmpty.setVisibility(View.VISIBLE);
+                            }
                             binding.layoutRefresh.setRefreshing(false);
                             jobAdapter.notifyDataSetChanged();
                             loadingDialog.hideDialog();
@@ -166,12 +166,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
 
             @Override
             public void retry(VolleyError error) throws VolleyError {
-                if (error.networkResponse.data != null & error.networkResponse.statusCode == 401) {
-                    Intent i = new Intent(getContext(), LoginActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    preferenceManager.clear();
-                    startActivity(i);
-                }
+                throw new VolleyError(error.getMessage());
             }
         });
         queue.add(data);

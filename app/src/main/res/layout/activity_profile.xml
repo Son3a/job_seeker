@@ -50,156 +50,164 @@
         android:paddingHorizontal="16dp"
         android:paddingVertical="25dp">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:backgroundTint="@color/white"
-            app:cardCornerRadius="100dp">
-
-            <ImageView
-                android:id="@+id/imageAvatar"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
-                android:background="@drawable/rounded_outline"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_account" />
-        </androidx.cardview.widget.CardView>
-
-
-        <TextView
-            android:id="@+id/txtName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/ivChooseAvatar"
-            android:layout_marginVertical="8dp"
-            android:text="Tên"
-            android:textColor="@color/secondary_text" />
-
-        <EditText
-            android:id="@+id/textName"
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:layout_below="@+id/txtName"
-            android:background="@drawable/custom_input"
-            android:drawableStart="@drawable/custom_icon_name"
-            android:drawablePadding="12dp"
-            android:ems="10"
-            android:paddingHorizontal="8dp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/secondary_text"
-            android:textSize="18sp" />
-
         <LinearLayout
-            android:id="@+id/layoutErrorName"
+            android:id="@+id/layoutContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textEmail"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
+            android:orientation="vertical">
             <androidx.cardview.widget.CardView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:backgroundTint="@color/white"
-                app:cardCornerRadius="50dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_error"
-                    android:tint="@color/red" />
-            </androidx.cardview.widget.CardView>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="Vui lòng nhập tên"
-                android:textColor="@color/red"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/txtEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/edtName"
-            android:layout_marginVertical="8dp"
-            android:text="Email"
-            android:textColor="@color/secondary_text" />
-
-        <TextView
-            android:id="@+id/textEmail"
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:layout_below="@+id/txtEmail"
-            android:background="@drawable/custom_input"
-            android:drawableStart="@drawable/custom_icon_email"
-            android:drawablePadding="12dp"
-            android:gravity="center_vertical"
-            android:inputType="textEmailAddress"
-            android:paddingHorizontal="8dp"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/txtPhone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
-            android:text="Số điện thoại"
-            android:textColor="@color/secondary_text" />
-
-
-        <EditText
-            android:id="@+id/textPhone"
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:layout_below="@+id/txtPhone"
-            android:background="@drawable/custom_input"
-            android:drawableStart="@drawable/custom_icon_phone"
-            android:drawablePadding="12dp"
-            android:ems="10"
-            android:inputType="phone"
-            android:paddingHorizontal="8dp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/secondary_text"
-            android:textSize="18sp" />
-
-        <LinearLayout
-            android:id="@+id/layoutErrorPhone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textEmail"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_gravity="center_horizontal"
                 android:backgroundTint="@color/white"
-                app:cardCornerRadius="50dp">
+                app:cardCornerRadius="100dp">
 
                 <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:id="@+id/imageAvatar"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:background="@drawable/rounded_outline"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_error"
-                    android:tint="@color/red" />
+                    android:src="@drawable/ic_account" />
             </androidx.cardview.widget.CardView>
 
+
             <TextView
+                android:id="@+id/txtName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:text="Vui lòng nhập số điện thoại"
-                android:textColor="@color/red"
-                android:textSize="14sp" />
+                android:layout_below="@+id/ivChooseAvatar"
+                android:layout_marginVertical="8dp"
+                android:text="Tên"
+                android:textColor="@color/secondary_text" />
+
+            <EditText
+                android:id="@+id/textName"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_below="@+id/txtName"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_icon_name"
+                android:drawablePadding="12dp"
+                android:ems="10"
+                android:paddingHorizontal="8dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/secondary_text"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:id="@+id/layoutErrorName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textEmail"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:backgroundTint="@color/white"
+                    app:cardCornerRadius="50dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_error"
+                        android:tint="@color/red" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="Vui lòng nhập tên"
+                    android:textColor="@color/red"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/edtName"
+                android:layout_marginVertical="8dp"
+                android:text="Email"
+                android:textColor="@color/secondary_text" />
+
+            <TextView
+                android:id="@+id/textEmail"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_below="@+id/txtEmail"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_icon_email"
+                android:drawablePadding="12dp"
+                android:gravity="center_vertical"
+                android:inputType="textEmailAddress"
+                android:paddingHorizontal="8dp"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txtPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="8dp"
+                android:text="Số điện thoại"
+                android:textColor="@color/secondary_text" />
+
+
+            <EditText
+                android:id="@+id/textPhone"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_below="@+id/txtPhone"
+                android:background="@drawable/custom_input"
+                android:drawableStart="@drawable/custom_icon_phone"
+                android:drawablePadding="12dp"
+                android:ems="10"
+                android:inputType="phone"
+                android:paddingHorizontal="8dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/secondary_text"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:id="@+id/layoutErrorPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textEmail"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:backgroundTint="@color/white"
+                    app:cardCornerRadius="50dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_error"
+                        android:tint="@color/red" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:text="Vui lòng nhập số điện thoại"
+                    android:textColor="@color/red"
+                    android:textSize="14sp" />
+            </LinearLayout>
         </LinearLayout>
+
+
     </LinearLayout>
 
     <LinearLayout
