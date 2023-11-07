@@ -207,6 +207,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginEnd="10dp"
             android:buttonTint="@color/green"
+            android:checked="true"
             android:paddingStart="5dp"
             android:text="Bằng việc đăng nhập, tôi đã đọc và đồng ý với điều khoản dịch vụ và Chính sách bảo mật của TopJob"
             android:textColor="@color/black"

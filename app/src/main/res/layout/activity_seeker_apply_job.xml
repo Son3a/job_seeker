@@ -69,7 +69,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnUploadCV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -78,6 +78,7 @@
                     android:text="Tải lên"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
+                    app:cornerRadius="5dp"
                     android:textSize="18sp" />
             </LinearLayout>
 

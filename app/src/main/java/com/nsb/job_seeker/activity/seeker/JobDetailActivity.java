@@ -96,6 +96,20 @@ public class JobDetailActivity extends BaseActivity {
         gotoAppJob();
 
         clickSaveJob();
+
+        setIconSave();
+    }
+
+    private void setIconSave(){
+        if(!IDJob.equals("")){
+            if (Constant.idSavedJobs.contains(IDJob)) {
+                binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_saved);
+                binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.green));
+            } else {
+                binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_not_save);
+                binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.secondary_text));
+            }
+        }
     }
 
     private void hideLayout(int visible){
@@ -207,7 +221,6 @@ public class JobDetailActivity extends BaseActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    String message = response.getString("message");
                     String status = response.getString("status");
 
                     if (status.equals("1")) {

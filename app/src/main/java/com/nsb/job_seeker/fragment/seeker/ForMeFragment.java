@@ -78,11 +78,16 @@ public class ForMeFragment extends Fragment implements JobListener {
     }
 
     private void setEvent() {
+        loadAvatar();
         getNewJobs();
         setStateAppBar();
         gotoSearch();
         refreshContent();
         gotoAccount();
+    }
+
+    private void loadAvatar(){
+        binding.layoutWelcome.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
     }
 
     private void gotoAccount() {
@@ -229,7 +234,6 @@ public class ForMeFragment extends Fragment implements JobListener {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    String message = response.getString("message");
                     String status = response.getString("status");
 
                     if (status.equals("1")) {

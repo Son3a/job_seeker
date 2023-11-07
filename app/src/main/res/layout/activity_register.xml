@@ -303,11 +303,24 @@
                 android:textSize="14sp" />
         </LinearLayout>
 
+        <com.github.angads25.toggle.widget.LabeledSwitch
+            android:id="@+id/switchButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/layoutErrorConfirmPassword"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp"
+            android:textSize="14sp"
+            app:colorBorder="@color/green"
+            app:on="true" />
+
         <CheckBox
             android:id="@+id/cbxAcceptApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/layoutErrorConfirmPassword"
+            android:layout_below="@+id/switchButton"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"

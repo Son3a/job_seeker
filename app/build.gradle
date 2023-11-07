@@ -96,4 +96,9 @@ dependencies {
     implementation 'com.github.eddykwang:MaterialScrollPicker:1.0a'
 
     implementation 'com.squareup.picasso:picasso:2.8'
+
+    //custom switch button
+    implementation 'lib.kingja.switchbutton:switchbutton:1.1.8'
+
+    implementation 'com.github.angads25:toggle:1.1.0'
 }

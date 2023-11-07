@@ -10,7 +10,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.adapter.ForMeAdapter;
+import com.nsb.job_seeker.adapter.MyJobAdapter;
 import com.nsb.job_seeker.databinding.FragmentSeekerForMeBinding;
 import com.nsb.job_seeker.databinding.FragmentSeekerMyFobBinding;
 import com.nsb.job_seeker.model.Job;
@@ -20,12 +23,8 @@ import java.util.List;
 
 public class MyJobFragment extends Fragment {
     private FragmentSeekerMyFobBinding binding;
-    //    private ViewPager2 viewPager2;
-    private MyJobAppliedFragment myJobAppliedFragment;
-    private MyJobSavedFragment myJobSavedFragment;
-    private Fragment activeFragment;
-
-    private List<Job> jobListApplied;
+    private MyJobAdapter myJobAdapter;
+    private List<String> tabTitle;
 
     @Nullable
     @Override
@@ -39,52 +38,20 @@ public class MyJobFragment extends Fragment {
     }
 
     private void setControl() {
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Đã lưu lại"));
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Đã nộp hồ sơ"));
-
-        myJobSavedFragment = new MyJobSavedFragment();
-        myJobAppliedFragment = new MyJobAppliedFragment();
-        activeFragment = new MyJobSavedFragment();
-        jobListApplied = new ArrayList<>();
+        tabTitle = new ArrayList<>();
+        tabTitle.add("Đã lưu lại");
+        tabTitle.add("Đã nộp hồ sơ");
+        if (getActivity() != null) {
+            myJobAdapter = new MyJobAdapter(getActivity());
+        }
     }
 
     private void setEvent() {
-        setTabLayout();
+        binding.viewPagerMyJob.setAdapter(myJobAdapter);
+
+        new TabLayoutMediator(binding.tabLayout, binding.viewPagerMyJob, (tab, position) -> {
+            tab.setText(tabTitle.get(position));
+            tab.view.setClickable(true);
+        }).attach();
     }
-
-    private void setTabLayout() {
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_my_job, myJobSavedFragment)
-                .addToBackStack(null)
-                .commit();
-
-        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container_my_job, myJobSavedFragment)
-                            .addToBackStack(null)
-                            .commit();
-                } else {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container_my_job, myJobAppliedFragment)
-                            .addToBackStack(null)
-                            .commit();
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-    }
-
-
 }
