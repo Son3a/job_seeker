@@ -60,9 +60,6 @@ public class JobDetailActivity extends BaseActivity {
         setContentView(binding.getRoot());
 
         setControl();
-
-
-        getJobDetail();
         setEvent();
     }
 
@@ -83,25 +80,19 @@ public class JobDetailActivity extends BaseActivity {
     private void setEvent() {
         binding.viewPager.setUserInputEnabled(false);
 
+        getJobDetail();
         setStateAppBar();
-
         back();
-
         setTabLayout();
-
         changeBtnSubmit();
-
         applyJob();
-
         gotoAppJob();
-
         clickSaveJob();
-
         setIconSave();
     }
 
-    private void setIconSave(){
-        if(!IDJob.equals("")){
+    private void setIconSave() {
+        if (!IDJob.equals("")) {
             if (Constant.idSavedJobs.contains(IDJob)) {
                 binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_saved);
                 binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.green));
@@ -112,7 +103,7 @@ public class JobDetailActivity extends BaseActivity {
         }
     }
 
-    private void hideLayout(int visible){
+    private void hideLayout(int visible) {
         binding.layoutHeader1.setVisibility(visible);
         binding.tabLayout.setVisibility(visible);
         binding.layoutBottomSheet.getRoot().setVisibility(visible);
@@ -122,7 +113,7 @@ public class JobDetailActivity extends BaseActivity {
     private void gotoAppJob() {
         binding.layoutBottomSheet.btnApplyJob.setOnClickListener(v -> {
             Intent intent = new Intent(this, ApplyJobActivity.class);
-            intent.putExtra("idJob",IDJob);
+            intent.putExtra("idJob", IDJob);
             startActivity(intent);
         });
     }
@@ -198,8 +189,8 @@ public class JobDetailActivity extends BaseActivity {
 //        }
     }
 
-    private void clickSaveJob(){
-        binding.layoutBottomSheet.cvSaveJob.setOnClickListener(v->{
+    private void clickSaveJob() {
+        binding.layoutBottomSheet.cvSaveJob.setOnClickListener(v -> {
             try {
                 saveJob(IDJob);
             } catch (JSONException e) {
@@ -248,8 +239,7 @@ public class JobDetailActivity extends BaseActivity {
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
                 if (error instanceof com.android.volley.NoConnectionError) {
 
-                } else
-                if (error.networkResponse.data != null) {
+                } else if (error.networkResponse.data != null) {
                     try {
                         if (error.networkResponse.statusCode == 401) {
                             Intent i = new Intent(JobDetailActivity.this, LoginActivity.class);
@@ -384,6 +374,13 @@ public class JobDetailActivity extends BaseActivity {
                             company
                     );
 
+                    if(Constant.idAppliedJob.contains(job.getString("_id"))){
+                        binding.layoutBottomSheet.getRoot().setVisibility(View.INVISIBLE);
+                        binding.layoutBottomSheetApplyAgain.getRoot().setVisibility(View.VISIBLE);
+                    } else {
+                        binding.layoutBottomSheetApplyAgain.getRoot().setVisibility(View.INVISIBLE);
+                        binding.layoutBottomSheet.getRoot().setVisibility(View.VISIBLE);
+                    }
                     hideLayout(View.VISIBLE);
 
                 } catch (JSONException e) {
@@ -400,7 +397,8 @@ public class JobDetailActivity extends BaseActivity {
                 if (error instanceof com.android.volley.NoConnectionError) {
 
                 }
-                Log.d("Error", error.getMessage());;
+                Log.d("Error", error.getMessage());
+                ;
             }
         });
         data.setRetryPolicy(new RetryPolicy() {

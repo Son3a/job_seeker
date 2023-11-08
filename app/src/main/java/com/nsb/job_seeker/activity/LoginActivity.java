@@ -54,6 +54,8 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends BaseActivity {
     private ActivityLoginBinding binding;
@@ -298,7 +300,7 @@ public class LoginActivity extends BaseActivity {
                             binding.btnLogin.setVisibility(View.VISIBLE);
                             binding.pbLoading.setVisibility(View.GONE);
 
-                            redirectAfterLogin(role);
+                            getAppliedJob(role);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -391,6 +393,70 @@ public class LoginActivity extends BaseActivity {
                 ).addOnFailureListener(e -> {
                     Log.d("Error", e.getMessage());
                 });
+    }
+
+    private void getAppliedJob(String role) {
+        String url = Constant.url_dev + "/application/get-by-userid";
+        String token = preferenceManager.getString(Constant.TOKEN);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest data = new JsonObjectRequest(
+                url,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Constant.idAppliedJob = new ArrayList<>();
+                            JSONArray jobsList = response.getJSONObject("data").getJSONArray("data");
+                            for (int i = 0; i < jobsList.length(); i++) {
+                                JSONObject job = jobsList.getJSONObject(i).getJSONObject("idJob");
+                                Constant.idAppliedJob.add(job.getString("_id"));
+                            }
+                            redirectAfterLogin(role);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof com.android.volley.NoConnectionError) {
+
+                        } else if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
+                            Intent i = new Intent(LoginActivity.this, LoginActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            preferenceManager.clear();
+                            startActivity(i);
+                        }
+
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", token);
+                return headers;
+            }
+        };
+        data.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                throw new VolleyError(error.getMessage());
+            }
+        });
+        queue.add(data);
     }
 
 }

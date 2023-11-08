@@ -70,13 +70,13 @@ public class Constant {
     public static final String JOB_MODEL = "jobModel";
     public static final String LIST_RELATED_JOB = "listRelatedJob";
     public static final String COMPANY_MODEL = "companyModel";
-    public static List<String> idSavedJobs;
     public static final String AVATAR = "avatar";
     public static final String NAME = "NAME_USER";
     public static final String PHONE = "PHONE_USER";
     public static final String MAIL = "MAIL_USER";
     public static final String BROADCAST_AVATAR = "send_avatar";
     public static String avatar;
+    public static List<String> idSavedJobs, idAppliedJob;
 
     public static HashMap<String, String> remoteMsgHeaders = null;
 
