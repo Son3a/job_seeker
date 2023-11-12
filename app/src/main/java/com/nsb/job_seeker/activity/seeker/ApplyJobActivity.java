@@ -20,6 +20,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.nsb.job_seeker.activity.BaseActivity;
 
 import com.android.volley.AuthFailureError;
@@ -99,11 +100,21 @@ public class ApplyJobActivity extends BaseActivity {
     private void setEvent() throws URISyntaxException {
         back();
 
+        loadInfo();
+
         clickOpenFile();
 
         removeFile();
 
         clickApply();
+    }
+
+    private void loadInfo() {
+        binding.textEmailSeeker.setText(preferenceManager.getString(Constant.MAIL));
+        binding.textNameSeeker.setText(preferenceManager.getString(Constant.NAME));
+        if (preferenceManager.getString(Constant.PHONE) != null) {
+            binding.textPhoneSeeker.setText(preferenceManager.getString(Constant.PHONE));
+        }
     }
 
     private void clickApply() {
@@ -200,8 +211,7 @@ public class ApplyJobActivity extends BaseActivity {
                         public void onErrorResponse(VolleyError error) {
                             if (error instanceof com.android.volley.NoConnectionError) {
 
-                            } else
-                            if (error.networkResponse.statusCode == 401) {
+                            } else if (error.networkResponse.statusCode == 401) {
                                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 preferenceManager.clear();

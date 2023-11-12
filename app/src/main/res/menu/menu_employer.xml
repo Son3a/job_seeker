@@ -2,11 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/menu_recruitments"
-        android:title="Tin tuyển dụng"
+        android:title="Công việc"
         android:icon="@drawable/ic_news"/>
     <item android:id="@+id/menu_up_news"
         android:title="Đăng tin"
         android:icon="@drawable/ic_add"/>
+    <item android:id="@+id/menu_company"
+        android:title="Công ty"
+        android:icon="@drawable/ic_company"/>
     <item android:id="@+id/menu_message"
         android:title="Tin nhắn"
         android:icon="@drawable/ic_message"/>

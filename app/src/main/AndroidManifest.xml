@@ -20,7 +20,13 @@
         android:windowIsTranslucent="true"
         android:windowSoftInputMode="stateAlwaysVisible"
         tools:targetApi="31">
-
+        <activity
+            android:name=".activity.admin.UpdateCompanyActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".activity.seeker.SearchResultActivity"
             android:exported="false" />
@@ -51,7 +57,6 @@
         <activity android:name=".activity.seeker.JobDetailActivity" />
         <activity android:name=".activity.admin.StatisticalJobActivity" />
         <activity android:name=".activity.seeker.SeekerMainActivity" />
-        <activity android:name=".activity.admin.RecruitmentDetailActivity" />
         <activity android:name=".activity.admin.ListCVActivity" />
         <activity android:name=".activity.admin.EditRecruitmentActivity" />
         <activity

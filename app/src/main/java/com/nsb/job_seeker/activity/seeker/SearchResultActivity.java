@@ -5,18 +5,15 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -38,22 +35,20 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.nsb.job_seeker.adapter.ExperienceAdapter;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.adapter.KeywordAdapter;
 import com.nsb.job_seeker.adapter.PositionAdapter;
-import com.nsb.job_seeker.adapter.SalaryAdapter;
+import com.nsb.job_seeker.adapter.FilterAdapter;
 import com.nsb.job_seeker.common.CustomDialogDelete;
 import com.nsb.job_seeker.common.EventKeyboard;
 import com.nsb.job_seeker.databinding.ActivitySeekerSearchResultBinding;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
-import com.nsb.job_seeker.listener.ExperienceListener;
 import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.listener.KeywordListener;
 import com.nsb.job_seeker.listener.PositionListener;
-import com.nsb.job_seeker.listener.SalaryListener;
+import com.nsb.job_seeker.listener.FilterListener;
 import com.nsb.job_seeker.model.Job;
 import com.nsb.job_seeker.room.KeyWord;
 import com.nsb.job_seeker.room.KeywordDatabase;
@@ -69,8 +64,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SearchResultActivity extends BaseActivity implements JobListener, SalaryListener,
-        PositionListener, ExperienceListener, KeywordListener {
+public class SearchResultActivity extends BaseActivity implements JobListener,
+        PositionListener,  KeywordListener {
     private ActivitySeekerSearchResultBinding binding;
     private List<Job> jobList;
     private JobAdapter jobAdapter;
@@ -143,7 +138,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
 
     private void clickDeleteHistory() {
         binding.textDeleteAll.setOnClickListener(v -> {
-            CustomDialogDelete dialogDelete = new CustomDialogDelete(this) {
+            CustomDialogDelete dialogDelete = new CustomDialogDelete(this, "Xóa", "Hủy", true) {
                 @Override
                 public void doSomeThing() {
                     deleteAllHistory();
@@ -274,12 +269,30 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
         listExperiences.add("Trên 5 năm");
 
 
-        layoutBottomExperience = getLayoutInflater().inflate(R.layout.layout_experience, null);
+        layoutBottomExperience = getLayoutInflater().inflate(R.layout.layout_filter, null);
         bottomSheetExperience = new BottomSheetDialog(this);
         bottomSheetExperience.setContentView(layoutBottomExperience);
 
-        ExperienceAdapter experienceAdapter = new ExperienceAdapter(listExperiences, this);
-        recyclerViewExperience = layoutBottomExperience.findViewById(R.id.rcvExperience);
+        FilterAdapter experienceAdapter = new FilterAdapter(listExperiences, new FilterListener() {
+            @Override
+            public void onClickItem(String data, int position) {
+                experience = data;
+                binding.textExperience.setText(data);
+                bottomSheetExperience.dismiss();
+                if (data.equals(listExperiences.get(0))) {
+                    experience = "";
+                    binding.textExperience.setText("Kinh nghiệm");
+                    binding.textExperience.setTextColor(ContextCompat.getColor(SearchResultActivity.this, R.color.black));
+                    binding.textExperience.setBackgroundResource(R.drawable.background_border);
+                    TextViewCompat.setCompoundDrawableTintList(binding.textExperience, ColorStateList.valueOf(ContextCompat.getColor(SearchResultActivity.this, R.color.secondary_text)));
+                } else {
+                    binding.textExperience.setTextColor(ContextCompat.getColor(SearchResultActivity.this, R.color.green));
+                    binding.textExperience.setBackgroundResource(R.drawable.background_border_green);
+                    TextViewCompat.setCompoundDrawableTintList(binding.textExperience, ColorStateList.valueOf(ContextCompat.getColor(SearchResultActivity.this, R.color.green)));
+                }
+            }
+        });
+        recyclerViewExperience = layoutBottomExperience.findViewById(R.id.rcvFilter);
         recyclerViewExperience.setAdapter(experienceAdapter);
     }
 
@@ -295,9 +308,32 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
         listSalary.add("Trên 50 triệu");
         listSalary.add("Thỏa thuận");
 
-        layoutBottomSalary = getLayoutInflater().inflate(R.layout.layout_salary, null);
-        SalaryAdapter salaryAdapter = new SalaryAdapter(listSalary, this);
-        recyclerViewSalary = layoutBottomSalary.findViewById(R.id.rcvSalary);
+        layoutBottomSalary = getLayoutInflater().inflate(R.layout.layout_filter, null);
+        FilterAdapter salaryAdapter = new FilterAdapter(listSalary, new FilterListener() {
+            @Override
+            public void onClickItem(String data, int position) {
+                salary = data;
+                binding.textSalary.setText(data);
+                bottomSheetSalary.dismiss();
+                if (data.contains("Dưới")) {
+                    salary += "<";
+                } else if (data.contains("Trên")) {
+                    salary += ">";
+                }
+                if (data.equals(listSalary.get(0))) {
+                    salary = "";
+                    binding.textSalary.setText("Mức lương");
+                    binding.textSalary.setTextColor(ContextCompat.getColor(SearchResultActivity.this, R.color.black));
+                    binding.textSalary.setBackgroundResource(R.drawable.background_border);
+                    TextViewCompat.setCompoundDrawableTintList(binding.textSalary, ColorStateList.valueOf(ContextCompat.getColor(SearchResultActivity.this, R.color.secondary_text)));
+                } else {
+                    binding.textSalary.setTextColor(ContextCompat.getColor(SearchResultActivity.this, R.color.green));
+                    binding.textSalary.setBackgroundResource(R.drawable.background_border_green);
+                    TextViewCompat.setCompoundDrawableTintList(binding.textSalary, ColorStateList.valueOf(ContextCompat.getColor(SearchResultActivity.this, R.color.green)));
+                }
+            }
+        });
+        recyclerViewSalary = layoutBottomSalary.findViewById(R.id.rcvFilter);
         recyclerViewSalary.setAdapter(salaryAdapter);
 
         bottomSheetSalary = new BottomSheetDialog(this);
@@ -485,7 +521,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
                                     job.getJSONObject("idOccupation").getString("name"),
                                     job.getJSONObject("idCompany").getString("image"),
                                     job.getString("amount"),
-                                    job.getString("working_form"),
+                                    job.getString("workingForm"),
                                     job.getString("experience"),
                                     job.getString("gender")
                             ));
@@ -566,49 +602,8 @@ public class SearchResultActivity extends BaseActivity implements JobListener, S
     }
 
     @Override
-    public void onClickSalary(String data) {
-        salary = data;
-        binding.textSalary.setText(data);
-        bottomSheetSalary.dismiss();
-        if (data.contains("Dưới")) {
-            salary += "<";
-        } else if (data.contains("Trên")) {
-            salary += ">";
-        }
-        if (data.equals(listSalary.get(0))) {
-            salary = "";
-            binding.textSalary.setText("Mức lương");
-            binding.textSalary.setTextColor(ContextCompat.getColor(this, R.color.black));
-            binding.textSalary.setBackgroundResource(R.drawable.background_border);
-            TextViewCompat.setCompoundDrawableTintList(binding.textSalary, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.secondary_text)));
-        } else {
-            binding.textSalary.setTextColor(ContextCompat.getColor(this, R.color.green));
-            binding.textSalary.setBackgroundResource(R.drawable.background_border_green);
-            TextViewCompat.setCompoundDrawableTintList(binding.textSalary, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.green)));
-        }
-    }
-
-    @Override
-    public void onClickExperience(String data) {
-        experience = data;
-        binding.textExperience.setText(data);
-        bottomSheetExperience.dismiss();
-        if (data.equals(listExperiences.get(0))) {
-            experience = "";
-            binding.textExperience.setText("Kinh nghiệm");
-            binding.textExperience.setTextColor(ContextCompat.getColor(this, R.color.black));
-            binding.textExperience.setBackgroundResource(R.drawable.background_border);
-            TextViewCompat.setCompoundDrawableTintList(binding.textExperience, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.secondary_text)));
-        } else {
-            binding.textExperience.setTextColor(ContextCompat.getColor(this, R.color.green));
-            binding.textExperience.setBackgroundResource(R.drawable.background_border_green);
-            TextViewCompat.setCompoundDrawableTintList(binding.textExperience, ColorStateList.valueOf(ContextCompat.getColor(this, R.color.green)));
-        }
-    }
-
-    @Override
     public void onClickRemove(KeyWord keyWord, int position) {
-        CustomDialogDelete dialogDelete = new CustomDialogDelete(this) {
+        CustomDialogDelete dialogDelete = new CustomDialogDelete(this, "Xóa", "Hủy", true) {
             @Override
             public void doSomeThing() {
                 if (keyWordList.size() != 0) {

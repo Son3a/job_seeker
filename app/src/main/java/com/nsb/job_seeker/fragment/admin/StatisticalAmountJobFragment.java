@@ -201,7 +201,7 @@ public class StatisticalAmountJobFragment extends Fragment implements JobListene
                                     job.getJSONObject("idOccupation").getString("name"),
                                     job.getJSONObject("idCompany").getString("image"),
                                     job.getString("amount"),
-                                    job.getString("working_form"),
+                                    job.getString("workingForm"),
                                     job.getString("experience"),
                                     job.getString("gender")
                             ));

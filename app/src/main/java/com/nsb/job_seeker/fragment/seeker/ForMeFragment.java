@@ -173,7 +173,7 @@ public class ForMeFragment extends Fragment implements JobListener {
                                             job.getJSONObject("idOccupation").getString("name"),
                                             job.getJSONObject("idCompany").getString("image"),
                                             job.getString("amount"),
-                                            job.getString("working_form"),
+                                            job.getString("workingForm"),
                                             job.getString("experience"),
                                             job.getString("gender")
                                     ));
@@ -349,7 +349,7 @@ public class ForMeFragment extends Fragment implements JobListener {
     @Override
     public void onClick(Job job) {
         Intent i = new Intent(getActivity(), JobDetailActivity.class);
-        i.putExtra("id", job.getId());
+        i.putExtra(Constant.JOB_ID, job.getId());
         i.putExtra("isApply", true);
         startActivity(i);
     }

@@ -105,7 +105,7 @@ public class CompanyFragment extends Fragment implements JobListener {
                                             job.getJSONObject("idOccupation").getString("name"),
                                             job.getJSONObject("idCompany").getString("image"),
                                             job.getString("amount"),
-                                            job.getString("working_form"),
+                                            job.getString("workingForm"),
                                             job.getString("experience"),
                                             job.getString("gender")
                                     ));

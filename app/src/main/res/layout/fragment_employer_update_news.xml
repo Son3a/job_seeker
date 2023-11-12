@@ -1,30 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_main"
-    android:orientation="vertical">
+    android:background="@color/gray_main">
 
     <RelativeLayout
+        android:id="@+id/layoutHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary"
-        android:padding="10dp">
-
-        <ImageView
-            android:id="@+id/ic_cancel"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/ic_cancel"
-            android:visibility="gone"
-            app:tint="@color/white" />
+        android:padding="10dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/txt_title"
@@ -32,132 +19,128 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_marginVertical="8dp"
             android:text="Thêm tin tuyển dụng mới"
             android:textColor="@color/white" />
 
-        <ImageView
-            android:id="@+id/ic_create_recruitment"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_save_recruiment" />
     </RelativeLayout>
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:background="@color/white">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/footer"
+        app:layout_constraintTop_toBottomOf="@+id/layoutHeader">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <EditText
-                android:id="@+id/edt_name_job"
-                style="@style/text_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/custom_edittext_cre_news"
-                android:hint="Tên công việc"
-                android:textColorHint="@color/secondary_text" />
-
-            <EditText
-                android:id="@+id/edt_place"
-                style="@style/text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/custom_edittext_cre_news"
-                android:hint="Địa chỉ"
-                android:textColorHint="@color/secondary_text" />
-
-            <FrameLayout
-                android:id="@+id/line"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp"
-                android:background="#D4D4D4" />
+            android:layout_below="@+id/layoutHeader"
+            android:layout_margin="10dp"
+            android:background="@color/white">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="20dp">
 
                 <EditText
-                    android:id="@+id/edt_salary"
-                    style="@style/text"
+                    android:id="@+id/edt_name_job"
+                    style="@style/text_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
                     android:background="@drawable/custom_edittext_cre_news"
-                    android:drawableLeft="@drawable/ic_salary_black"
-                    android:drawablePadding="20dp"
-                    android:hint="Lương"
-                    android:inputType="number"
+                    android:hint="Tên công việc"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:maxLines="1"
                     android:textColorHint="@color/secondary_text" />
+
+                <LinearLayout
+                    android:id="@+id/layoutErrorName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textEmail"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:backgroundTint="@color/white"
+                        app:cardCornerRadius="50dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_error"
+                            android:tint="@color/red" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="Vui lòng nhập tên công việc"
+                        android:textColor="@color/red"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
                 <EditText
-                    android:id="@+id/edt_work_time"
+                    android:id="@+id/textPosition"
                     style="@style/text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/custom_edittext_cre_news"
-                    android:drawableLeft="@drawable/ic_work_time"
+                    android:drawableLeft="@drawable/ic_position_job"
                     android:drawablePadding="20dp"
-                    android:hint="Thời gian làm việc"
+                    android:drawableTint="@color/green"
+                    android:hint="Địa điểm làm việc"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:maxLines="1"
                     android:textColorHint="@color/secondary_text" />
 
-                <Spinner
-                    android:id="@+id/spn_type_job"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="5dp"
-                    android:paddingStart="47dp"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/custom_spinner_type_job"
-                    android:paddingLeft="50dp"
-                    android:popupBackground="@color/white"
-                    android:theme="@style/mySpinnerItemStyle" />
-
-                <TextView
-                    android:id="@+id/tv_time_create_new"
-                    style="@style/text"
+                <LinearLayout
+                    android:id="@+id/layoutErrorPosition"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/textEmail"
                     android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:background="@drawable/custom_edittext_cre_news"
-                    android:drawableLeft="@drawable/ic_time_created"
-                    android:drawablePadding="20dp"
-                    android:hint="Hôm nay" />
+                    android:orientation="horizontal"
+                    android:visibility="gone">
 
-                <EditText
-                    android:id="@+id/edt_deadline"
-                    style="@style/text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/custom_edittext_cre_news"
-                    android:drawableLeft="@drawable/ic_deadline"
-                    android:drawablePadding="20dp"
-                    android:hint="Hạn nộp hồ sơ"
-                    android:inputType="date"
-                    android:textColorHint="@color/secondary_text" />
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:backgroundTint="@color/white"
+                        app:cardCornerRadius="50dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_error"
+                            android:tint="@color/red" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="Vui lòng nhập địa điểm làm việc"
+                        android:textColor="@color/red"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
                 <FrameLayout
+                    android:id="@+id/line"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="15dp"
                     android:layout_marginBottom="15dp"
                     android:background="#D4D4D4" />
 
@@ -166,59 +149,539 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <TextView
-                        style="@style/text_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Mô tả công việc" />
-
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/layoutSalary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="Chi tiết công việc:"
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
+                        android:background="@drawable/custom_edittext_cre_news">
+
+                        <EditText
+                            android:id="@+id/textSalary"
+                            style="@style/text"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.7"
+                            android:background="@null"
+                            android:drawableLeft="@drawable/ic_salary"
+                            android:drawablePadding="20dp"
+                            android:drawableTint="@color/green"
+                            android:hint="Lương"
+                            android:imeOptions="actionNext"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:textColorHint="@color/secondary_text" />
+
+                        <TextView
+                            android:id="@+id/textUnitMoney"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.3"
+                            android:drawableRight="@drawable/ic_down"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="@color/green"
+                            android:gravity="right|center_vertical"
+                            android:text="VND"
+                            android:textColor="@color/secondary_text"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutErrorSalary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textEmail"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="50dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_error"
+                                android:tint="@color/red" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="Vui lòng nhập lương công việc"
+                            android:textColor="@color/red"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                     <EditText
-                        android:id="@+id/edt_detail_job"
+                        android:id="@+id/textWorkingForm"
                         style="@style/text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:background="@drawable/custom_edittext_cre_news"
-                        android:inputType="textMultiLine" />
+                        android:drawableLeft="@drawable/ic_form"
+                        android:drawablePadding="20dp"
+                        android:drawableTint="@color/green"
+                        android:hint="Hình thức làm việc"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColorHint="@color/secondary_text" />
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/layoutErrorWorkingForm"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textEmail"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="50dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_error"
+                                android:tint="@color/red" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="Vui lòng nhập hình thức làm công việc"
+                            android:textColor="@color/red"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/textExperience"
+                        style="@style/text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/custom_edittext_cre_news"
+                        android:drawableLeft="@drawable/ic_experience"
+                        android:drawablePadding="20dp"
+                        android:drawableTint="@color/green"
+                        android:hint="Kinh nghiệm"
+                        android:imeOptions="actionNext"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:textColorHint="@color/secondary_text" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutErrorExperience"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textEmail"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="50dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_error"
+                                android:tint="@color/red" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="Vui lòng nhập kinh nghiệm làm công việc"
+                            android:textColor="@color/red"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+
+                    <EditText
+                        android:id="@+id/textTypeJob"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/custom_edittext_cre_news"
+                        android:cursorVisible="false"
+                        android:drawableLeft="@drawable/ic_type_job"
+                        android:drawableRight="@drawable/ic_down"
+                        android:drawablePadding="20dp"
+                        android:drawableTint="@color/green"
+                        android:focusable="false"
+                        android:gravity="center_vertical"
+                        android:hint="Loại công việc"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/secondary_text"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutErrorTypeJob"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textEmail"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="50dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_error"
+                                android:tint="@color/red" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="Vui lòng chọn loại công việc"
+                            android:textColor="@color/red"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/textGender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/custom_edittext_cre_news"
+                        android:cursorVisible="false"
+                        android:drawableLeft="@drawable/ic_type_job"
+                        android:drawableRight="@drawable/ic_down"
+                        android:drawablePadding="20dp"
+                        android:drawableTint="@color/green"
+                        android:focusable="false"
+                        android:gravity="center_vertical"
+                        android:hint="Giới tính"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/secondary_text"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutErrorGender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textEmail"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="50dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_error"
+                                android:tint="@color/red" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="Vui lòng chọn giới tính"
+                            android:textColor="@color/red"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/textApplyAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="0dp"
+                        android:background="@drawable/custom_edittext_cre_news"
+                        android:drawableLeft="@drawable/ic_amount_apply"
+                        android:drawablePadding="20dp"
+                        android:drawableTint="@color/green"
+                        android:hint="Số lượng ứng tuyển"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        android:textColor="@color/black"
+                        android:textColorHint="@color/secondary_text"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutErrorAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/textEmail"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="50dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_error"
+                                android:tint="@color/red" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="Vui lòng nhập số lượng tuyển"
+                            android:textColor="@color/red"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/edt_deadline"
+                        style="@style/text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="Yêu cầu công việc:"
+                        android:background="@drawable/custom_edittext_cre_news"
+                        android:cursorVisible="false"
+                        android:drawableLeft="@drawable/ic_deadline"
+                        android:drawablePadding="20dp"
+                        android:drawableTint="@color/green"
+                        android:focusable="false"
+                        android:hint="Hạn nộp hồ sơ"
+                        android:inputType="date"
                         android:textColor="@color/black"
-                        android:textSize="18sp" />
+                        android:textColorHint="@color/secondary_text" />
 
-                    <EditText
-                        android:id="@+id/edt_job_req"
-                        style="@style/text"
+                    <LinearLayout
+                        android:id="@+id/layoutErrorDeadline"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/custom_edittext_cre_news"
-                        android:inputType="textMultiLine" />
+                        android:layout_below="@id/textEmail"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:backgroundTint="@color/white"
+                            app:cardCornerRadius="50dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_error"
+                                android:tint="@color/red" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="Vui lòng nhập thời hạn ứng tuyển"
+                            android:textColor="@color/red"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="15dp"
+                        android:background="#D4D4D4" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/text_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Mô tả công việc" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Chi tiết công việc:"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/edt_detail_job"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:background="@drawable/custom_edittext_cre_news"
+                            android:gravity="top"
+                            android:hint="Nhập chi tiết công việc"
+                            android:inputType="textMultiLine"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/secondary_text"
+                            android:textSize="16sp" />
+
+                        <LinearLayout
+                            android:id="@+id/layoutErrorDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/textEmail"
+                            android:layout_marginTop="5dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:backgroundTint="@color/white"
+                                app:cardCornerRadius="50dp">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/ic_error"
+                                    android:tint="@color/red" />
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:text="Vui lòng nhập mô tả công việc"
+                                android:textColor="@color/red"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Yêu cầu công việc:"
+                            android:textColor="@color/black"
+                            android:textSize="18sp" />
+
+                        <EditText
+                            android:id="@+id/edt_job_req"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:background="@drawable/custom_edittext_cre_news"
+                            android:gravity="top"
+                            android:hint="Nhập yêu cầu công việc"
+                            android:inputType="textMultiLine"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/secondary_text"
+                            android:textSize="16sp" />
+
+                        <LinearLayout
+                            android:id="@+id/layoutErrorRequire"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/textEmail"
+                            android:layout_marginTop="5dp"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:backgroundTint="@color/white"
+                                app:cardCornerRadius="50dp">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/ic_error"
+                                    android:tint="@color/red" />
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="5dp"
+                                android:text="Vui lòng nhập yêu cầu công việc"
+                                android:textColor="@color/red"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
+        </ScrollView>
+    </FrameLayout>
 
-    <ProgressBar
-        android:id="@+id/idLoadingPB"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <TextView
-        android:id="@+id/tv_save_id_jobs"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-</LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.5"
+            android:padding="8dp"
+            android:text="Hủy bỏ"
+            android:textAllCaps="false"
+            android:textColor="@color/green"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:cornerRadius="20dp"
+            app:strokeColor="@color/green"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:backgroundTint="@color/green"
+            android:padding="8dp"
+            android:text="Lưu"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:cornerRadius="20dp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

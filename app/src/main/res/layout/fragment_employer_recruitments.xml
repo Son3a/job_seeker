@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
@@ -9,63 +10,78 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@color/primary">
+        android:background="@color/primary"
+        android:paddingVertical="8dp">
 
         <TextView
             android:id="@+id/txt_title"
-            style="@style/text_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="Danh sách tin tuyển dụng"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold" />
     </FrameLayout>
 
-
-    <FrameLayout
-        android:id="@+id/line"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/layoutRefresh"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@+id/frame_layout_header"
-        android:background="#D4D4D4" />
-
-    <RelativeLayout
-        android:id="@+id/layout"
-        android:layout_below="@+id/line"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tv_amount_recruitment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tổng số lượng tin:"
-            android:layout_marginLeft="10dp"
-            style="@style/text"
-            android:layout_centerVertical="true"/>
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="Mới nhất"
-            android:layout_marginRight="10dp"/>
-    </RelativeLayout>
-
-    <!--Body-->
-    <ListView
-        android:id="@+id/lv_recruitments"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/layout"
-        android:divider="@null"
-        android:scrollingCache="true"
-        android:smoothScrollbar="true" />
-
-    <ProgressBar
-        android:id="@+id/idLoadingPB"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
+        android:layout_below="@+id/frame_layout_header">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/textTitleAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:text="Tổng số lượng tin: "
+                    android:textColor="@color/secondary_text"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/textAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/textTitleAmount"
+                    android:textColor="@color/green"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <!--Body-->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvRecruitments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/layout"
+                android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="15dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <ProgressBar
+                android:id="@+id/idLoadingPB"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminateTint="@color/green"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

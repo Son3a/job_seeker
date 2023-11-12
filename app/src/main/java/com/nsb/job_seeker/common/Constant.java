@@ -74,6 +74,7 @@ public class Constant {
     public static final String NAME = "NAME_USER";
     public static final String PHONE = "PHONE_USER";
     public static final String MAIL = "MAIL_USER";
+    public static final String JOB_ID = "jobId";
     public static final String BROADCAST_AVATAR = "send_avatar";
     public static String avatar;
     public static List<String> idSavedJobs, idAppliedJob;
@@ -260,6 +261,10 @@ public class Constant {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 
+    public static int getNumFromString(String str) {
+        return Integer.parseInt(str.replaceAll("[^0-9]", ""));
+    }
+
     public static void eventKeyBoard(View view, EventKeyboard eventKeyboard) {
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -276,7 +281,7 @@ public class Constant {
 
                 if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                     // keyboard is opened
-                   eventKeyboard.showKeyboard();
+                    eventKeyboard.showKeyboard();
                 } else {
                     // keyboard is closed
                     eventKeyboard.hideKeyboard();

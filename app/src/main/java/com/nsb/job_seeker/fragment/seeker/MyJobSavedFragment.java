@@ -113,7 +113,7 @@ public class MyJobSavedFragment extends Fragment implements JobListener {
                                             "",
                                             job.getJSONObject("idCompany").getString("image"),
                                             job.getString("amount"),
-                                            job.getString("working_form"),
+                                            job.getString("workingForm"),
                                             job.getString("experience"),
                                             job.getString("gender")
                                     ));

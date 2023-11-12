@@ -4,9 +4,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
@@ -14,9 +17,14 @@ import com.nsb.job_seeker.R;
 
 public abstract class CustomDialogDelete {
     private Context context;
+    private String accept, cancel;
+    private boolean isShowImage;
 
-    public CustomDialogDelete(Context context){
+    public CustomDialogDelete(Context context, String accept, String cancel, boolean isShowImage){
         this.context = context;
+        this.accept = accept;
+        this.cancel = cancel;
+        this.isShowImage = isShowImage;
     }
 
     public abstract void doSomeThing();
@@ -43,7 +51,13 @@ public abstract class CustomDialogDelete {
         MaterialButton btnDelete = dialog.findViewById(R.id.btnDelete);
         MaterialButton btnCancel = dialog.findViewById(R.id.btnCancel);
         TextView textContent = dialog.findViewById(R.id.textContent);
+        ImageView imageView = dialog.findViewById(R.id.image);
+        if(isShowImage == false){
+            imageView.setVisibility(View.GONE);
+        }
         textContent.setText(contentDelete);
+        btnDelete.setText(accept);
+        btnCancel.setText(cancel);
 
         btnDelete.setOnClickListener(v -> {
             doSomeThing();

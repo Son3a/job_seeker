@@ -5,23 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="bottom"
-    android:orientation="vertical"
     android:background="@color/white"
+    android:orientation="vertical"
     tools:context=".activity.seeker.SeekerMainActivity">
 
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/frame_layout" />
+        android:layout_above="@+id/line" />
 
-    <!--Navigation-->
-    <FrameLayout
-        android:id="@+id/frame_layout"
+    <View
+        android:id="@+id/line"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:layout_above="@+id/bottom_navigation_employer"
-        android:background="@drawable/custom_shadow" />
+        android:layout_height="1dp"
+        android:layout_above="@id/bottom_navigation_employer"
+        android:background="@color/border" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation_employer"
@@ -29,10 +28,10 @@
         android:layout_height="60dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:background="@color/white"
         app:itemIconSize="30dp"
         app:itemIconTint="@color/custom_bottom_navigation_employer"
         app:itemPaddingBottom="10dp"
-        android:background="@color/white"
         app:itemTextAppearanceActive="@style/text_bottom_navigation"
         app:itemTextColor="@color/custom_bottom_navigation_employer"
         app:labelVisibilityMode="labeled"

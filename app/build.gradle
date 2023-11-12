@@ -35,6 +35,12 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    allprojects {
+        tasks.withType(JavaCompile){
+            options.compilerArgs <<"-Xlint:deprecation"
+        }
+    }
+
     buildFeatures {
         viewBinding true
     }
@@ -99,4 +105,7 @@ dependencies {
 
     //custom switch button
     implementation 'com.github.classiczires:Android-Switch-Segmented-Control:1.0.5'
+
+    //expanded textview
+    implementation 'at.blogc:expandabletextview:1.0.5'
 }

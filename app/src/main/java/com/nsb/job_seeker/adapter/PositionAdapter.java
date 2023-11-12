@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nsb.job_seeker.databinding.ItemFilterBinding;
 import com.nsb.job_seeker.listener.PositionListener;
-import com.nsb.job_seeker.listener.SalaryListener;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,8 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
@@ -19,12 +24,14 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.BaseActivity;
 import com.nsb.job_seeker.activity.LoginActivity;
+import com.nsb.job_seeker.activity.admin.UpdateCompanyActivity;
 import com.nsb.job_seeker.adapter.JobDetailAdapter;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
@@ -51,6 +58,28 @@ public class JobDetailActivity extends BaseActivity {
     private JobDetailAdapter jobDetailAdapter;
     private List<Job> listRelatedJob;
     private PreferenceManager preferenceManager;
+    private Job job;
+
+    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK) {
+                        Intent intent = result.getData();
+                        Company company = (Company) intent.getExtras().getSerializable(Constant.COMPANY_MODEL);
+
+                        if (company.getImage() != null && !company.getImage().equals("")) {
+                            binding.imageCompany.setImageBitmap(Constant.getBitmapFromEncodedString(company.getImage()));
+                        }
+                        binding.textNameCompany.setText(company.getName());
+                        binding.textIntroduceCompany.setText(company.getAbout());
+                        binding.textLink.setText(company.getLink());
+                        binding.textAddress.setText(company.getAddress());
+                        binding.textAmountEmployer.setText(company.getTotalEmployee() + " nhân viên");
+                    }
+                }
+            }
+    );
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,7 +97,7 @@ public class JobDetailActivity extends BaseActivity {
         if (bundle.containsKey("isLinkCompany")) {
             //binding..setEnabled(false);
         }
-        IDJob = bundle.getString("id");
+        IDJob = bundle.getString(Constant.JOB_ID);
         listRelatedJob = new ArrayList<>();
         preferenceManager = new PreferenceManager(this);
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Thông tin"));
@@ -79,16 +108,38 @@ public class JobDetailActivity extends BaseActivity {
 
     private void setEvent() {
         binding.viewPager.setUserInputEnabled(false);
+        if (preferenceManager.getString(Constant.ROLE).equals(Constant.ADMIN_ROLE)) {
+            binding.tabLayout.setVisibility(View.GONE);
+        }
 
         getJobDetail();
         setStateAppBar();
         back();
         setTabLayout();
-        changeBtnSubmit();
-        applyJob();
         gotoAppJob();
         clickSaveJob();
         setIconSave();
+        openBottomEditRecruitment();
+    }
+
+    private void openBottomEditRecruitment() {
+        if (preferenceManager.getString(Constant.ROLE).equals(Constant.ADMIN_ROLE)) {
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(JobDetailActivity.this);
+            View layoutFunc = getLayoutInflater().inflate(R.layout.layout_function_company, null);
+            bottomSheetDialog.setContentView(layoutFunc);
+
+            LinearLayout layoutEditCompany = layoutFunc.findViewById(R.id.layoutEditCompany);
+            layoutEditCompany.setOnClickListener(view -> {
+                if (job != null) {
+                    Intent intent = new Intent(JobDetailActivity.this, UpdateCompanyActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(Constant.JOB_MODEL, job);
+                    intent.putExtras(bundle);
+                    activityResultLauncher.launch(intent);
+                    bottomSheetDialog.dismiss();
+                }
+            });
+        }
     }
 
     private void setIconSave() {
@@ -112,6 +163,12 @@ public class JobDetailActivity extends BaseActivity {
 
     private void gotoAppJob() {
         binding.layoutBottomSheet.btnApplyJob.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ApplyJobActivity.class);
+            intent.putExtra("idJob", IDJob);
+            startActivity(intent);
+        });
+
+        binding.layoutBottomSheetApplyAgain.btnApplyJob.setOnClickListener(v -> {
             Intent intent = new Intent(this, ApplyJobActivity.class);
             intent.putExtra("idJob", IDJob);
             startActivity(intent);
@@ -161,32 +218,6 @@ public class JobDetailActivity extends BaseActivity {
                 onBackPressed();
             }
         });
-    }
-
-    private void applyJob() {
-//        btnApply.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent i = new Intent(JobDetailActivity.this, ApplyJobActivity.class);
-//                i.putExtra("idJob",IDJob);
-//                startActivity(i);
-//            }
-//        });
-    }
-
-    private void changeBtnSubmit() {
-//        Bundle bundle = getIntent().getExtras();
-//        if (bundle.containsKey("isApply")) {
-//            boolean isApply = bundle.getBoolean("isApply");
-//            if (!isApply) {
-//                binding.layoutBottomSheet.btnApplyJob.setText("Đã ứng tuyển");
-//                //btnApply.setEnabled(false);
-//            } else {
-//                binding.layoutBottomSheet.btnApplyJob.setText("ỨNG TUYỂN NGAY");
-//            }
-//        } else {
-//            binding.layoutBottomSheet.btnApplyJob.setVisibility(View.GONE);
-//        }
     }
 
     private void clickSaveJob() {
@@ -301,80 +332,83 @@ public class JobDetailActivity extends BaseActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONObject job = response.getJSONObject("data");
+                    JSONObject jsonObject = response.getJSONObject("data");
 
                     String nameCompany = "", place = "";
-                    if (!job.isNull("idCompany")) {
-                        nameCompany = job.getJSONObject("idCompany").getString("name");
-                        place = job.getJSONObject("idCompany").getString("location");
-                        IDCompany = job.getJSONObject("idCompany").getString("_id");
+                    if (!jsonObject.isNull("idCompany")) {
+                        nameCompany = jsonObject.getJSONObject("idCompany").getString("name");
+                        place = jsonObject.getJSONObject("idCompany").getString("location");
+                        IDCompany = jsonObject.getJSONObject("idCompany").getString("_id");
                     }
 
-                    binding.textNameJob.setText(job.getString("name"));
+                    binding.textNameJob.setText(jsonObject.getString("name"));
                     binding.textNameCompany.setText(nameCompany);
                     binding.textPosition.setText(place);
-                    binding.textSalary.setText(job.getString("salary"));
-                    Picasso.get().load(job.getJSONObject("idCompany").getString("image")).into(binding.imageCompany);
+                    binding.textSalary.setText(jsonObject.getString("salary"));
+                    if (!jsonObject.getJSONObject("idCompany").getString("image").isEmpty()) {
+                        binding.imageCompany.setImageBitmap(Constant.getBitmapFromEncodedString(jsonObject.getJSONObject("idCompany").getString("image")));
+                    }
 
-                    for (int i = 0; i < job.getJSONArray("relatedJob").length(); i++) {
-                        JSONObject jobRelated = job.getJSONArray("relatedJob").getJSONObject(i);
+                    for (int i = 0; i < jsonObject.getJSONArray("relatedJob").length(); i++) {
+                        JSONObject jobRelated = jsonObject.getJSONArray("relatedJob").getJSONObject(i);
 
                         if (jobRelated.getString("status").equals("true")) {
                             listRelatedJob.add(new Job(
-                                    job.getString("_id"),
-                                    job.getString("name"),
-                                    job.getJSONObject("idCompany").getString("name"),
-                                    job.getString("locationWorking"),
-                                    job.getString("salary"),
-                                    Constant.setTime(job.getString("deadline")),
-                                    job.getString("description"),
-                                    job.getString("requirement"),
-                                    job.getJSONObject("idOccupation").getString("name"),
-                                    job.getJSONObject("idCompany").getString("image"),
-                                    job.getString("amount"),
-                                    job.getString("working_form"),
-                                    job.getString("experience"),
-                                    job.getString("gender")
+                                    jsonObject.getString("_id"),
+                                    jsonObject.getString("name"),
+                                    jsonObject.getJSONObject("idCompany").getString("name"),
+                                    jsonObject.getString("locationWorking"),
+                                    jsonObject.getString("salary"),
+                                    Constant.setTime(jsonObject.getString("deadline")),
+                                    jsonObject.getString("description"),
+                                    jsonObject.getString("requirement"),
+                                    jsonObject.getJSONObject("idOccupation").getString("name"),
+                                    jsonObject.getJSONObject("idCompany").getString("image"),
+                                    jsonObject.getString("amount"),
+                                    jsonObject.getString("workingForm"),
+                                    jsonObject.getString("experience"),
+                                    jsonObject.getString("gender")
                             ));
                         }
                     }
 
                     Company company = new Company(
-                            job.getJSONObject("idCompany").getString("_id"),
-                            job.getJSONObject("idCompany").getString("name"),
-                            job.getJSONObject("idCompany").getString("isDelete"),
-                            job.getJSONObject("idCompany").getString("link"),
-                            job.getJSONObject("idCompany").getString("image"),
-                            job.getJSONObject("idCompany").getString("totalEmployee"),
-                            job.getJSONObject("idCompany").getString("about"),
-                            job.getJSONObject("idCompany").getString("address"),
-                            job.getJSONObject("idCompany").getString("location"),
-                            job.getJSONObject("idCompany").getString("idUser"),
-                            job.getJSONObject("idCompany").getString("phone")
+                            jsonObject.getJSONObject("idCompany").getString("_id"),
+                            jsonObject.getJSONObject("idCompany").getString("name"),
+                            jsonObject.getJSONObject("idCompany").getString("isDelete"),
+                            jsonObject.getJSONObject("idCompany").getString("link"),
+                            jsonObject.getJSONObject("idCompany").getString("image"),
+                            jsonObject.getJSONObject("idCompany").getInt("totalEmployee"),
+                            jsonObject.getJSONObject("idCompany").getString("about"),
+                            jsonObject.getJSONObject("idCompany").getString("address"),
+                            jsonObject.getJSONObject("idCompany").getString("location"),
+                            jsonObject.getJSONObject("idCompany").getString("phone")
+                    );
+
+                    job = new Job(
+                            jsonObject.getString("_id"),
+                            jsonObject.getString("name"),
+                            jsonObject.getJSONObject("idCompany").getString("name"),
+                            jsonObject.getString("locationWorking"),
+                            jsonObject.getString("salary"),
+                            Constant.setTime(jsonObject.getString("deadline")),
+                            jsonObject.getString("description"),
+                            jsonObject.getString("requirement"),
+                            jsonObject.getJSONObject("idOccupation").getString("name"),
+                            jsonObject.getJSONObject("idCompany").getString("image"),
+                            jsonObject.getString("amount"),
+                            jsonObject.getString("workingForm"),
+                            jsonObject.getString("experience"),
+                            jsonObject.getString("gender")
                     );
 
                     setViewAdapter(
                             listRelatedJob,
-                            new Job(
-                                    job.getString("_id"),
-                                    job.getString("name"),
-                                    job.getJSONObject("idCompany").getString("name"),
-                                    job.getString("locationWorking"),
-                                    job.getString("salary"),
-                                    Constant.setTime(job.getString("deadline")),
-                                    job.getString("description"),
-                                    job.getString("requirement"),
-                                    job.getJSONObject("idOccupation").getString("name"),
-                                    job.getJSONObject("idCompany").getString("image"),
-                                    job.getString("amount"),
-                                    job.getString("working_form"),
-                                    job.getString("experience"),
-                                    job.getString("gender")
-                            ),
+                            job,
                             company
                     );
 
-                    if(Constant.idAppliedJob.contains(job.getString("_id"))){
+                    if (Constant.idAppliedJob.contains(jsonObject.getString("_id"))) {
                         binding.layoutBottomSheet.getRoot().setVisibility(View.INVISIBLE);
                         binding.layoutBottomSheetApplyAgain.getRoot().setVisibility(View.VISIBLE);
                     } else {

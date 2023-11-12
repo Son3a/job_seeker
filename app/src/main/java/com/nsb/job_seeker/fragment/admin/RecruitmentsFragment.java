@@ -5,10 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,12 +17,14 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
+import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.common.Constant;
-import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.activity.admin.RecruitmentDetailActivity;
-import com.nsb.job_seeker.adapter.RecruitmentAdapter;
 import com.nsb.job_seeker.common.PreferenceManager;
-import com.nsb.job_seeker.model.Recruitment;
+import com.nsb.job_seeker.databinding.FragmentEmployerRecruitmentsBinding;
+import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
+import com.nsb.job_seeker.listener.JobListener;
+import com.nsb.job_seeker.model.Job;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,64 +34,50 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecruitmentsFragment extends Fragment {
-    private ListView listViewRecruitments;
-    private List<Recruitment> recruitmentList;
-    private View recruitmentView;
-    private TextView amountRec;
-    private ProgressBar pbLoading;
-    private String Url = Constant.url_dev + "/job/list/company/";
+public class RecruitmentsFragment extends Fragment implements JobListener {
+    private FragmentEmployerRecruitmentsBinding binding;
     private PreferenceManager preferenceManager;
-    private RecruitmentAdapter recruitmentAdapter;
+    private List<Job> jobList;
+    private JobAdapter jobAdapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        recruitmentView = inflater.inflate(R.layout.fragment_employer_recruitments, container, false);
+        binding = FragmentEmployerRecruitmentsBinding.inflate(getLayoutInflater());
 
         setControl();
         setEvent();
-        return recruitmentView;
+
+        return binding.getRoot();
     }
 
     private void setControl() {
-        amountRec = recruitmentView.findViewById(R.id.tv_amount_recruitment);
-        listViewRecruitments = recruitmentView.findViewById(R.id.lv_recruitments);
-        pbLoading = recruitmentView.findViewById(R.id.idLoadingPB);
-
-        recruitmentList = new ArrayList<Recruitment>();
+        jobList = new ArrayList<>();
+        jobAdapter = new JobAdapter(getContext(), jobList, this, false);
+        binding.rcvRecruitments.setAdapter(jobAdapter);
 
         preferenceManager = new PreferenceManager(getActivity());
     }
 
 
     private void setEvent() {
-        getListJobOfCompany(Url);
-
+        getListJobOfCompany();
+        refreshContent();
     }
 
-
-    private void setListViewAdapter() {
-        amountRec.setText("Tổng số lượng tin: " + String.valueOf(recruitmentList.size()));
-        if (getActivity()!=null){
-            recruitmentAdapter = new RecruitmentAdapter(getActivity(), R.layout.list_view_item_recruitment, recruitmentList);
-            listViewRecruitments.setAdapter(recruitmentAdapter);
-            listViewRecruitments.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent i = new Intent(getActivity(), RecruitmentDetailActivity.class);
-                    i.putExtra("id", recruitmentList.get(position).getId());
-                    startActivity(i);
-                }
-            });
-        }
-
+    private void refreshContent() {
+        binding.layoutRefresh.setOnRefreshListener(() -> {
+            binding.layoutRefresh.setRefreshing(false);
+            getListJobOfCompany();
+        });
     }
 
-    private void getListJobOfCompany(String url) {
-        url += preferenceManager.getString(Constant.COMPANY_ID);
+    private void getListJobOfCompany() {
+        String url = Constant.url_dev + "/job/list/company/" + preferenceManager.getString(Constant.COMPANY_ID);
         RequestQueue queue = Volley.newRequestQueue(getActivity());
-        pbLoading.setVisibility(View.VISIBLE);
+        binding.idLoadingPB.setVisibility(View.VISIBLE);
+        jobList.clear();
+        jobAdapter.notifyDataSetChanged();
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
                 url,
                 null,
@@ -101,31 +85,31 @@ public class RecruitmentsFragment extends Fragment {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String idCompany = "";
                             JSONArray jobsList = response.getJSONArray("data");
                             for (int i = 0; i < jobsList.length(); i++) {
                                 JSONObject job = jobsList.getJSONObject(i);
                                 if (job.getString("status").equals("true")) {
-                                    String time = Constant.setTime(job.getString("deadline"));
-
-                                    if (time.equals(null)) {
-                                        time = "Hết hạn";
-                                    } else {
-                                        time = "Còn " + time;
-                                    }
-                                    recruitmentList.add(new Recruitment(
+                                    jobList.add(new Job(
                                             job.getString("_id"),
                                             job.getString("name"),
+                                            job.getJSONObject("idCompany").getString("name"),
                                             job.getString("locationWorking"),
-                                            Constant.formatTimeDDMMYYYY(job.getString("updateDate")),
-                                            "Số lượng hồ sơ: 5",
-                                            time
+                                            job.getString("salary"),
+                                            Constant.setTime(job.getString("deadline")),
+                                            job.getString("description"),
+                                            job.getString("requirement"),
+                                            job.getJSONObject("idOccupation").getString("name"),
+                                            job.getJSONObject("idCompany").getString("image"),
+                                            job.getString("amount"),
+                                            job.getString("workingForm"),
+                                            job.getString("experience"),
+                                            job.getString("gender")
                                     ));
                                 }
                             }
-                            pbLoading.setVisibility(View.GONE);
-                            setListViewAdapter();
-
+                            binding.idLoadingPB.setVisibility(View.GONE);
+                            binding.textAmount.setText(String.valueOf(jobsList.length()));
+                            jobAdapter.notifyDataSetChanged();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (ParseException e) {
@@ -160,5 +144,17 @@ public class RecruitmentsFragment extends Fragment {
             }
         });
         queue.add(data);
+    }
+
+    @Override
+    public void onClick(Job job) {
+        Intent intent = new Intent(getContext(), JobDetailActivity.class);
+        intent.putExtra(Constant.JOB_ID, job.getId());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onSave(Job job, ListViewItemJobBinding binding) {
+
     }
 }

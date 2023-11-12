@@ -222,7 +222,6 @@ public class Activity_ChangePassword extends BaseActivity {
                 return params;
             }
         };
-        ;
         jsonObjectRequest.setRetryPolicy(new RetryPolicy() {
             @Override
             public int getCurrentTimeout() {

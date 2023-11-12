@@ -72,7 +72,9 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             binding.tvCompany.setText(job.getCompany());
             binding.tvPlace.setText(job.getPlace());
             binding.tvSalary.setText(job.getSalary());
-            Picasso.get().load(job.getImage()).into(binding.imgJob);
+            if (job.getImage() != null && !job.getImage().equals("")) {
+                binding.imgJob.setImageBitmap(Constant.getBitmapFromEncodedString(job.getImage()));
+            }
             if (job.getDeadline() == null) {
                 binding.tvTimeUpdated1.setText("Công việc đã hết hạn");
                 binding.tvTimeUpdated.setVisibility(View.INVISIBLE);
@@ -83,12 +85,14 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             if (isVisibleBtnSave == false) { //hide icon
                 binding.imgSaveJob.setVisibility(View.GONE);
             }
-            if (Constant.idSavedJobs.contains(job.getId())) {
-                binding.imgSaveJob.setImageResource(R.drawable.ic_saved);
-                binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.green));
-            } else {
-                binding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
-                binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.secondary_text));
+            if (Constant.idSavedJobs != null) {
+                if (Constant.idSavedJobs.contains(job.getId())) {
+                    binding.imgSaveJob.setImageResource(R.drawable.ic_saved);
+                    binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.green));
+                } else {
+                    binding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
+                    binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.secondary_text));
+                }
             }
 
 

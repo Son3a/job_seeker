@@ -150,7 +150,7 @@ public class SearchActivity extends BaseActivity implements JobListener, Keyword
 
     private void clickDeleteHistory() {
         binding.textDeleteAll.setOnClickListener(v -> {
-            CustomDialogDelete dialogDelete = new CustomDialogDelete(this) {
+            CustomDialogDelete dialogDelete = new CustomDialogDelete(this, "Xóa", "Hủy", true) {
                 @Override
                 public void doSomeThing() {
                     deleteAllHistory();
@@ -319,7 +319,7 @@ public class SearchActivity extends BaseActivity implements JobListener, Keyword
 
     @Override
     public void onClickRemove(KeyWord keyWord, int position) {
-        CustomDialogDelete dialogDelete = new CustomDialogDelete(this) {
+        CustomDialogDelete dialogDelete = new CustomDialogDelete(this, "Xóa", "Hủy", true) {
             @Override
             public void doSomeThing() {
                 if (keyWordList.size() != 0) {

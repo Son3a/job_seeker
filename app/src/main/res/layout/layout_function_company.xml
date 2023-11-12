@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="20dp"
     android:background="@drawable/custom_background_bottom_sheet"
     android:padding="20dp">
 
@@ -10,7 +11,7 @@
         android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chọn số năm kinh nghiệm"
+        android:text="Thao tác"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -20,8 +21,8 @@
         android:layout_height="30dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="1dp"
         android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
         android:backgroundTint="@color/background_text"
         app:cardCornerRadius="50dp">
 
@@ -35,11 +36,33 @@
             android:translationZ="100dp" />
     </androidx.cardview.widget.CardView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcvExperience"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textTitle"
-        android:layout_marginTop="15dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/layoutEditCompany"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_edit_not_fill"
+                android:tint="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Cập nhật thông tin công ty"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

@@ -269,15 +269,16 @@ public class LoginActivity extends BaseActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONObject jsonObject1 = response.getJSONObject("data");
+                            JSONObject jsonObject = response.getJSONObject("data");
 
-                            String role = jsonObject1.getString("role");
+                            String role = jsonObject.getString("role");
                             //signIn(email, password);   //login firebase
+
                             Constant.idSavedJobs = new ArrayList<>();
                             if (role.equals(Constant.ADMIN_ROLE)) {
-                                preferenceManager.putString(Constant.COMPANY_ID, response.getJSONObject("company").getString("_id"));
+                                preferenceManager.putString(Constant.COMPANY_ID, jsonObject.getJSONObject("idCompany").getString("_id"));
                             } else {
-                                JSONArray listJobFavorite = jsonObject1.getJSONArray("jobFavourite");
+                                JSONArray listJobFavorite = jsonObject.getJSONArray("jobFavourite");
                                 for (int i = 0; i < listJobFavorite.length(); i++) {
                                     if (!listJobFavorite.getJSONObject(i).isNull("jobId")) {
                                         JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
@@ -287,13 +288,13 @@ public class LoginActivity extends BaseActivity {
                                     }
                                 }
                             }
-                            String accessToken = jsonObject1.get("refreshToken").toString();
+                            String accessToken = jsonObject.get("refreshToken").toString();
                             preferenceManager.putString(Constant.TOKEN, "Bearer " + accessToken.replace("\"", ""));
-                            preferenceManager.putString(Constant.NAME, jsonObject1.getString("name"));
-                            preferenceManager.putString(Constant.MAIL, jsonObject1.getString("email"));
-                            if (!jsonObject1.getString("avatar").isEmpty()) {
-                                preferenceManager.putString(Constant.AVATAR, jsonObject1.getString("avatar"));
-                                preferenceManager.putString(Constant.PHONE, jsonObject1.getString("phone"));
+                            preferenceManager.putString(Constant.NAME, jsonObject.getString("name"));
+                            preferenceManager.putString(Constant.MAIL, jsonObject.getString("email"));
+                            if (!jsonObject.getString("avatar").isEmpty()) {
+                                preferenceManager.putString(Constant.AVATAR, jsonObject.getString("avatar"));
+                                preferenceManager.putString(Constant.PHONE, jsonObject.getString("phone"));
                             }
                             preferenceManager.putString(Constant.ROLE, role);
                             preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);

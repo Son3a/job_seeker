@@ -9,10 +9,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Company implements Serializable, Parcelable {
-    String id, name, isDelete, link, image, totalEmployee, about, address, location, idUser, phone;
+    String id, name, isDelete, link, image, about, address, location, phone;
+    int totalEmployee;
 
-    public Company(String id, String name, String isDelete, String link, String image, String totalEmployee,
-                   String about, String address, String location, String idUser, String phone) {
+    public Company(String id, String name, String isDelete, String link, String image, int totalEmployee,
+                   String about, String address, String location, String phone) {
         this.id = id;
         this.name = name;
         this.isDelete = isDelete;
@@ -22,7 +23,6 @@ public class Company implements Serializable, Parcelable {
         this.about = about;
         this.address = address;
         this.location = location;
-        this.idUser = idUser;
         this.phone = phone;
     }
 
@@ -32,11 +32,10 @@ public class Company implements Serializable, Parcelable {
         isDelete = in.readString();
         link = in.readString();
         image = in.readString();
-        totalEmployee = in.readString();
+        totalEmployee = in.readInt();
         about = in.readString();
         address = in.readString();
         location = in.readString();
-        idUser = in.readString();
         phone = in.readString();
     }
 
@@ -92,11 +91,11 @@ public class Company implements Serializable, Parcelable {
         this.image = image;
     }
 
-    public String getTotalEmployee() {
+    public int getTotalEmployee() {
         return totalEmployee;
     }
 
-    public void setTotalEmployee(String totalEmployee) {
+    public void setTotalEmployee(int totalEmployee) {
         this.totalEmployee = totalEmployee;
     }
 
@@ -124,14 +123,6 @@ public class Company implements Serializable, Parcelable {
         this.location = location;
     }
 
-    public String getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(String idUser) {
-        this.idUser = idUser;
-    }
-
     public String getPhone() {
         return phone;
     }
@@ -152,11 +143,10 @@ public class Company implements Serializable, Parcelable {
         parcel.writeString(isDelete);
         parcel.writeString(link);
         parcel.writeString(image);
-        parcel.writeString(totalEmployee);
+        parcel.writeInt(totalEmployee);
         parcel.writeString(about);
         parcel.writeString(address);
         parcel.writeString(location);
-        parcel.writeString(idUser);
         parcel.writeString(phone);
     }
 }
