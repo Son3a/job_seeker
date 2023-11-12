@@ -8,17 +8,18 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class Job implements Serializable, Parcelable {
-    private String id, nameJob, company, place, salary, deadline, desJob, reqJob,
+    private String id, nameJob, companyId, place, salary, deadline, desJob, reqJob,
             typeJob, image, amountRecruitment, workingForm, experience, gender;
+    private String companyName, typeId;
 
     public Job() {
     }
 
-    public Job(String id, String nameJob, String company, String place, String salary, String deadline,
-               String desJob, String reqJob, String typeJob, String image,
-               String amountRecruitment, String workingForm, String experience, String gender) {
+    public Job(String id, String nameJob, String companyId, String companyName, String place,
+               String salary, String deadline, String desJob, String reqJob, String typeId,
+               String typeJob, String image, String amountRecruitment, String workingForm, String experience, String gender) {
         this.nameJob = nameJob;
-        this.company = company;
+        this.companyId = companyId;
         this.place = place;
         this.salary = salary;
         this.deadline = deadline;
@@ -31,12 +32,14 @@ public class Job implements Serializable, Parcelable {
         this.workingForm = workingForm;
         this.experience = experience;
         this.gender = gender;
+        this.typeId = typeId;
+        this.companyName = companyName;
     }
 
     protected Job(Parcel in) {
         id = in.readString();
         nameJob = in.readString();
-        company = in.readString();
+        companyId = in.readString();
         place = in.readString();
         salary = in.readString();
         deadline = in.readString();
@@ -78,12 +81,28 @@ public class Job implements Serializable, Parcelable {
         this.nameJob = nameJob;
     }
 
-    public String getCompany() {
-        return company;
+    public String getCompanyId() {
+        return companyId;
     }
 
-    public void setCompany(String company) {
-        this.company = company;
+    public void setCompanyId(String companyId) {
+        this.companyId = companyId;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String typeId() {
+        return typeId;
+    }
+
+    public void setTypeId(String typeId) {
+        this.typeId = typeId;
     }
 
     public String getPlace() {
@@ -178,7 +197,7 @@ public class Job implements Serializable, Parcelable {
     public String toString() {
         return "Job{" +
                 "nameJob='" + nameJob + '\'' +
-                ", company='" + company + '\'' +
+                ", company='" + companyId + '\'' +
                 ", place='" + place + '\'' +
                 ", salary='" + salary + '\'' +
                 '}';
@@ -193,7 +212,7 @@ public class Job implements Serializable, Parcelable {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(id);
         dest.writeString(nameJob);
-        dest.writeString(company);
+        dest.writeString(companyId);
         dest.writeString(place);
         dest.writeString(salary);
         dest.writeString(deadline);

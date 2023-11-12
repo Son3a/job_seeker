@@ -4,7 +4,11 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,7 +18,7 @@ import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.service.InternetService;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
     private InternetService internetService;
     private DocumentReference documentReference;
     public static boolean isConnect;

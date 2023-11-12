@@ -69,7 +69,7 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
 
         void setData(Job job) {
             binding.tvNameJob.setText(job.getNameJob());
-            binding.tvCompany.setText(job.getCompany());
+            binding.tvCompany.setText(job.getCompanyName());
             binding.tvPlace.setText(job.getPlace());
             binding.tvSalary.setText(job.getSalary());
             if (job.getImage() != null && !job.getImage().equals("")) {

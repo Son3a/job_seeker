@@ -2,10 +2,14 @@ package com.nsb.job_seeker.activity.seeker;
 
 import static java.lang.Math.abs;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -60,26 +64,18 @@ public class JobDetailActivity extends BaseActivity {
     private PreferenceManager preferenceManager;
     private Job job;
 
-    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == RESULT_OK) {
-                        Intent intent = result.getData();
-                        Company company = (Company) intent.getExtras().getSerializable(Constant.COMPANY_MODEL);
-
-                        if (company.getImage() != null && !company.getImage().equals("")) {
-                            binding.imageCompany.setImageBitmap(Constant.getBitmapFromEncodedString(company.getImage()));
-                        }
-                        binding.textNameCompany.setText(company.getName());
-                        binding.textIntroduceCompany.setText(company.getAbout());
-                        binding.textLink.setText(company.getLink());
-                        binding.textAddress.setText(company.getAddress());
-                        binding.textAmountEmployer.setText(company.getTotalEmployee() + " nhân viên");
-                    }
-                }
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Constant.JOB_MODEL.equals(intent.getAction())) {
+                Job job1 = (Job) intent.getSerializableExtra(Constant.JOB_MODEL);
+                binding.textNameJob.setText(job1.getNameJob());
+                binding.textNameCompany.setText(job1.getCompanyName());
+                binding.textPosition.setText(job.getPlace());
+                binding.textSalary.setText(job.getSalary());
             }
-    );
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,18 +96,19 @@ public class JobDetailActivity extends BaseActivity {
         IDJob = bundle.getString(Constant.JOB_ID);
         listRelatedJob = new ArrayList<>();
         preferenceManager = new PreferenceManager(this);
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Thông tin"));
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công việc liên quan"));
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công ty"));
+        if (preferenceManager.getString(Constant.ROLE).equals(Constant.ADMIN_ROLE)) {
+            binding.tabLayout.setVisibility(View.GONE);
+            binding.tabLayout.getLayoutParams().height = 1;
+        } else {
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Thông tin"));
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công việc liên quan"));
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công ty"));
+        }
     }
 
 
     private void setEvent() {
         binding.viewPager.setUserInputEnabled(false);
-        if (preferenceManager.getString(Constant.ROLE).equals(Constant.ADMIN_ROLE)) {
-            binding.tabLayout.setVisibility(View.GONE);
-        }
-
         getJobDetail();
         setStateAppBar();
         back();
@@ -135,7 +132,7 @@ public class JobDetailActivity extends BaseActivity {
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(Constant.JOB_MODEL, job);
                     intent.putExtras(bundle);
-                    activityResultLauncher.launch(intent);
+                    startActivity(intent);
                     bottomSheetDialog.dismiss();
                 }
             });
@@ -356,12 +353,14 @@ public class JobDetailActivity extends BaseActivity {
                             listRelatedJob.add(new Job(
                                     jsonObject.getString("_id"),
                                     jsonObject.getString("name"),
+                                    jsonObject.getJSONObject("idCompany").getString("_id"),
                                     jsonObject.getJSONObject("idCompany").getString("name"),
                                     jsonObject.getString("locationWorking"),
                                     jsonObject.getString("salary"),
                                     Constant.setTime(jsonObject.getString("deadline")),
                                     jsonObject.getString("description"),
                                     jsonObject.getString("requirement"),
+                                    jsonObject.getJSONObject("idOccupation").getString("_id"),
                                     jsonObject.getJSONObject("idOccupation").getString("name"),
                                     jsonObject.getJSONObject("idCompany").getString("image"),
                                     jsonObject.getString("amount"),
@@ -388,12 +387,14 @@ public class JobDetailActivity extends BaseActivity {
                     job = new Job(
                             jsonObject.getString("_id"),
                             jsonObject.getString("name"),
+                            jsonObject.getJSONObject("idCompany").getString("_id"),
                             jsonObject.getJSONObject("idCompany").getString("name"),
                             jsonObject.getString("locationWorking"),
                             jsonObject.getString("salary"),
                             Constant.setTime(jsonObject.getString("deadline")),
                             jsonObject.getString("description"),
                             jsonObject.getString("requirement"),
+                            jsonObject.getJSONObject("idOccupation").getString("_id"),
                             jsonObject.getJSONObject("idOccupation").getString("name"),
                             jsonObject.getJSONObject("idCompany").getString("image"),
                             jsonObject.getString("amount"),
@@ -452,5 +453,18 @@ public class JobDetailActivity extends BaseActivity {
             }
         });
         requestQueue.add(data);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(Constant.JOB_MODEL);
+        registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(broadcastReceiver);
     }
 }
