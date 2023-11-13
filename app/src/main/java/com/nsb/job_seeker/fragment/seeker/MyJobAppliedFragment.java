@@ -186,7 +186,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
     @Override
     public void onClick(Job job) {
         Intent i = new Intent(getActivity(), JobDetailActivity.class);
-        i.putExtra("id", job.getId());
+        i.putExtra(Constant.JOB_ID, job.getId());
         i.putExtra("isApply", false);
         startActivity(i);
     }

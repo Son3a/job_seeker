@@ -14,20 +14,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        app:cardCornerRadius="10dp"
         android:backgroundTint="@color/white"
-        app:strokeWidth="0.5dp"
-        app:strokeColor="@color/border"
+        app:cardCornerRadius="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/border"
+        app:strokeWidth="0.5dp">
 
         <ImageView
             android:id="@+id/img_job"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-
             android:layout_weight="0.8"
+            android:scaleType="fitXY"
             android:src="@drawable/ic_launcher_background" />
     </com.google.android.material.card.MaterialCardView>
 
@@ -54,8 +54,8 @@
         <TextView
             android:id="@+id/tv_company"
             style="@style/text_view_job"
-            android:text="Xgame Studio"
             android:layout_marginTop="5dp"
+            android:text="Xgame Studio"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_name_job" />
@@ -131,9 +131,8 @@
             android:textColor="#4F4C4C" />
 
         <TextView
-            android:id="@+id/tv_time_updated"
+            android:id="@+id/textDeadline"
             style="@style/text_view_job"
-            android:text="10"
             android:textColor="@color/black"
             android:textStyle="bold" />
 

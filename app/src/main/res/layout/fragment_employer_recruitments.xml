@@ -11,18 +11,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@color/primary"
-        android:paddingVertical="8dp">
+        android:paddingVertical="18dp">
 
         <TextView
             android:id="@+id/txt_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="Danh sách tin tuyển dụng"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
     </FrameLayout>
 

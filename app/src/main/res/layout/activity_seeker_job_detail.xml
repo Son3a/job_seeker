@@ -145,7 +145,7 @@
                         android:id="@+id/imageCompany"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
-                        android:scaleType="centerInside"
+                        android:scaleType="fitXY"
                         android:translationZ="100dp" />
                 </androidx.cardview.widget.CardView>
 
@@ -319,7 +319,7 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" />
 
     <include
-        android:id="@+id/layoutBottomSheet"
+        android:id="@+id/layoutBottomSheetApply"
         layout="@layout/layout_save_job"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

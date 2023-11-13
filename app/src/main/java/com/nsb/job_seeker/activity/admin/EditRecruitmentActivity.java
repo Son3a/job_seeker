@@ -6,17 +6,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,7 +28,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.BaseActivity;
 import com.nsb.job_seeker.activity.LoginActivity;
-import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
 import com.nsb.job_seeker.adapter.FilterAdapter;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomDialogDelete;
@@ -59,7 +54,6 @@ import java.util.Map;
 
 public class EditRecruitmentActivity extends BaseActivity {
     private FragmentEmployerUpdateNewsBinding binding;
-    private String url = Constant.url_dev + "/job/update";
     private List<String> nameTypeJobs;
     private List<String> idTypeJobs;
     private PreferenceManager preferenceManager;
@@ -93,34 +87,38 @@ public class EditRecruitmentActivity extends BaseActivity {
         Date date = new Date(System.currentTimeMillis());
 
         loadContent();
-
         pickTime();
-
         formatBullet();
-
         openBottomUnitMoney();
-
         openBottomSheetTypeJob();
-
         openBottomSheetGender();
-
         clickUpdateJob();
-
         cancelProcess();
     }
 
     private void loadContent() {
-        Job job = (Job) getIntent().getSerializableExtra(Constant.JOB_MODEL);
-        binding.edtNameJob.setText(job.getNameJob());
-        binding.edtDetailJob.setText(job.getDesJob());
-        binding.edtJobReq.setText(job.getReqJob());
-        binding.edtDeadline.setText(job.getDeadline());
-        binding.textSalary.setText(job.getSalary());
-        binding.textPosition.setText(job.getPlace());
-        binding.textGender.setText(job.getGender());
-        binding.textExperience.setText(job.getExperience());
-        binding.textWorkingForm.setText(job.getWorkingForm());
-        binding.textApplyAmount.setText(job.getAmountRecruitment());
+        try {
+            Job job = (Job) getIntent().getSerializableExtra(Constant.JOB_MODEL);
+            binding.edtNameJob.setText(job.getNameJob());
+            binding.edtDetailJob.setText(Constant.formatStringToBullet(job.getDesJob()));
+            binding.edtJobReq.setText(Constant.formatStringToBullet(job.getReqJob()));
+            binding.edtDeadline.setText(Constant.formatTimeDDMMYYYY(job.getDeadline()));
+            binding.textSalary.setText(Constant.formatSalary(job.getSalary()));
+            binding.textPosition.setText(job.getPlace());
+            binding.textGender.setText(job.getGender());
+            binding.textExperience.setText(job.getExperience());
+            binding.textWorkingForm.setText(job.getWorkingForm());
+            binding.textApplyAmount.setText(job.getAmountRecruitment());
+            binding.textTypeJob.setText(job.getTypeJob());
+
+            if (job.getSalary().contains("VND")) {
+                binding.textUnitMoney.setText("VND");
+            } else if (job.getSalary().contains("USD")) {
+                binding.textUnitMoney.setText("USD");
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     private void cancelProcess() {
@@ -210,14 +208,13 @@ public class EditRecruitmentActivity extends BaseActivity {
                 bottomSheetTypeJob.dismiss();
             }
         });
-        recyclerView.setAdapter(filterAdapter);
-        bottomSheetTypeJob.setContentView(layoutTypeJob);
-        bottomSheetTypeJob.show();
-
         ImageView imgClose = layoutTypeJob.findViewById(R.id.imageClose);
         imgClose.setOnClickListener(view -> {
             bottomSheetTypeJob.dismiss();
         });
+        recyclerView.setAdapter(filterAdapter);
+        bottomSheetTypeJob.setContentView(layoutTypeJob);
+        bottomSheetTypeJob.show();
     }
 
     private void openBottomUnitMoney() {
@@ -318,8 +315,8 @@ public class EditRecruitmentActivity extends BaseActivity {
                     updateRecruitment(
                             job.getId(),
                             binding.edtNameJob.getText().toString().trim(),
-                            Constant.formatStringToBullet(binding.edtDetailJob.getText().toString().trim()),
-                            Constant.formatStringToBullet(binding.edtJobReq.getText().toString().trim()),
+                            Constant.formatStringFromBullet(binding.edtDetailJob.getText().toString().trim()),
+                            Constant.formatStringFromBullet(binding.edtJobReq.getText().toString().trim()),
                             binding.edtDeadline.getText().toString().trim(),
                             binding.textSalary.getText().toString().trim(),
                             binding.textPosition.getText().toString().trim(),
@@ -456,31 +453,31 @@ public class EditRecruitmentActivity extends BaseActivity {
     private void updateRecruitment(String id, String nameJob, String description, String requirement,
                                    String deadline, String salary, String locationWorking, String idOccupation, String idCompany,
                                    String gender, String experience, String workingForm, String amount) throws JSONException {
-        String access_token = preferenceManager.getString(Constant.TOKEN);
+        String url = Constant.url_dev + "/job/update";
         loadingDialog.showDialog();
         RequestQueue queue = Volley.newRequestQueue(EditRecruitmentActivity.this);
 
-        JSONObject jsonObject = new JSONObject();
+        JSONObject jsonReq = new JSONObject();
 
-        jsonObject.put("_id", id);
-        jsonObject.put("name", nameJob);
-        jsonObject.put("description", description);
-        jsonObject.put("requirement", requirement);
-        jsonObject.put("deadline", deadline);
-        jsonObject.put("salary", salary);
-        jsonObject.put("locationWorking", locationWorking);
-        jsonObject.put("idOccupation", idOccupation);
-        jsonObject.put("idCompany", idCompany);
-        jsonObject.put("gender", gender);
-        jsonObject.put("experience", experience);
-        jsonObject.put("workingForm", workingForm);
-        jsonObject.put("amount", amount);
+        jsonReq.put("_id", id);
+        jsonReq.put("name", nameJob);
+        jsonReq.put("description", description);
+        jsonReq.put("requirement", requirement);
+        jsonReq.put("deadline", deadline);
+        jsonReq.put("salary", salary + binding.textUnitMoney.getText().toString());
+        jsonReq.put("locationWorking", locationWorking);
+        jsonReq.put("idOccupation", idOccupation);
+        jsonReq.put("idCompany", idCompany);
+        jsonReq.put("gender", gender);
+        jsonReq.put("experience", experience);
+        jsonReq.put("workingForm", workingForm);
+        jsonReq.put("amount", amount);
 
-        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.PUT, url, jsonObject, new Response.Listener<JSONObject>() {
+        JsonObjectRequest sr = new JsonObjectRequest(Request.Method.PUT, url, jsonReq, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JSONObject jsonObject1 = response.getJSONObject("job");
+                    JSONObject jsonObject = response.getJSONObject("job");
                     Job job = new Job(
                             jsonObject.getString("_id"),
                             jsonObject.getString("name"),
@@ -488,7 +485,7 @@ public class EditRecruitmentActivity extends BaseActivity {
                             jsonObject.getJSONObject("idCompany").getString("name"),
                             jsonObject.getString("locationWorking"),
                             jsonObject.getString("salary"),
-                            Constant.setTime(jsonObject.getString("deadline")),
+                            jsonObject.getString("deadline"),
                             jsonObject.getString("description"),
                             jsonObject.getString("requirement"),
                             jsonObject.getJSONObject("idOccupation").getString("_id"),
@@ -501,7 +498,9 @@ public class EditRecruitmentActivity extends BaseActivity {
                     );
 
                     sendBroadcast(job);
-                } catch (JSONException | ParseException e) {
+                    CustomToast.makeText(EditRecruitmentActivity.this, "Cập nhật thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                    finish();
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -522,7 +521,7 @@ public class EditRecruitmentActivity extends BaseActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", access_token);
+                headers.put("Authorization", preferenceManager.getString(Constant.TOKEN));
                 headers.put("Content-Type", "application/json");
                 return headers;
             }

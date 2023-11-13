@@ -3,14 +3,9 @@ package com.nsb.job_seeker.activity.admin;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import com.nsb.job_seeker.activity.BaseActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -20,11 +15,14 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.adapter.CVAdapter;
+import com.nsb.job_seeker.activity.BaseActivity;
 import com.nsb.job_seeker.activity.LoginActivity;
+import com.nsb.job_seeker.adapter.CVAdapter;
+import com.nsb.job_seeker.common.Constant;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
+import com.nsb.job_seeker.databinding.ActivityEmployerListCvBinding;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,40 +34,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ListCVActivity extends BaseActivity {
-    private ListView listViewCV;
+    private ActivityEmployerListCvBinding binding;
     private ArrayList<String> listTimeApply;
     private ArrayList<String> listFile;
-    private ImageView icBack;
-    private TextView tvNotifyEmpty, tvAmountJob;
-    private String url = Constant.url_dev + "/application/get-by-jobid?jobid=";
     private PreferenceManager preferenceManager;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        binding = ActivityEmployerListCvBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_employer_list_cv);
+        setContentView(binding.getRoot());
 
         setControl();
         setEvent();
     }
 
     private void setControl() {
-        icBack = findViewById(R.id.ic_back);
-        listViewCV = findViewById(R.id.lv_cv);
-        tvNotifyEmpty = findViewById(R.id.tv_notify_empty);
-        tvAmountJob = findViewById(R.id.tv_amount_cv);
-
         listTimeApply = new ArrayList<String>();
         listFile = new ArrayList<>();
-
+        loadingDialog = new LoadingDialog(this);
         preferenceManager = new PreferenceManager(this);
     }
 
     private void setEvent() {
 
 
-        icBack.setOnClickListener(new View.OnClickListener() {
+        binding.icBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -81,8 +72,8 @@ public class ListCVActivity extends BaseActivity {
 
     private void setListAdapter() {
         CVAdapter cvAdapter = new CVAdapter(ListCVActivity.this, R.layout.list_view_item_cv, listTimeApply, listFile);
-        listViewCV.setAdapter(cvAdapter);
-        listViewCV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        binding.lvCv.setAdapter(cvAdapter);
+        binding.lvCv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -92,8 +83,8 @@ public class ListCVActivity extends BaseActivity {
 
     private void getListCV() {
         Bundle bundle = getIntent().getExtras();
-        url += bundle.getString("id");
-
+        String url = Constant.url_dev + "/application/get-by-jobid?jobid=" + bundle.getString(Constant.JOB_ID);
+        loadingDialog.showDialog();
         RequestQueue queue = Volley.newRequestQueue(ListCVActivity.this);
 
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
@@ -103,6 +94,7 @@ public class ListCVActivity extends BaseActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
+                            loadingDialog.hideDialog();
                             JSONArray listCV = response.getJSONObject("data").getJSONArray("data");
                             for (int i = 0; i < listCV.length(); i++) {
                                 JSONObject CV = listCV.getJSONObject(i);
@@ -111,11 +103,11 @@ public class ListCVActivity extends BaseActivity {
                                 listTimeApply.add(Constant.formatTimeDDMMYYYY(CV.getString("submitDate")));
                             }
                             if (listFile.size() == 0) {
-                                tvNotifyEmpty.setVisibility(View.VISIBLE);
+                                binding.tvNotifyEmpty.setVisibility(View.VISIBLE);
                             } else {
                                 setListAdapter();
                             }
-                            tvAmountJob.setText("Tổng số lượng hồ sơ: " + String.valueOf(listFile.size()));
+                            binding.tvAmount.setText(String.valueOf(listFile.size()));
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         } catch (ParseException e) {
@@ -128,8 +120,7 @@ public class ListCVActivity extends BaseActivity {
                     public void onErrorResponse(VolleyError error) {
                         if (error instanceof com.android.volley.NoConnectionError) {
 
-                        } else
-                        if(error.networkResponse != null) {
+                        } else if (error.networkResponse != null) {
                             if (error.networkResponse.statusCode == 401) {
                                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

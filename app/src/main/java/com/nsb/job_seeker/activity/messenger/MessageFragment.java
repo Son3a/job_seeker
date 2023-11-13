@@ -176,15 +176,6 @@ public class MessageFragment extends Fragment implements ConversionListener {
     }
 
     private void getToken() {
-//        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-//            if (!task.isSuccessful()) {
-//                Log.w("ABC", "Fetching FCM registration token failed", task.getException());
-//                return;
-//            }
-//            Log.d("Token", "Token firebase:  " + task.getResult());
-//            updateToken(task.getResult());
-//
-//        });
         FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this::updateToken);
     }
 

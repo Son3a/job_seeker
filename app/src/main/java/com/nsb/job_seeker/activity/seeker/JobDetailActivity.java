@@ -9,14 +9,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
@@ -35,7 +32,9 @@ import com.google.gson.JsonObject;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.BaseActivity;
 import com.nsb.job_seeker.activity.LoginActivity;
-import com.nsb.job_seeker.activity.admin.UpdateCompanyActivity;
+import com.nsb.job_seeker.activity.admin.EditRecruitmentActivity;
+import com.nsb.job_seeker.activity.admin.ListCVActivity;
+import com.nsb.job_seeker.activity.messenger.ChatActivity;
 import com.nsb.job_seeker.adapter.JobDetailAdapter;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
@@ -43,13 +42,12 @@ import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivitySeekerJobDetailBinding;
 import com.nsb.job_seeker.model.Company;
 import com.nsb.job_seeker.model.Job;
-import com.squareup.picasso.Picasso;
+import com.nsb.job_seeker.model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,13 +97,13 @@ public class JobDetailActivity extends BaseActivity {
         if (preferenceManager.getString(Constant.ROLE).equals(Constant.ADMIN_ROLE)) {
             binding.tabLayout.setVisibility(View.GONE);
             binding.tabLayout.getLayoutParams().height = 1;
+            binding.layoutBottomSheetApply.getRoot().getLayoutParams().height = 0;
         } else {
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Thông tin"));
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công việc liên quan"));
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Công ty"));
         }
     }
-
 
     private void setEvent() {
         binding.viewPager.setUserInputEnabled(false);
@@ -119,34 +117,71 @@ public class JobDetailActivity extends BaseActivity {
         openBottomEditRecruitment();
     }
 
-    private void openBottomEditRecruitment() {
-        if (preferenceManager.getString(Constant.ROLE).equals(Constant.ADMIN_ROLE)) {
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(JobDetailActivity.this);
-            View layoutFunc = getLayoutInflater().inflate(R.layout.layout_function_company, null);
-            bottomSheetDialog.setContentView(layoutFunc);
-
-            LinearLayout layoutEditCompany = layoutFunc.findViewById(R.id.layoutEditCompany);
-            layoutEditCompany.setOnClickListener(view -> {
-                if (job != null) {
-                    Intent intent = new Intent(JobDetailActivity.this, UpdateCompanyActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable(Constant.JOB_MODEL, job);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    bottomSheetDialog.dismiss();
-                }
+    private void gotoChat(){
+        if(job != null){
+            binding.layoutBottomSheetApplyAgain.btnMessage.setOnClickListener(v->{
+//                User user = new User(
+//                        job.getId(),
+//                        job
+//                );
             });
+//        Intent intent = new Intent(getApplicationContext(), ChatActivity.class);
+//        intent.putExtra()
+//        startActivity();
         }
     }
 
+    private void openBottomEditRecruitment() {
+        binding.cvExpand.setOnClickListener(v -> {
+            if (preferenceManager.getString(Constant.ROLE).equals(Constant.ADMIN_ROLE)) {
+                BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(JobDetailActivity.this);
+                View layoutFunc = getLayoutInflater().inflate(R.layout.layout_function_company, null);
+                bottomSheetDialog.setContentView(layoutFunc);
+
+                TextView textTitle = layoutFunc.findViewById(R.id.textOption);
+                textTitle.setText("Cập nhật tin tuyển dụng");
+
+                LinearLayout layoutListCv = layoutFunc.findViewById(R.id.layoutListCV);
+                layoutListCv.setVisibility(View.VISIBLE);
+
+                layoutListCv.setOnClickListener(view -> {
+                    if (!IDJob.equals("")) {
+                        Intent intent = new Intent(JobDetailActivity.this, ListCVActivity.class);
+                        intent.putExtra(Constant.JOB_ID, IDJob);
+                        startActivity(intent);
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+
+                LinearLayout layoutEditCompany = layoutFunc.findViewById(R.id.layoutEditCompany);
+                layoutEditCompany.setOnClickListener(view -> {
+                    if (job != null) {
+                        Intent intent = new Intent(JobDetailActivity.this, EditRecruitmentActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable(Constant.JOB_MODEL, job);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                        bottomSheetDialog.dismiss();
+                    }
+                });
+                ImageView imgClose = layoutFunc.findViewById(R.id.imageClose);
+                imgClose.setOnClickListener(view -> {
+                    bottomSheetDialog.dismiss();
+                });
+
+                bottomSheetDialog.show();
+            }
+        });
+    }
+
     private void setIconSave() {
-        if (!IDJob.equals("")) {
+        if (!IDJob.equals("") && IDJob != null) {
             if (Constant.idSavedJobs.contains(IDJob)) {
-                binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_saved);
-                binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.green));
+                binding.layoutBottomSheetApply.imageSave.setImageResource(R.drawable.ic_saved);
+                binding.layoutBottomSheetApply.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.green));
             } else {
-                binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_not_save);
-                binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.secondary_text));
+                binding.layoutBottomSheetApply.imageSave.setImageResource(R.drawable.ic_not_save);
+                binding.layoutBottomSheetApply.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.secondary_text));
             }
         }
     }
@@ -154,12 +189,12 @@ public class JobDetailActivity extends BaseActivity {
     private void hideLayout(int visible) {
         binding.layoutHeader1.setVisibility(visible);
         binding.tabLayout.setVisibility(visible);
-        binding.layoutBottomSheet.getRoot().setVisibility(visible);
+        binding.layoutBottomSheetApply.getRoot().setVisibility(visible);
         binding.viewPager.setVisibility(visible);
     }
 
     private void gotoAppJob() {
-        binding.layoutBottomSheet.btnApplyJob.setOnClickListener(v -> {
+        binding.layoutBottomSheetApply.btnApplyJob.setOnClickListener(v -> {
             Intent intent = new Intent(this, ApplyJobActivity.class);
             intent.putExtra("idJob", IDJob);
             startActivity(intent);
@@ -218,7 +253,7 @@ public class JobDetailActivity extends BaseActivity {
     }
 
     private void clickSaveJob() {
-        binding.layoutBottomSheet.cvSaveJob.setOnClickListener(v -> {
+        binding.layoutBottomSheetApply.cvSaveJob.setOnClickListener(v -> {
             try {
                 saveJob(IDJob);
             } catch (JSONException e) {
@@ -243,13 +278,13 @@ public class JobDetailActivity extends BaseActivity {
                     String status = response.getString("status");
 
                     if (status.equals("1")) {
-                        binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_saved);
-                        binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.green));
+                        binding.layoutBottomSheetApply.imageSave.setImageResource(R.drawable.ic_saved);
+                        binding.layoutBottomSheetApply.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.green));
                         Constant.idSavedJobs.add(jobId);
                     } else {
-                        binding.layoutBottomSheet.imageSave.setImageResource(R.drawable.ic_not_save);
+                        binding.layoutBottomSheetApply.imageSave.setImageResource(R.drawable.ic_not_save);
                         Constant.idSavedJobs.remove(Constant.idSavedJobs.size() - 1);
-                        binding.layoutBottomSheet.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.secondary_text));
+                        binding.layoutBottomSheetApply.imageSave.setColorFilter(ContextCompat.getColor(JobDetailActivity.this, R.color.secondary_text));
                         CustomToast.makeText(JobDetailActivity.this, "Bạn đã bỏ lưu công việc!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                     }
 
@@ -357,7 +392,7 @@ public class JobDetailActivity extends BaseActivity {
                                     jsonObject.getJSONObject("idCompany").getString("name"),
                                     jsonObject.getString("locationWorking"),
                                     jsonObject.getString("salary"),
-                                    Constant.setTime(jsonObject.getString("deadline")),
+                                    jsonObject.getString("deadline"),
                                     jsonObject.getString("description"),
                                     jsonObject.getString("requirement"),
                                     jsonObject.getJSONObject("idOccupation").getString("_id"),
@@ -391,7 +426,7 @@ public class JobDetailActivity extends BaseActivity {
                             jsonObject.getJSONObject("idCompany").getString("name"),
                             jsonObject.getString("locationWorking"),
                             jsonObject.getString("salary"),
-                            Constant.setTime(jsonObject.getString("deadline")),
+                            jsonObject.getString("deadline"),
                             jsonObject.getString("description"),
                             jsonObject.getString("requirement"),
                             jsonObject.getJSONObject("idOccupation").getString("_id"),
@@ -410,18 +445,15 @@ public class JobDetailActivity extends BaseActivity {
                     );
 
                     if (Constant.idAppliedJob.contains(jsonObject.getString("_id"))) {
-                        binding.layoutBottomSheet.getRoot().setVisibility(View.INVISIBLE);
+                        binding.layoutBottomSheetApply.getRoot().setVisibility(View.INVISIBLE);
                         binding.layoutBottomSheetApplyAgain.getRoot().setVisibility(View.VISIBLE);
                     } else {
                         binding.layoutBottomSheetApplyAgain.getRoot().setVisibility(View.INVISIBLE);
-                        binding.layoutBottomSheet.getRoot().setVisibility(View.VISIBLE);
+                        binding.layoutBottomSheetApply.getRoot().setVisibility(View.VISIBLE);
                     }
                     hideLayout(View.VISIBLE);
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.d("Error", e.getMessage());
-                } catch (ParseException e) {
                     e.printStackTrace();
                     Log.d("Error", e.getMessage());
                 }

@@ -134,29 +134,25 @@ public class RegisterActivity extends BaseActivity {
             role = "user";
         }
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("password", binding.textPassword.getText().toString());
-        jsonObject.put("name", binding.textName.getText().toString());
-        jsonObject.put("email", binding.textEmail.getText().toString());
-        jsonObject.put("phone", "");
-        jsonObject.put("role", role);
+        JSONObject jsonReq = new JSONObject();
+        jsonReq.put("password", binding.textPassword.getText().toString());
+        jsonReq.put("name", binding.textName.getText().toString());
+        jsonReq.put("email", binding.textEmail.getText().toString());
+        jsonReq.put("phone", "");
+        jsonReq.put("role", role);
 
         binding.btnRegister.setVisibility(View.GONE);
         binding.pbLoading.setVisibility(View.VISIBLE);
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, base_url + "/register", jsonObject, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, base_url + "/register", jsonReq, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    JsonObject convertedObject = new Gson().fromJson(response.getString("data"), JsonObject.class);
-                    Log.d("ABC", convertedObject.toString());
-                    CustomToast.makeText(RegisterActivity.this, "Đăng kí tài khoản thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
-                    finish();
-//                    signUp(); // sign up on firebase
+                    JSONObject jsonObject = response.getJSONObject("data");
+                    signUp(jsonObject.getString("_id")); // sign up on firebase
                 } catch (JSONException e) {
                     binding.btnRegister.setVisibility(View.VISIBLE);
                     binding.pbLoading.setVisibility(View.GONE);
-                    Toast.makeText(RegisterActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
@@ -185,24 +181,20 @@ public class RegisterActivity extends BaseActivity {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    private void signUp() {
+    private void signUp(String id) {
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         HashMap<String, Object> user = new HashMap<>();
+        user.put(Constant.KEY_USER_ID, id);
         user.put(Constant.KEY_NAME, binding.textName.getText().toString());
         user.put(Constant.KEY_EMAIL, binding.textEmail.getText().toString());
         user.put(Constant.KEY_PASSWORD, binding.textPassword.getText().toString());
-//            user.put(Constant.KEY_IMAGE, encodeImage);
         database.collection(Constant.KEY_COLLECTION_USERS)
                 .add(user)
                 .addOnSuccessListener(documentReference -> {
                     binding.btnRegister.setVisibility(View.VISIBLE);
                     binding.pbLoading.setVisibility(View.GONE);
-                    preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
-                    preferenceManager.putString(Constant.KEY_USER_ID, documentReference.getId());
-                    preferenceManager.putString(Constant.KEY_NAME, binding.textName.getText().toString());
 
-                    Toast.makeText(RegisterActivity.this, "Success!", Toast.LENGTH_SHORT).show();
-
+                    CustomToast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                     Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

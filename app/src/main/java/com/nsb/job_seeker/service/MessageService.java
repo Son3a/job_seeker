@@ -32,6 +32,7 @@ public class MessageService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
+        Log.d("Chat",message.getNotification().getBody());
         User user = new User();
         user.id = message.getData().get(Constant.KEY_USER_ID);
         user.name = message.getData().get(Constant.KEY_NAME);

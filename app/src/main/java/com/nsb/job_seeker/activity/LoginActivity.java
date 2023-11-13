@@ -63,7 +63,6 @@ public class LoginActivity extends BaseActivity {
     private LoadingDialog loadingDialog;
     private DialogNotification dialogNotification = null;
     private PreferenceManager preferenceManager;
-    private String tokenDevice;
 
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
     private boolean showOneTapUI = true;
@@ -87,8 +86,6 @@ public class LoginActivity extends BaseActivity {
             redirectAfterLogin(preferenceManager.getString(Constant.ROLE));
         }
         initGoogle();
-
-        getToken();
 
         this.loadingDialog = new LoadingDialog(LoginActivity.this);
 
@@ -163,26 +160,6 @@ public class LoginActivity extends BaseActivity {
                         }
                     });
         });
-    }
-
-    private void getToken() {
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w("ABC", "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-//                        preferenceManager.putString(Constant.TOKEN, token);
-                        tokenDevice = token;
-                        // Log and toast
-                        Log.d("ABC", token);
-                    }
-                });
     }
 
 
@@ -298,13 +275,14 @@ public class LoginActivity extends BaseActivity {
                             }
                             preferenceManager.putString(Constant.ROLE, role);
                             preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
-                            binding.btnLogin.setVisibility(View.VISIBLE);
-                            binding.pbLoading.setVisibility(View.GONE);
+
 
                             getAppliedJob(role);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            binding.btnLogin.setVisibility(View.VISIBLE);
+                            binding.pbLoading.setVisibility(View.GONE);
                         }
                     }
                 },
@@ -371,7 +349,7 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-    private void signIn(String email, String password) {
+    private void signIn(String email, String password, String role) {
         Log.d("Process", "Login Firebase");
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         database.collection(Constant.KEY_COLLECTION_USERS)
@@ -381,13 +359,15 @@ public class LoginActivity extends BaseActivity {
                 .addOnCompleteListener(task -> {
                             if (task.isSuccessful() && task.getResult() != null &&
                                     task.getResult().getDocuments().size() > 0) {
+                                binding.btnLogin.setVisibility(View.VISIBLE);
+                                binding.pbLoading.setVisibility(View.GONE);
 
                                 DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
                                 Log.d("UserId", documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_USER_ID, documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_NAME, documentSnapshot.getString(Constant.KEY_NAME));
-                                preferenceManager.putString(Constant.KEY_IMAGE, documentSnapshot.getString(Constant.KEY_IMAGE));
 
+                                redirectAfterLogin(role);
                                 Log.d("Process", "Login Firebase successfully");
                             }
                         }
@@ -412,8 +392,10 @@ public class LoginActivity extends BaseActivity {
                                 JSONObject job = jobsList.getJSONObject(i).getJSONObject("idJob");
                                 Constant.idAppliedJob.add(job.getString("_id"));
                             }
-                            redirectAfterLogin(role);
+                            signIn(binding.textEmail.getText().toString().trim(), binding.textPassword.getText().toString().trim(), role);
                         } catch (JSONException e) {
+                            binding.btnLogin.setVisibility(View.VISIBLE);
+                            binding.pbLoading.setVisibility(View.GONE);
                             e.printStackTrace();
                         }
                     }
@@ -421,6 +403,8 @@ public class LoginActivity extends BaseActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        binding.btnLogin.setVisibility(View.VISIBLE);
+                        binding.pbLoading.setVisibility(View.GONE);
                         if (error instanceof com.android.volley.NoConnectionError) {
 
                         } else if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {

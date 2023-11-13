@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import com.nsb.job_seeker.R;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -47,7 +48,7 @@ public class Constant {
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PASSWORD = "password";
-    public static final String KEY_USER_ID = "userIdFB";
+    public static final String KEY_USER_ID = "id";
     public static final String KEY_IMAGE = "image";
     public static final String KEY_FCM_TOKEN = "fcmToken";
     public static final String KEY_USER = "user";
@@ -110,8 +111,7 @@ public class Constant {
             if (!salary.matches(".*\\d.*")) return salary;
 
             String money = salary.replaceAll("[^0-9]", "");
-            String moneySign = salary.replaceAll("[0-9]", "").trim();
-            return df.format(Integer.parseInt(money)) + moneySign;
+            return df.format(Integer.parseInt(money));
         } else {
             String salarys[] = salary.split("-");
             String moneySign = salarys[0].replaceAll("[0-9]", "").trim();
@@ -124,15 +124,18 @@ public class Constant {
     }
 
     public static long calculateTime(String deadline) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        if(deadline == null) return -1;
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date timeNow = new Date(System.currentTimeMillis());
         Date create = format.parse(deadline);
+        Log.d("Deadline", timeNow.toString() + "\n" + create.toString());
         long difference = (create.getTime() - timeNow.getTime());
         return difference;
     }
 
     public static String setTime(String timeDeadline) throws ParseException {
         long time = calculateTime(timeDeadline);
+        Log.d("Time", time + "");
         if (time < 0) {
             return null;
         }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_main">
+    android:background="@color/background">
 
     <RelativeLayout
         android:id="@+id/layoutHeader"
@@ -14,7 +14,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/txt_title"
+            android:id="@+id/textTitle"
             style="@style/text_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -34,9 +34,9 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/background_border_no_color"
             android:layout_below="@+id/layoutHeader"
-            android:layout_margin="10dp"
-            android:background="@color/white">
+            android:layout_margin="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,13 +44,21 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="Tên công việc"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/edt_name_job"
                     style="@style/text_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/custom_edittext_cre_news"
-                    android:hint="Tên công việc"
+                    android:hint="Nhập tên công việc"
                     android:imeOptions="actionNext"
                     android:inputType="text"
                     android:maxLines="1"
@@ -88,17 +96,25 @@
                         android:textSize="14sp" />
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:text="Địa điểm làm việc"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="16sp" />
+
                 <EditText
                     android:id="@+id/textPosition"
                     style="@style/text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
                     android:background="@drawable/custom_edittext_cre_news"
                     android:drawableLeft="@drawable/ic_position_job"
                     android:drawablePadding="20dp"
                     android:drawableTint="@color/green"
-                    android:hint="Địa điểm làm việc"
+                    android:hint="Nhập địa điểm làm việc"
                     android:imeOptions="actionNext"
                     android:inputType="text"
                     android:maxLines="1"
@@ -149,11 +165,18 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="Lương"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp" />
+
                     <LinearLayout
                         android:id="@+id/layoutSalary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:background="@drawable/custom_edittext_cre_news">
 
                         <EditText
@@ -166,9 +189,8 @@
                             android:drawableLeft="@drawable/ic_salary"
                             android:drawablePadding="20dp"
                             android:drawableTint="@color/green"
-                            android:hint="Lương"
+                            android:hint="Nhập số lương"
                             android:imeOptions="actionNext"
-                            android:inputType="number"
                             android:maxLines="1"
                             android:textColorHint="@color/secondary_text" />
 
@@ -218,17 +240,25 @@
                             android:textSize="14sp" />
                     </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="Hình thức làm việc"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp" />
+
                     <EditText
                         android:id="@+id/textWorkingForm"
                         style="@style/text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:background="@drawable/custom_edittext_cre_news"
                         android:drawableLeft="@drawable/ic_form"
                         android:drawablePadding="20dp"
                         android:drawableTint="@color/green"
-                        android:hint="Hình thức làm việc"
+                        android:hint="Nhập hình thức làm việc"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:maxLines="1"
@@ -266,17 +296,25 @@
                             android:textSize="14sp" />
                     </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="Kinh nghiệm"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp" />
+
                     <EditText
                         android:id="@+id/textExperience"
                         style="@style/text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:background="@drawable/custom_edittext_cre_news"
                         android:drawableLeft="@drawable/ic_experience"
                         android:drawablePadding="20dp"
                         android:drawableTint="@color/green"
-                        android:hint="Kinh nghiệm"
+                        android:hint="Nhập kinh nghiệm"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:maxLines="1"
@@ -314,12 +352,19 @@
                             android:textSize="14sp" />
                     </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="Loại làm việc"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp" />
 
                     <EditText
                         android:id="@+id/textTypeJob"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="0dp"
                         android:background="@drawable/custom_edittext_cre_news"
                         android:cursorVisible="false"
@@ -329,7 +374,7 @@
                         android:drawableTint="@color/green"
                         android:focusable="false"
                         android:gravity="center_vertical"
-                        android:hint="Loại công việc"
+                        android:hint="Chọn loại công việc"
                         android:textColor="@color/black"
                         android:textColorHint="@color/secondary_text"
                         android:textSize="16sp" />
@@ -366,11 +411,19 @@
                             android:textSize="14sp" />
                     </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="Giới tính"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp" />
+
                     <EditText
                         android:id="@+id/textGender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="0dp"
                         android:background="@drawable/custom_edittext_cre_news"
                         android:cursorVisible="false"
@@ -380,7 +433,7 @@
                         android:drawableTint="@color/green"
                         android:focusable="false"
                         android:gravity="center_vertical"
-                        android:hint="Giới tính"
+                        android:hint="Chọn giới tính"
                         android:textColor="@color/black"
                         android:textColorHint="@color/secondary_text"
                         android:textSize="16sp" />
@@ -417,17 +470,25 @@
                             android:textSize="14sp" />
                     </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="Số lượng tuyển"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp" />
+
                     <EditText
                         android:id="@+id/textApplyAmount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="0dp"
                         android:background="@drawable/custom_edittext_cre_news"
                         android:drawableLeft="@drawable/ic_amount_apply"
                         android:drawablePadding="20dp"
                         android:drawableTint="@color/green"
-                        android:hint="Số lượng ứng tuyển"
+                        android:hint="Nhập số lượng tuyển"
                         android:imeOptions="actionNext"
                         android:inputType="number"
                         android:maxLines="1"
@@ -467,19 +528,27 @@
                             android:textSize="14sp" />
                     </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/secondary_text"
+                        android:text="Thời hạn nộp hồ sơ"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:textSize="16sp"/>
+
                     <EditText
                         android:id="@+id/edt_deadline"
                         style="@style/text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
                         android:background="@drawable/custom_edittext_cre_news"
                         android:cursorVisible="false"
                         android:drawableLeft="@drawable/ic_deadline"
                         android:drawablePadding="20dp"
                         android:drawableTint="@color/green"
                         android:focusable="false"
-                        android:hint="Hạn nộp hồ sơ"
+                        android:hint="Chọn thời hạn nộp hồ sơ"
                         android:inputType="date"
                         android:textColor="@color/black"
                         android:textColorHint="@color/secondary_text" />

@@ -29,6 +29,7 @@ import com.google.gson.JsonObject;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.EventKeyboard;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityChangePasswordBinding;
 
@@ -44,6 +45,7 @@ public class Activity_ChangePassword extends BaseActivity {
     private String base_url = Constant.url_dev + "/auth";
     private boolean isKeyboardShowing = false;
     private PreferenceManager preferenceManager;
+    private LoadingDialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,77 +59,61 @@ public class Activity_ChangePassword extends BaseActivity {
 
     private void setControl() {
         preferenceManager = new PreferenceManager(getApplicationContext());
+        loadingDialog = new LoadingDialog(this);
     }
 
     private void setEvent() {
         binding.icBack.setOnClickListener(v -> onBackPressed());
         eventKeyBoard();
         clickChangePW();
-        checkDuplicatePW();
     }
 
-    private void validate() {
+    private boolean validate() {
+        boolean isValid = true;
         if (isEmpty(binding.textCurrentPW)) {
             binding.layoutErrorCurrentPW.setVisibility(View.VISIBLE);
+            isValid = false;
         } else {
             binding.layoutErrorCurrentPW.setVisibility(View.GONE);
         }
         if (isEmpty(binding.textNewPW)) {
+            isValid = false;
             binding.textErrorNewPW.setText("Vui lòng nhập mật khẩu mới!");
-            binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
-        } else if (binding.textNewPW.getText().toString().trim().equals(binding.textCurrentPW.getText().toString().trim())) {
-            binding.textErrorNewPW.setText("Trùng với mật khẩu hiện tại!");
             binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
         } else {
             binding.layoutErrorNewPW.setVisibility(View.GONE);
-
         }
+
         if (isEmpty(binding.textConfirmPW)) {
             binding.textErrorConfirmPW.setTextColor(ContextCompat.getColor(Activity_ChangePassword.this, R.color.red));
             binding.textErrorConfirmPW.setText("Vui lòng nhập lại mật khẩu mới");
             binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
+            isValid = false;
         } else {
             binding.layoutErrorConfirmPW.setVisibility(View.GONE);
-
         }
-    }
 
-    private void checkDuplicatePW() {
-        binding.textConfirmPW.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        if (binding.textNewPW.getText().toString().trim().equals(binding.textCurrentPW.getText().toString().trim())) {
+            binding.textErrorNewPW.setText("Trùng với mật khẩu hiện tại!");
+            binding.layoutErrorNewPW.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (!binding.textConfirmPW.getText().toString().equals(binding.textNewPW.getText().toString())) {
-                    binding.textErrorConfirmPW.setText("Mật khẩu không khớp!");
-                    binding.textCorrectPW.setVisibility(View.GONE);
-                    binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
-                } else {
-                    binding.textCorrectPW.setVisibility(View.VISIBLE);
-                    binding.layoutErrorConfirmPW.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+        if(!binding.textNewPW.getText().toString().trim().equals(binding.textConfirmPW.getText().toString().trim())){
+            binding.textErrorConfirmPW.setText("Mật khẩu không khớp!");
+            binding.layoutErrorConfirmPW.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
+        return isValid;
     }
 
     private void clickChangePW() {
         binding.btnSave.setOnClickListener(v -> {
-            validate();
-            if (!isEmpty(binding.textConfirmPW) && !isEmpty(binding.textNewPW) && !isEmpty(binding.textCurrentPW)) {
-                binding.textErrorConfirmPW.setTextColor(ContextCompat.getColor(Activity_ChangePassword.this, R.color.red));
-                binding.textErrorConfirmPW.setText("Vui lòng nhập lại mật khẩu mới");
-                binding.layoutErrorCurrentPW.setVisibility(View.GONE);
-                binding.layoutErrorNewPW.setVisibility(View.GONE);
-                binding.layoutErrorConfirmPW.setVisibility(View.GONE);
+            if (validate()) {
                 try {
+                    binding.layoutErrorCurrentPW.setVisibility(View.GONE);
+                    binding.layoutErrorNewPW.setVisibility(View.GONE);
+                    binding.layoutErrorConfirmPW.setVisibility(View.GONE);
                     changPasswordService(binding.textCurrentPW.getText().toString(), binding.textNewPW.getText().toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -166,6 +152,7 @@ public class Activity_ChangePassword extends BaseActivity {
 
     private void changPasswordService(String password, String newPassword) throws JSONException {
         RequestQueue mRequestQueue = Volley.newRequestQueue(Activity_ChangePassword.this);
+        loadingDialog.showDialog();
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("password", password);
@@ -176,8 +163,10 @@ public class Activity_ChangePassword extends BaseActivity {
             public void onResponse(JSONObject response) {
                 try {
                     String message = response.getString("message");
-                    Log.d("ABC", message);
-                    changePasswordFirebase(newPassword, message);
+                    //changePasswordFirebase(newPassword, message);
+                    loadingDialog.hideDialog();
+                    CustomToast.makeText(Activity_ChangePassword.this, "Đổi mật khẩu thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                    finish();
                 } catch (JSONException e) {
                     Log.d("ABC", e.toString());
                     e.printStackTrace();
@@ -186,7 +175,7 @@ public class Activity_ChangePassword extends BaseActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                loadingDialog.hideDialog();
                 String body;
                 //get status code here
                 String statusCode = String.valueOf(error.networkResponse.statusCode);
@@ -205,6 +194,7 @@ public class Activity_ChangePassword extends BaseActivity {
                             Log.d("ABC", body);
                             JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
                             String message = convertedObject.get("message").toString();
+                            CustomToast.makeText(Activity_ChangePassword.this, message, CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
                         }
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();

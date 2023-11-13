@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -32,7 +33,9 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RecruitmentsFragment extends Fragment implements JobListener {
     private FragmentEmployerRecruitmentsBinding binding;
@@ -73,7 +76,7 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
     }
 
     private void getListJobOfCompany() {
-        String url = Constant.url_dev + "/job/list/company/" + preferenceManager.getString(Constant.COMPANY_ID);
+        String url = Constant.url_dev + "/job/list/all-moderator-job";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         binding.idLoadingPB.setVisibility(View.VISIBLE);
         jobList.clear();
@@ -128,7 +131,15 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
                         System.out.println(error);
                     }
                 }
-        );
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", preferenceManager.getString(Constant.TOKEN));
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
         data.setRetryPolicy(new RetryPolicy() {
             @Override
             public int getCurrentTimeout() {
