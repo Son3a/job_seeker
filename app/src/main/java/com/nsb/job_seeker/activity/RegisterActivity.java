@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.activity.seeker.SeekerMainActivity;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
 import com.nsb.job_seeker.common.LoadingDialog;
@@ -56,6 +57,16 @@ public class RegisterActivity extends BaseActivity {
     private void setEvent() {
         clickRegister();
         gotoLogin();
+        gotoAppWithoutLogin();
+    }
+
+    private void gotoAppWithoutLogin() {
+        binding.textVisitPage.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SeekerMainActivity.class);
+            preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, false);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
     }
 
     private void clickRegister() {
@@ -188,6 +199,9 @@ public class RegisterActivity extends BaseActivity {
         user.put(Constant.KEY_NAME, binding.textName.getText().toString());
         user.put(Constant.KEY_EMAIL, binding.textEmail.getText().toString());
         user.put(Constant.KEY_PASSWORD, binding.textPassword.getText().toString());
+        user.put(Constant.KEY_IMAGE, "");
+        user.put(Constant.KEY_AVAILABILITY, 0);
+        user.put(Constant.KEY_FCM_TOKEN, "");
         database.collection(Constant.KEY_COLLECTION_USERS)
                 .add(user)
                 .addOnSuccessListener(documentReference -> {

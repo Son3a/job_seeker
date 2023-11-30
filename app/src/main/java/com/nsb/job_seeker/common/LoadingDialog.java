@@ -19,12 +19,14 @@ public class LoadingDialog {
         dialog = new Dialog(context);
         dialog.setContentView(R.layout.layout_loading);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
+        dialog.setCancelable(false);
         dialog.create();
         dialog.show();
     }
 
-    public void hideDialog(){
-        dialog.dismiss();
+    public void hideDialog() {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
     }
 }

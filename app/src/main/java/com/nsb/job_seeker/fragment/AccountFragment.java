@@ -1,13 +1,13 @@
 package com.nsb.job_seeker.fragment;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -28,6 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -38,6 +39,7 @@ import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.FragmentAccountBinding;
+import com.nsb.job_seeker.room.KeywordDatabase;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
@@ -83,25 +85,47 @@ public class AccountFragment extends Fragment {
     }
 
     private void setControl() {
-        this.loadingDialog = new LoadingDialog(getActivity());
+        loadingDialog = new LoadingDialog(getActivity());
         preferenceManager = new PreferenceManager(getActivity());
     }
 
     private void setEvent() {
-        loadInfo();
+        if (preferenceManager.getBoolean(Constant.KEY_IS_SIGNED_IN)) {
+            loadInfo();
+            clickChangePW();
+            clickInfo();
+            clickLogout();
+        } else {
+            binding.layoutProfile.setVisibility(View.GONE);
+            binding.layoutLogin.setVisibility(View.VISIBLE);
+            binding.buttonLogout.setVisibility(View.GONE);
+            binding.buttonLogin.setVisibility(View.VISIBLE);
+            gotoAppWithoutLogin();
+        }
+    }
 
-        clickChangePW();
+    private void gotoAppWithoutLogin() {
+        binding.buttonLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
 
-        clickInfo();
-
-        clickLogout();
+        binding.btnLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
     }
 
     private void loadInfo() {
         if (preferenceManager.getString(Constant.AVATAR) != null) {
-            binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
+            if (URLUtil.isValidUrl(preferenceManager.getString(Constant.AVATAR))) {
+                Picasso.get().load(preferenceManager.getString(Constant.AVATAR)).into(binding.imageAvatar);
+            } else {
+                binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
+            }
         }
-
         binding.textName.setText(preferenceManager.getString(Constant.NAME));
     }
 
@@ -128,21 +152,20 @@ public class AccountFragment extends Fragment {
 
     private void handleLogout() {
         RequestQueue mRequestQueue = Volley.newRequestQueue(getActivity());
-
+        loadingDialog.showDialog();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, Constant.url_dev + "/auth/logout", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d("ABC", "Monggo: Sign out successfully!");
-                Intent i = new Intent(getContext(), LoginActivity.class);
-                preferenceManager.clear();
-                getActivity().finish();
-                startActivity(i);
+                KeywordDatabase.getInstance(getContext()).keywordDAO().deleteAll();
+                signOut();
                 //signOut();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.d("Error", error.getMessage());
+                loadingDialog.hideDialog();
                 String body;
                 //get status code here
                 NetworkResponse statusCode = error.networkResponse;
@@ -201,9 +224,10 @@ public class AccountFragment extends Fragment {
                         preferenceManager.getString(Constant.KEY_USER_ID)
                 );
         HashMap<String, Object> updates = new HashMap<>();
-        updates.put(Constant.KEY_FCM_TOKEN, null);
+        updates.put(Constant.KEY_FCM_TOKEN, FieldValue.delete());
         documentReference.update(updates)
                 .addOnSuccessListener(unused -> {
+                    loadingDialog.hideDialog();
 //                    startActivity(new Intent(getActivity().getApplicationContext(), SignInActivity.class));
                     preferenceManager.clear();
                     Toast.makeText(getActivity(), "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
@@ -212,6 +236,7 @@ public class AccountFragment extends Fragment {
                     startActivity(i);
                 })
                 .addOnFailureListener(e -> {
+                    loadingDialog.hideDialog();
                     Log.d("Error", e.getMessage());
                     preferenceManager.clear();
                     Toast.makeText(getActivity(), "Đăng xuất thành công!", Toast.LENGTH_SHORT).show();
@@ -220,4 +245,5 @@ public class AccountFragment extends Fragment {
                     startActivity(i);
                 });
     }
+
 }

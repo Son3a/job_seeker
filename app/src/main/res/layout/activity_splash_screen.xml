@@ -14,22 +14,20 @@
         android:layout_centerInParent="true"
         android:orientation="horizontal">
 
-        <TextView
+        <com.nsb.job_seeker.custom_text.AztekTextView
             android:id="@+id/textTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TOP"
+            android:text="Top"
             android:textColor="@color/white"
-            android:textSize="40sp"
-            android:textStyle="bold" />
+            android:textSize="40sp" />
 
-        <TextView
+        <com.nsb.job_seeker.custom_text.AztekTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="JOB"
+            android:text="Jop"
             android:textColor="#f4466b"
-            android:textSize="40sp"
-            android:textStyle="bold" />
+            android:textSize="40sp" />
     </LinearLayout>
 
     <TextView

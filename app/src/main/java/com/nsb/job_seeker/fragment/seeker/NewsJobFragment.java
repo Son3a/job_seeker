@@ -1,6 +1,8 @@
 package com.nsb.job_seeker.fragment.seeker;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.ForMeAdapter;
+import com.nsb.job_seeker.common.Constant;
 
 public class NewsJobFragment extends Fragment {
     private View newsJobView;
@@ -48,4 +51,5 @@ public class NewsJobFragment extends Fragment {
             tab.view.setClickable(false);
         }).attach();
     }
+
 }

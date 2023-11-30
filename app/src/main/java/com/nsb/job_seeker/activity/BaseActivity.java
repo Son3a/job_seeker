@@ -22,15 +22,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     private InternetService internetService;
     private DocumentReference documentReference;
     public static boolean isConnect;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
-//        FirebaseFirestore database = FirebaseFirestore.getInstance();
-//        Log.d("USERS", preferenceManager.getString(Constant.KEY_USER_ID));
-//        documentReference = database.collection(Constant.KEY_COLLECTION_USERS)
-//                .document(preferenceManager.getString(Constant.KEY_USER_ID));
+        PreferenceManager preferenceManager = new PreferenceManager(getApplicationContext());
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+        if (preferenceManager.getBoolean(Constant.KEY_IS_SIGNED_IN)) {
+            documentReference = database.collection(Constant.KEY_COLLECTION_USERS)
+                    .document(preferenceManager.getString(Constant.KEY_USER_ID));
+        }
 
         internetService = new InternetService();
     }
@@ -45,13 +48,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        //documentReference.update(Constant.KEY_AVAILABILITY, 0);
+        if(documentReference!=null) {
+            documentReference.update(Constant.KEY_AVAILABILITY, 0);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //documentReference.update(Constant.KEY_AVAILABILITY, 1);
+        if(documentReference!=null) {
+            documentReference.update(Constant.KEY_AVAILABILITY, 1);
+        }
     }
 
     @Override

@@ -60,8 +60,11 @@ public class EditRecruitmentActivity extends BaseActivity {
     private BottomSheetDialog bottomSheetUnitMoney, bottomSheetTypeJob, bottomSheetGender;
     private String idOccupation;
     private LoadingDialog loadingDialog;
+    private FilterAdapter genderAdapter, typeJobAdapter, unitMoney;
+    private List<Boolean> listSelectedGender, listSelectedTypeJob, listSelectedUnitMoney;
 
     @Override
+
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         binding = FragmentEmployerUpdateNewsBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
@@ -72,12 +75,10 @@ public class EditRecruitmentActivity extends BaseActivity {
     }
 
     private void setControl() {
-        idTypeJobs = new ArrayList<>();
-        nameTypeJobs = new ArrayList<>();
-        nameTypeJobs.add("Lĩnh vực");
-
         loadingDialog = new LoadingDialog(EditRecruitmentActivity.this);
         preferenceManager = new PreferenceManager(EditRecruitmentActivity.this);
+        initBottomUnitMoney();
+        initBottomSheetGender();
     }
 
 
@@ -89,11 +90,12 @@ public class EditRecruitmentActivity extends BaseActivity {
         loadContent();
         pickTime();
         formatBullet();
-        openBottomUnitMoney();
         openBottomSheetTypeJob();
         openBottomSheetGender();
+        openBottomSheetMoney();
         clickUpdateJob();
         cancelProcess();
+        getTypeJob();
     }
 
     private void loadContent() {
@@ -110,6 +112,7 @@ public class EditRecruitmentActivity extends BaseActivity {
             binding.textWorkingForm.setText(job.getWorkingForm());
             binding.textApplyAmount.setText(job.getAmountRecruitment());
             binding.textTypeJob.setText(job.getTypeJob());
+            idOccupation = job.getTypeId();
 
             if (job.getSalary().contains("VND")) {
                 binding.textUnitMoney.setText("VND");
@@ -126,13 +129,19 @@ public class EditRecruitmentActivity extends BaseActivity {
             if (checkAllEmpty()) {
                 return;
             }
-            CustomDialogDelete customDialogDelete = new CustomDialogDelete(EditRecruitmentActivity.this, "Có", "Không", false) {
+            CustomDialogDelete customDialogDelete = new CustomDialogDelete(EditRecruitmentActivity.this, "Bạn chắc chắn muốn hủy quá trình này?",
+                    "Có", "Không") {
                 @Override
-                public void doSomeThing() {
+                public void doAccept() {
                     clearText();
                 }
+
+                @Override
+                public void doCancel() {
+
+                }
             };
-            customDialogDelete.openDiaLogDelete("Bạn chắc chắn muốn hủy quá trình này?");
+            customDialogDelete.openDiaLogDelete();
         });
     }
 
@@ -161,50 +170,62 @@ public class EditRecruitmentActivity extends BaseActivity {
 
     private void openBottomSheetTypeJob() {
         binding.textTypeJob.setOnClickListener(v -> {
-            getTypeJob();
+            if (bottomSheetTypeJob != null) {
+                bottomSheetTypeJob.show();
+            }
+        });
+    }
+
+    private void initBottomSheetGender() {
+        bottomSheetGender = new BottomSheetDialog(EditRecruitmentActivity.this);
+        View layoutGender = getLayoutInflater().inflate(R.layout.layout_filter, null);
+        TextView textTitle = (TextView) layoutGender.findViewById(R.id.textTitle);
+        textTitle.setText("Chọn giới tính");
+        List<String> listGender = new ArrayList<>();
+        listSelectedGender = new ArrayList<>();
+        listGender.add("Không yêu cầu");
+        listGender.add("Nam");
+        listGender.add("Nữ");
+        listSelectedGender.add(false);
+        listSelectedGender.add(false);
+        listSelectedGender.add(false);
+        RecyclerView recyclerView = layoutGender.findViewById(R.id.rcvFilter);
+        genderAdapter = new FilterAdapter(listGender, listSelectedGender, new FilterListener() {
+            @Override
+            public void onClickItem(String data, int position) {
+                binding.textGender.setText(data);
+                bottomSheetGender.dismiss();
+            }
+        });
+        recyclerView.setAdapter(genderAdapter);
+        bottomSheetGender.setContentView(layoutGender);
+
+        ImageView imgClose = layoutGender.findViewById(R.id.imageClose);
+        imgClose.setOnClickListener(view -> {
+            bottomSheetGender.dismiss();
         });
     }
 
     private void openBottomSheetGender() {
         binding.textGender.setOnClickListener(v -> {
-            bottomSheetGender = new BottomSheetDialog(EditRecruitmentActivity.this);
-            View layoutGender = getLayoutInflater().inflate(R.layout.layout_filter, null);
-            TextView textTitle = (TextView) layoutGender.findViewById(R.id.textTitle);
-            textTitle.setText("Chọn giới tính");
-            List<String> listGender = new ArrayList<>();
-            listGender.add("Không yêu cầu");
-            listGender.add("Nam");
-            listGender.add("Nữ");
-            RecyclerView recyclerView = layoutGender.findViewById(R.id.rcvFilter);
-            FilterAdapter positionAdapter = new FilterAdapter(listGender, new FilterListener() {
-                @Override
-                public void onClickItem(String data, int position) {
-                    binding.textGender.setText(data);
-                    bottomSheetGender.dismiss();
-                }
-            });
-            recyclerView.setAdapter(positionAdapter);
-            bottomSheetGender.setContentView(layoutGender);
-            bottomSheetGender.show();
-
-            ImageView imgClose = layoutGender.findViewById(R.id.imageClose);
-            imgClose.setOnClickListener(view -> {
-                bottomSheetGender.dismiss();
-            });
+            if (bottomSheetGender != null) {
+                bottomSheetGender.show();
+            }
         });
     }
 
-    private void initBottomSheetTypeJob(List<String> listTypeJob) {
+    private void initBottomSheetTypeJob() {
         bottomSheetTypeJob = new BottomSheetDialog(EditRecruitmentActivity.this);
         View layoutTypeJob = getLayoutInflater().inflate(R.layout.layout_filter, null);
         TextView textTitle = (TextView) layoutTypeJob.findViewById(R.id.textTitle);
         textTitle.setText("Chọn loại công việc");
 
         RecyclerView recyclerView = layoutTypeJob.findViewById(R.id.rcvFilter);
-        FilterAdapter filterAdapter = new FilterAdapter(listTypeJob, new FilterListener() {
+        typeJobAdapter = new FilterAdapter(nameTypeJobs, listSelectedTypeJob, new FilterListener() {
             @Override
             public void onClickItem(String data, int position) {
                 binding.textTypeJob.setText(data);
+                idOccupation = idTypeJobs.get(position);
                 bottomSheetTypeJob.dismiss();
             }
         });
@@ -212,36 +233,44 @@ public class EditRecruitmentActivity extends BaseActivity {
         imgClose.setOnClickListener(view -> {
             bottomSheetTypeJob.dismiss();
         });
-        recyclerView.setAdapter(filterAdapter);
+        recyclerView.setAdapter(typeJobAdapter);
+        typeJobAdapter.notifyDataSetChanged();
         bottomSheetTypeJob.setContentView(layoutTypeJob);
-        bottomSheetTypeJob.show();
     }
 
-    private void openBottomUnitMoney() {
-        binding.textUnitMoney.setOnClickListener(v -> {
-            bottomSheetUnitMoney = new BottomSheetDialog(EditRecruitmentActivity.this);
-            View layoutUnitMoney = getLayoutInflater().inflate(R.layout.layout_filter, null);
-            TextView textTitle = (TextView) layoutUnitMoney.findViewById(R.id.textTitle);
-            textTitle.setText("Chọn đơn vị tiền");
-            List<String> listUnitMoney = new ArrayList<>();
-            listUnitMoney.add("VND");
-            listUnitMoney.add("USD");
-            RecyclerView recyclerView = layoutUnitMoney.findViewById(R.id.rcvFilter);
-            FilterAdapter filterAdapter = new FilterAdapter(listUnitMoney, new FilterListener() {
-                @Override
-                public void onClickItem(String data, int position) {
-                    binding.textUnitMoney.setText(data);
-                    bottomSheetUnitMoney.dismiss();
-                }
-            });
-            recyclerView.setAdapter(filterAdapter);
-            bottomSheetUnitMoney.setContentView(layoutUnitMoney);
-            bottomSheetUnitMoney.show();
-
-            ImageView imgClose = layoutUnitMoney.findViewById(R.id.imageClose);
-            imgClose.setOnClickListener(view -> {
+    private void initBottomUnitMoney() {
+        bottomSheetUnitMoney = new BottomSheetDialog(EditRecruitmentActivity.this);
+        View layoutUnitMoney = getLayoutInflater().inflate(R.layout.layout_filter, null);
+        TextView textTitle = (TextView) layoutUnitMoney.findViewById(R.id.textTitle);
+        textTitle.setText("Chọn đơn vị tiền");
+        List<String> listUnitMoney = new ArrayList<>();
+        listSelectedUnitMoney = new ArrayList<>();
+        listUnitMoney.add("VND");
+        listUnitMoney.add("USD");
+        listSelectedUnitMoney.add(false);
+        listSelectedUnitMoney.add(false);
+        RecyclerView recyclerView = layoutUnitMoney.findViewById(R.id.rcvFilter);
+        unitMoney = new FilterAdapter(listUnitMoney, listSelectedUnitMoney, new FilterListener() {
+            @Override
+            public void onClickItem(String data, int position) {
+                binding.textUnitMoney.setText(data);
                 bottomSheetUnitMoney.dismiss();
-            });
+            }
+        });
+        recyclerView.setAdapter(unitMoney);
+        bottomSheetUnitMoney.setContentView(layoutUnitMoney);
+
+        ImageView imgClose = layoutUnitMoney.findViewById(R.id.imageClose);
+        imgClose.setOnClickListener(view -> {
+            bottomSheetUnitMoney.dismiss();
+        });
+    }
+
+    private void openBottomSheetMoney() {
+        binding.textUnitMoney.setOnClickListener(v -> {
+            if (bottomSheetUnitMoney != null) {
+                bottomSheetUnitMoney.show();
+            }
         });
     }
 
@@ -259,7 +288,7 @@ public class EditRecruitmentActivity extends BaseActivity {
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
                         if (Constant.checkValidDeadline(day, month + 1, year)) {
-                            binding.edtDeadline.setText((month + 1) + "-" + day + "-" + year);
+                            binding.edtDeadline.setText(day + "-" + (month + 1) + "-" + year);
                         } else {
                             Toast.makeText(EditRecruitmentActivity.this, "Hạn nộp không hợp lệ, vui lòng chọn lại !", Toast.LENGTH_SHORT).show();
                             binding.edtDeadline.requestFocus();
@@ -317,7 +346,7 @@ public class EditRecruitmentActivity extends BaseActivity {
                             binding.edtNameJob.getText().toString().trim(),
                             Constant.formatStringFromBullet(binding.edtDetailJob.getText().toString().trim()),
                             Constant.formatStringFromBullet(binding.edtJobReq.getText().toString().trim()),
-                            binding.edtDeadline.getText().toString().trim(),
+                            Constant.formatTimeMMDDYYYY(binding.edtDeadline.getText().toString().trim()),
                             binding.textSalary.getText().toString().trim(),
                             binding.textPosition.getText().toString().trim(),
                             idOccupation,
@@ -328,6 +357,8 @@ public class EditRecruitmentActivity extends BaseActivity {
                             binding.textApplyAmount.getText().toString().trim());
                 }
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
         });
@@ -457,6 +488,8 @@ public class EditRecruitmentActivity extends BaseActivity {
         loadingDialog.showDialog();
         RequestQueue queue = Volley.newRequestQueue(EditRecruitmentActivity.this);
 
+        boolean isNumberSalary = salary.matches(".*\\d.*");
+
         JSONObject jsonReq = new JSONObject();
 
         jsonReq.put("_id", id);
@@ -464,7 +497,7 @@ public class EditRecruitmentActivity extends BaseActivity {
         jsonReq.put("description", description);
         jsonReq.put("requirement", requirement);
         jsonReq.put("deadline", deadline);
-        jsonReq.put("salary", salary + binding.textUnitMoney.getText().toString());
+        jsonReq.put("salary", isNumberSalary == true ? salary + binding.textUnitMoney.getText().toString() : salary);
         jsonReq.put("locationWorking", locationWorking);
         jsonReq.put("idOccupation", idOccupation);
         jsonReq.put("idCompany", idCompany);
@@ -496,7 +529,7 @@ public class EditRecruitmentActivity extends BaseActivity {
                             jsonObject.getString("experience"),
                             jsonObject.getString("gender")
                     );
-
+                    loadingDialog.hideDialog();
                     sendBroadcast(job);
                     CustomToast.makeText(EditRecruitmentActivity.this, "Cập nhật thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                     finish();
@@ -547,9 +580,12 @@ public class EditRecruitmentActivity extends BaseActivity {
 
 
     private void getTypeJob() {
-
         String urlTypeJob = Constant.url_dev + "/occupation/list";
         RequestQueue queue = Volley.newRequestQueue(EditRecruitmentActivity.this);
+
+        idTypeJobs = new ArrayList<>();
+        nameTypeJobs = new ArrayList<>();
+        listSelectedTypeJob = new ArrayList<>();
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
             @Override
@@ -562,9 +598,10 @@ public class EditRecruitmentActivity extends BaseActivity {
                             Log.d("TypeJob", typeJob.getString("name"));
                             nameTypeJobs.add(typeJob.getString("name"));
                             idTypeJobs.add(typeJob.getString("_id"));
+                            listSelectedTypeJob.add(false);
                         }
                     }
-                    initBottomSheetTypeJob(nameTypeJobs);
+                    initBottomSheetTypeJob();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -607,6 +644,7 @@ public class EditRecruitmentActivity extends BaseActivity {
     private void sendBroadcast(Job job) {
         Intent intent = new Intent(Constant.JOB_MODEL);
         intent.putExtra(Constant.JOB_MODEL, (Serializable) job);
+        intent.putExtra(Constant.POSITION, getIntent().getIntExtra(Constant.POSITION, -1));
         sendBroadcast(intent);
     }
 }

@@ -51,7 +51,11 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
         holder.setData(jobList.get(position));
 
         holder.binding.imgSaveJob.setOnClickListener(v -> {
-            listener.onSave(jobList.get(position), holder.binding);
+            listener.onSave(jobList.get(position), holder.binding, position);
+        });
+
+        holder.binding.getRoot().setOnClickListener(v -> {
+            listener.onClick(jobList.get(position), position);
         });
     }
 
@@ -90,9 +94,6 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
                     binding.imgSaveJob.setColorFilter(ContextCompat.getColor(context, R.color.secondary_text));
                 }
             }
-            binding.getRoot().setOnClickListener(v -> {
-                listener.onClick(job);
-            });
             try {
                 if (Constant.setTime(job.getDeadline()) == null) {
                     binding.tvTimeUpdated1.setText("Công việc đã hết hạn");

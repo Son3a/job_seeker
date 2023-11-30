@@ -70,6 +70,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/layout"
                 android:layout_marginHorizontal="15dp"
+                android:scrollingCache="true"
+                android:smoothScrollbar="true"
                 android:layout_marginTop="15dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 

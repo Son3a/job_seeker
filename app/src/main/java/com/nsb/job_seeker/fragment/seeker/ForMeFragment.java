@@ -1,7 +1,5 @@
 package com.nsb.job_seeker.fragment.seeker;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,7 +27,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.type.DateTime;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.LoginActivity;
 import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
@@ -37,18 +35,19 @@ import com.nsb.job_seeker.activity.seeker.SeekerMainActivity;
 import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.FragmentSeekerForMeBinding;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
 import com.nsb.job_seeker.model.Job;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -62,13 +61,28 @@ public class ForMeFragment extends Fragment implements JobListener {
     private PreferenceManager preferenceManager;
     private JobAdapter jobAdapter;
     public static List<Job> jobList;
+    private final int RESULT_OK = -1;
+    private LoadingDialog loadingDialog;
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver broadcastAvatar = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(Constant.BROADCAST_AVATAR.equals(intent.getAction())){
+            if (Constant.BROADCAST_AVATAR.equals(intent.getAction())) {
                 String avatar = intent.getStringExtra(Constant.AVATAR);
-                binding.layoutWelcome.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(avatar));
+                binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(avatar));
+            }
+        }
+    };
+
+    private BroadcastReceiver broadcastSaveJob = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Constant.BROADCAST_SAVE_JOB.equals(intent.getAction())) {
+                Log.d("PositionSave", "ChangeSaveJob");
+                int position = intent.getIntExtra(Constant.POSITION, -1);
+                if (position != -1) {
+                    jobAdapter.notifyItemChanged(position);
+                }
             }
         }
     };
@@ -77,7 +91,6 @@ public class ForMeFragment extends Fragment implements JobListener {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentSeekerForMeBinding.inflate(getLayoutInflater());
-
         setControl();
         setEvent();
 
@@ -86,7 +99,15 @@ public class ForMeFragment extends Fragment implements JobListener {
 
     private void setControl() {
         jobList = new ArrayList<Job>();
+        loadingDialog = new LoadingDialog(getContext());
         preferenceManager = new PreferenceManager(getActivity());
+        if (preferenceManager.getBoolean(Constant.KEY_IS_SIGNED_IN)) {
+            binding.layoutWelcome.setVisibility(View.VISIBLE);
+            binding.layoutLogo.setVisibility(View.INVISIBLE);
+        } else {
+            binding.layoutWelcome.setVisibility(View.INVISIBLE);
+            binding.layoutLogo.setVisibility(View.VISIBLE);
+        }
         jobAdapter = new JobAdapter(getContext(), jobList, this, true);
         binding.lvJob.setAdapter(jobAdapter);
     }
@@ -98,35 +119,51 @@ public class ForMeFragment extends Fragment implements JobListener {
         gotoSearch();
         refreshContent();
         gotoAccount();
+        gotoLogin();
     }
 
     private void loadAvatar() {
         if (preferenceManager.getString(Constant.AVATAR) != null) {
-            binding.layoutWelcome.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
+            if (URLUtil.isValidUrl(preferenceManager.getString(Constant.AVATAR))) {
+                Picasso.get().load(preferenceManager.getString(Constant.AVATAR)).into(binding.imageAvatar);
+            } else {
+                binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(preferenceManager.getString(Constant.AVATAR)));
+            }
         }
 
-        binding.layoutWelcome.textName.setText(preferenceManager.getString(Constant.NAME));
+        binding.textName.setText(preferenceManager.getString(Constant.NAME));
         Date now = new Date();   // given date
         Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
         calendar.setTime(now);   // assigns calendar to given date
         int hour = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
         String time;
-        if(hour >= 0 && hour < 6){
+        if (hour >= 0 && hour < 6) {
             time = "buổi đêm";
-        } else if(hour >= 6 && hour < 12){
+        } else if (hour >= 6 && hour < 12) {
             time = "buổi sáng";
-        } else if(hour >= 12 && hour < 18){
+        } else if (hour >= 12 && hour < 18) {
             time = "ngày";
         } else {
             time = "buổi tối";
         }
 
-        binding.layoutWelcome.textTime.setText(time);
+        binding.textTime.setText(time);
+    }
+
+    private void gotoLogin() {
+        binding.btnLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
     }
 
     private void gotoAccount() {
-        binding.layoutWelcome.getRoot().setOnClickListener(v -> {
-            SeekerMainActivity.bottomNavigationView.setSelectedItemId(R.id.menu_account);
+        binding.layoutWelcome.setOnClickListener(v -> {
+            if (ForMeFragment.this.isVisible()) {
+                Log.d("Forme", "ForMe is showing");
+                SeekerMainActivity.bottomNavigationView.setSelectedItemId(R.id.menu_account);
+            }
         });
     }
 
@@ -150,6 +187,7 @@ public class ForMeFragment extends Fragment implements JobListener {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         String url = Constant.url_dev + "/job/list/sort-by-date";
         jobList.clear();
+        binding.pbLoading.setVisibility(View.VISIBLE);
         JsonObjectRequest data = new JsonObjectRequest(
                 url,
                 new Response.Listener<JSONObject>() {
@@ -168,7 +206,7 @@ public class ForMeFragment extends Fragment implements JobListener {
                                             job.getJSONObject("idCompany").getString("name"),
                                             job.getString("locationWorking"),
                                             job.getString("salary"),
-                                            Constant.setTime(job.getString("deadline")),
+                                            job.getString("deadline"),
                                             job.getString("description"),
                                             job.getString("requirement"),
                                             job.getJSONObject("idOccupation").getString("_id"),
@@ -181,13 +219,12 @@ public class ForMeFragment extends Fragment implements JobListener {
                                     ));
                                 }
                             }
+                            binding.pbLoading.setVisibility(View.GONE);
                             jobAdapter.notifyDataSetChanged();
                             binding.layoutRefresh.setRefreshing(false);
                             //pbLoading.setVisibility(View.GONE);
 
                         } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     }
@@ -249,43 +286,32 @@ public class ForMeFragment extends Fragment implements JobListener {
 
     private void saveJob(String jobId, ListViewItemJobBinding itemJobBinding) throws JSONException {
         String base_url = Constant.url_dev + "/job";
-        itemJobBinding.layoutItemJob.animate()
-                .setDuration(300)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        itemJobBinding.layoutItemJob.setVisibility(View.INVISIBLE);
-                    }
-                });
-
-        itemJobBinding.layoutItemJob.setVisibility(View.INVISIBLE);
+        loadingDialog.showDialog();
         RequestQueue mRequestQueue = Volley.newRequestQueue(getContext());
         //post data
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("jobId", jobId);
-//        pbLoading.setVisibility(View.VISIBLE);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PATCH, base_url + "/list-job-favourite", jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     String status = response.getString("status");
-
+                    loadingDialog.hideDialog();
                     if (status.equals("1")) {
                         itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_saved);
                         itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.green));
+                        CustomToast.makeText(getContext(), "Lưu việc làm thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                         Constant.idSavedJobs.add(jobId);
                     } else {
                         itemJobBinding.imgSaveJob.setImageResource(R.drawable.ic_not_save);
-                        Constant.idSavedJobs.remove(Constant.idSavedJobs.size() - 1);
+                        Constant.idSavedJobs.remove(jobId);
                         itemJobBinding.imgSaveJob.setColorFilter(ContextCompat.getColor(getContext(), R.color.secondary_text));
                         CustomToast.makeText(getContext(), "Bạn đã bỏ lưu công việc!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                     }
-
-                    itemJobBinding.layoutItemJob.setVisibility(View.VISIBLE);
                 } catch (JSONException e) {
                     Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    loadingDialog.hideDialog();
 //                    pbLoading.setVisibility(View.GONE);
                     e.printStackTrace();
                 }
@@ -294,6 +320,7 @@ public class ForMeFragment extends Fragment implements JobListener {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String body;
+                loadingDialog.hideDialog();
                 //get status code here
                 if (error instanceof com.android.volley.NoConnectionError) {
 
@@ -349,19 +376,21 @@ public class ForMeFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onClick(Job job) {
+    public void onClick(Job job, int position) {
         Intent i = new Intent(getActivity(), JobDetailActivity.class);
         i.putExtra(Constant.JOB_ID, job.getId());
-        i.putExtra("isApply", true);
+        i.putExtra(Constant.POSITION, position);
         startActivity(i);
     }
 
     @Override
-    public void onSave(Job job, ListViewItemJobBinding listViewItemJobBinding) {
-        try {
-            saveJob(job.getId(), listViewItemJobBinding);
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public void onSave(Job job, ListViewItemJobBinding listViewItemJobBinding, int position) {
+        if (preferenceManager.getBoolean(Constant.KEY_IS_SIGNED_IN)) {
+            try {
+                saveJob(job.getId(), listViewItemJobBinding);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -369,12 +398,16 @@ public class ForMeFragment extends Fragment implements JobListener {
     public void onStart() {
         super.onStart();
         IntentFilter intentFilter = new IntentFilter(Constant.BROADCAST_AVATAR);
-        getContext().registerReceiver(broadcastReceiver, intentFilter);
+        getContext().registerReceiver(broadcastAvatar, intentFilter);
+
+        IntentFilter intentFilter1 = new IntentFilter(Constant.BROADCAST_SAVE_JOB);
+        getContext().registerReceiver(broadcastSaveJob, intentFilter1);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getContext().unregisterReceiver(broadcastReceiver);
+        getContext().unregisterReceiver(broadcastAvatar);
+        getContext().unregisterReceiver(broadcastSaveJob);
     }
 }

@@ -51,11 +51,11 @@ public class        UserActivity extends BaseActivity implements UserListener {
                                 continue;
                             }
                             User user = new User();
-                            user.name = queryDocumentSnapshot.getString(Constant.KEY_NAME);
-                            user.email = queryDocumentSnapshot.getString(Constant.KEY_EMAIL);
-                            user.image = queryDocumentSnapshot.getString(Constant.KEY_IMAGE);
-                            user.token = queryDocumentSnapshot.getString(Constant.KEY_FCM_TOKEN);
-                            user.id = queryDocumentSnapshot.getId();
+                            user.setName(queryDocumentSnapshot.getString(Constant.KEY_NAME));
+                            user.setEmail(queryDocumentSnapshot.getString(Constant.KEY_EMAIL));
+                            user.setImage(queryDocumentSnapshot.getString(Constant.KEY_IMAGE));
+                            user.setToken(queryDocumentSnapshot.getString(Constant.KEY_FCM_TOKEN));
+                            user.setId(queryDocumentSnapshot.getId());
                             users.add(user);
                         }
                         if (users.size() > 0) {
@@ -87,7 +87,7 @@ public class        UserActivity extends BaseActivity implements UserListener {
     @Override
     public void onUserClicked(User user){
         Intent intent = new Intent(getApplicationContext(),ChatActivity.class);
-        intent.putExtra(Constant.KEY_USER, user);
+        intent.putExtra(Constant.KEY_COLLECTION_USERS, user);
         startActivity(intent);
         finish();
     }

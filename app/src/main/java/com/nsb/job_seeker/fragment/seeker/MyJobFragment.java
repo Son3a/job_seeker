@@ -1,6 +1,7 @@
 package com.nsb.job_seeker.fragment.seeker;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.adapter.ForMeAdapter;
 import com.nsb.job_seeker.adapter.MyJobAdapter;
+import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.databinding.FragmentSeekerForMeBinding;
 import com.nsb.job_seeker.databinding.FragmentSeekerMyFobBinding;
 import com.nsb.job_seeker.model.Job;
@@ -53,5 +55,23 @@ public class MyJobFragment extends Fragment {
             tab.setText(tabTitle.get(position));
             tab.view.setClickable(true);
         }).attach();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("MyJob", "is pause");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("MyJob", "is resume");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("MyJob", "is start");
     }
 }

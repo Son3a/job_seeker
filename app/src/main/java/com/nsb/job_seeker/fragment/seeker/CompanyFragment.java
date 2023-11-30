@@ -160,7 +160,7 @@ public class CompanyFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onClick(Job job) {
+    public void onClick(Job job, int position) {
         Intent intent = new Intent(getActivity(), JobDetailActivity.class);
         intent.putExtra("id", job.getId());
         getActivity().finish();
@@ -168,7 +168,7 @@ public class CompanyFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onSave(Job job, ListViewItemJobBinding binding) {
+    public void onSave(Job job, ListViewItemJobBinding binding, int position) {
 
     }
 }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -14,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.IntentSenderRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -29,16 +29,12 @@ import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.identity.SignInCredential;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nsb.job_seeker.BuildConfig;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.admin.EmployerMainActivity;
 import com.nsb.job_seeker.activity.seeker.SeekerMainActivity;
@@ -57,13 +53,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private String base_url = Constant.url_dev + "/auth";
-    private LoadingDialog loadingDialog;
-    private DialogNotification dialogNotification = null;
     private PreferenceManager preferenceManager;
-
+    private LoadingDialog loadingDialog;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
     private boolean showOneTapUI = true;
 
@@ -76,26 +70,30 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(binding.getRoot());
 
-        Log.d("AppID", BuildConfig.APPLICATION_ID);
-
-        preferenceManager = new PreferenceManager(this);
-
-        if (preferenceManager.getBoolean(Constant.KEY_IS_SIGNED_IN)) {
-
-            Constant.idSavedJobs = preferenceManager.getArray(Constant.LIST_SAVED_JOB);
-            redirectAfterLogin(preferenceManager.getString(Constant.ROLE));
-        }
-        initGoogle();
-
-        this.loadingDialog = new LoadingDialog(LoginActivity.this);
-
+        init();
         setEvent();
+    }
+
+    private void init() {
+        preferenceManager = new PreferenceManager(this);
+        loadingDialog = new LoadingDialog(this);
+        initGoogle();
     }
 
     private void setEvent() {
         clickLogin();
         clickRegister();
         clickForgotPassword();
+        gotoAppWithoutLogin();
+    }
+
+    private void gotoAppWithoutLogin() {
+        binding.textVisitPage.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SeekerMainActivity.class);
+            preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, false);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
     }
 
     private void initGoogle() {
@@ -128,14 +126,18 @@ public class LoginActivity extends BaseActivity {
                             String idToken = credential.getGoogleIdToken();
                             if (idToken != null) {
                                 String email = credential.getId();
+                                String password = credential.getPassword();
                                 // Got an ID token from Google. Use it to authenticate
                                 // with your backend.
-                                Log.d("TAG", "Got ID token.");
-                                Log.d("TAG", email);
+                                Log.d("Google", "Got ID token.");
+                                Log.d("Google", "name: " + credential.getDisplayName());
+                                loginGoogle(credential.getDisplayName(), email, credential.getProfilePictureUri().toString());
                             }
                         } catch (ApiException e) {
-                            // ...
-                            Log.d("TAG", e.getMessage());
+                            Log.d("Google", e.getMessage());
+                            CustomToast.makeText(LoginActivity.this, e.getMessage(), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -143,10 +145,12 @@ public class LoginActivity extends BaseActivity {
 
     private void clickLoginGoogle() {
         binding.imageGoogle.setOnClickListener(v -> {
+            loadingDialog.showDialog();
             signInClient.beginSignIn(signInRequest)
                     .addOnSuccessListener(LoginActivity.this, new OnSuccessListener<BeginSignInResult>() {
                         @Override
                         public void onSuccess(BeginSignInResult result) {
+                            loadingDialog.hideDialog();
                             IntentSenderRequest intentSenderRequest = new IntentSenderRequest.Builder(
                                     result.getPendingIntent().getIntentSender()).build();
                             activityResultLauncher.launch(intentSenderRequest);
@@ -156,12 +160,160 @@ public class LoginActivity extends BaseActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             // No Google Accounts found. Just continue presenting the signed-out UI.
-                            Log.d("TAG", e.getMessage());
+                            loadingDialog.hideDialog();
+                            CustomToast.makeText(LoginActivity.this, e.getMessage(), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
+                            Log.d("Google", e.getMessage());
                         }
                     });
         });
     }
 
+    private void signInFireBase(String id, String name, String email, String avatar, String role) {
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        database.collection(Constant.KEY_COLLECTION_USERS)
+                .whereEqualTo(Constant.KEY_EMAIL, email)
+                .get()
+                .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && task.getResult() != null &&
+                                    task.getResult().getDocuments().size() > 0) {
+                                loadingDialog.hideDialog();
+                                DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+                                Log.d("UserId", documentSnapshot.getId());
+                                preferenceManager.putString(Constant.KEY_USER_ID, documentSnapshot.getId());
+                                preferenceManager.putString(Constant.KEY_NAME, documentSnapshot.getString(Constant.KEY_NAME));
+                                preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
+                                redirectAfterLogin(role);
+
+                            } else {
+                                HashMap<String, Object> user = new HashMap<>();
+                                user.put(Constant.KEY_USER_ID, id);
+                                user.put(Constant.KEY_NAME, name);
+                                user.put(Constant.KEY_EMAIL, email);
+                                user.put(Constant.KEY_IMAGE, avatar);
+                                user.put(Constant.KEY_PASSWORD, Constant.PASSWORD_DEFAULT);
+                                user.put(Constant.KEY_AVAILABILITY, 0);
+                                user.put(Constant.KEY_FCM_TOKEN, "");
+                                database.collection(Constant.KEY_COLLECTION_USERS)
+                                        .add(user)
+                                        .addOnSuccessListener(documentReference -> {
+                                            loadingDialog.hideDialog();
+                                            CustomToast.makeText(LoginActivity.this, "Đăng nhập thành công!",
+                                                    CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+
+                                            preferenceManager.putString(Constant.KEY_USER_ID, documentReference.getId());
+                                            preferenceManager.putString(Constant.KEY_NAME, name);
+                                            preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
+                                            redirectAfterLogin(role);
+                                        });
+                            }
+                        }
+                ).addOnFailureListener(e -> {
+                    Log.d("Error", "Login firebase fail " + e.getMessage());
+                });
+    }
+
+    private void loginGoogle(String name, String email, String avatar) throws JSONException {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        loadingDialog.showDialog();
+
+        JSONObject jsonReq = new JSONObject();
+        jsonReq.put("email", email);
+        jsonReq.put("password", Constant.PASSWORD_DEFAULT);
+        jsonReq.put("name", name);
+        jsonReq.put("avatar", avatar);
+
+        JsonObjectRequest data = new JsonObjectRequest(Request.Method.POST, base_url + "/login-with-google", jsonReq, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject jsonObject = response.getJSONObject("data").getJSONObject("user");
+                    String role = jsonObject.getString("role");
+
+                    Constant.idSavedJobs = new ArrayList<>();
+                    if (role.equals(Constant.ADMIN_ROLE)) {
+                        preferenceManager.putString(Constant.COMPANY_ID, jsonObject.getJSONObject("idCompany").getString("_id"));
+                    } else {
+                        JSONArray listJobFavorite = jsonObject.getJSONArray("jobFavourite");
+                        for (int i = 0; i < listJobFavorite.length(); i++) {
+                            if (!listJobFavorite.getJSONObject(i).isNull("jobId")) {
+                                JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
+                                Constant.idSavedJobs.add(jobObject.getString("_id"));
+                            }
+                        }
+                    }
+                    String accessToken = jsonObject.get("refreshToken").toString();
+                    preferenceManager.putString(Constant.TOKEN, "Bearer " + accessToken.replace("\"", ""));
+                    preferenceManager.putString(Constant.NAME, jsonObject.getString("name"));
+                    preferenceManager.putString(Constant.MAIL, jsonObject.getString("email"));
+                    if (!jsonObject.getString("avatar").isEmpty()) {
+                        preferenceManager.putString(Constant.AVATAR, jsonObject.getString("avatar"));
+                        preferenceManager.putString(Constant.PHONE, jsonObject.getString("phone"));
+                    }
+                    preferenceManager.putString(Constant.ROLE, role);
+
+                    Constant.idAppliedJob = new ArrayList<>();
+                    if (!response.getJSONObject("data").isNull("listCV")) {
+                        JSONArray jsonCV = response.getJSONObject("data").getJSONArray("listCV");
+                        for (int i = 0; i < jsonCV.length(); i++) {
+                            if (!jsonCV.getJSONObject(i).isNull("idJob")) {
+                                JSONObject job = jsonCV.getJSONObject(i).getJSONObject("idJob");
+                                Constant.idAppliedJob.add(job.getString("_id"));
+                            }
+                        }
+                    }
+                    signInFireBase(jsonObject.getString("_id").toString(), name, email, avatar, role);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    loadingDialog.hideDialog();
+                }
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error", "Error response: " + error.toString());
+                        String body;
+                        //get status code here
+                        loadingDialog.hideDialog();
+
+                        if (error instanceof com.android.volley.NoConnectionError) {
+                            CustomToast.makeText(LoginActivity.this, "Hệ thống đang có lỗi, quý khách vui lòng quay lại sau!",
+                                    CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
+                        } else if (error instanceof AuthFailureError) {
+                            try {
+                                body = new String(error.networkResponse.data, "UTF-8");
+                                JsonObject convertedObject = new Gson().fromJson(body, JsonObject.class);
+                                String message = convertedObject.get("message").toString();
+                                CustomToast.makeText(LoginActivity.this, message.substring(1, message.length() - 1), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (error instanceof VolleyError) {
+                            CustomToast.makeText(LoginActivity.this, error.getMessage(), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
+                        }
+                    }
+                }
+        );
+        data.setRetryPolicy(new RetryPolicy() {
+            @Override
+            public int getCurrentTimeout() {
+                return 50000;
+            }
+
+            @Override
+            public int getCurrentRetryCount() {
+                return 50000;
+            }
+
+            @Override
+            public void retry(VolleyError error) throws VolleyError {
+                throw new VolleyError("Email hoặc mật khẩu không chính xác!");
+            }
+        });
+        queue.add(data);
+    }
 
     private void clickForgotPassword() {
         binding.textForgotPassword.setOnClickListener(new View.OnClickListener() {
@@ -246,10 +398,8 @@ public class LoginActivity extends BaseActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            JSONObject jsonObject = response.getJSONObject("data");
-
+                            JSONObject jsonObject = response.getJSONObject("data").getJSONObject("user");
                             String role = jsonObject.getString("role");
-                            //signIn(email, password);   //login firebase
 
                             Constant.idSavedJobs = new ArrayList<>();
                             if (role.equals(Constant.ADMIN_ROLE)) {
@@ -259,9 +409,7 @@ public class LoginActivity extends BaseActivity {
                                 for (int i = 0; i < listJobFavorite.length(); i++) {
                                     if (!listJobFavorite.getJSONObject(i).isNull("jobId")) {
                                         JSONObject jobObject = listJobFavorite.getJSONObject(i).getJSONObject("jobId");
-                                        if (jobObject.getString("status").equals("true")) {
-                                            Constant.idSavedJobs.add(jobObject.getString("_id"));
-                                        }
+                                        Constant.idSavedJobs.add(jobObject.getString("_id"));
                                     }
                                 }
                             }
@@ -274,10 +422,19 @@ public class LoginActivity extends BaseActivity {
                                 preferenceManager.putString(Constant.PHONE, jsonObject.getString("phone"));
                             }
                             preferenceManager.putString(Constant.ROLE, role);
-                            preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
 
+                            Constant.idAppliedJob = new ArrayList<>();
+                            if (!response.getJSONObject("data").isNull("listCV")) {
+                                JSONArray jsonCV = response.getJSONObject("data").getJSONArray("listCV");
+                                for (int i = 0; i < jsonCV.length(); i++) {
+                                    if (!jsonCV.getJSONObject(i).isNull("idJob")) {
+                                        JSONObject job = jsonCV.getJSONObject(i).getJSONObject("idJob");
+                                        Constant.idAppliedJob.add(job.getString("_id"));
+                                    }
+                                }
+                            }
 
-                            getAppliedJob(role);
+                            signIn(binding.textEmail.getText().toString().trim(), binding.textPassword.getText().toString().trim(), role);
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -307,7 +464,7 @@ public class LoginActivity extends BaseActivity {
                             } catch (UnsupportedEncodingException e) {
                                 e.printStackTrace();
                             }
-                        } else if(error instanceof VolleyError){
+                        } else if (error instanceof VolleyError) {
                             CustomToast.makeText(LoginActivity.this, error.getMessage(), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
                         }
                     }
@@ -337,12 +494,12 @@ public class LoginActivity extends BaseActivity {
     private void redirectAfterLogin(String role) {
         if (role.trim().equals("user")) {
             Log.d("ABC", "user");
-            Intent intent = new Intent(LoginActivity.this, SeekerMainActivity.class);
+            Intent intent = new Intent(this, SeekerMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         } else {
             Log.d("ABC", "admin");
-            Intent intent = new Intent(LoginActivity.this, EmployerMainActivity.class);
+            Intent intent = new Intent(this, EmployerMainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
@@ -366,82 +523,15 @@ public class LoginActivity extends BaseActivity {
                                 Log.d("UserId", documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_USER_ID, documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_NAME, documentSnapshot.getString(Constant.KEY_NAME));
-
+                                preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
                                 redirectAfterLogin(role);
                                 Log.d("Process", "Login Firebase successfully");
                             }
                         }
                 ).addOnFailureListener(e -> {
+                    preferenceManager.clear();
+                    CustomToast.makeText(LoginActivity.this, e.getMessage(), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
                     Log.d("Error", e.getMessage());
                 });
     }
-
-    private void getAppliedJob(String role) {
-        String url = Constant.url_dev + "/application/get-by-userid";
-        String token = preferenceManager.getString(Constant.TOKEN);
-        RequestQueue queue = Volley.newRequestQueue(this);
-        JsonObjectRequest data = new JsonObjectRequest(
-                url,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            Constant.idAppliedJob = new ArrayList<>();
-                            JSONArray jobsList = response.getJSONObject("data").getJSONArray("data");
-                            for (int i = 0; i < jobsList.length(); i++) {
-                                JSONObject job = jobsList.getJSONObject(i).getJSONObject("idJob");
-                                Constant.idAppliedJob.add(job.getString("_id"));
-                            }
-                            signIn(binding.textEmail.getText().toString().trim(), binding.textPassword.getText().toString().trim(), role);
-                        } catch (JSONException e) {
-                            binding.btnLogin.setVisibility(View.VISIBLE);
-                            binding.pbLoading.setVisibility(View.GONE);
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        binding.btnLogin.setVisibility(View.VISIBLE);
-                        binding.pbLoading.setVisibility(View.GONE);
-                        if (error instanceof com.android.volley.NoConnectionError) {
-
-                        } else if (error.networkResponse.statusCode == 401 && error.networkResponse.data != null) {
-                            Intent i = new Intent(LoginActivity.this, LoginActivity.class);
-                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            preferenceManager.clear();
-                            startActivity(i);
-                        }
-
-                    }
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json");
-                headers.put("Authorization", token);
-                return headers;
-            }
-        };
-        data.setRetryPolicy(new RetryPolicy() {
-            @Override
-            public int getCurrentTimeout() {
-                return 50000;
-            }
-
-            @Override
-            public int getCurrentRetryCount() {
-                return 50000;
-            }
-
-            @Override
-            public void retry(VolleyError error) throws VolleyError {
-                throw new VolleyError(error.getMessage());
-            }
-        });
-        queue.add(data);
-    }
-
 }

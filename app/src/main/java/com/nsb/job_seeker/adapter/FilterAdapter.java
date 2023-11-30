@@ -1,6 +1,8 @@
 package com.nsb.job_seeker.adapter;
 
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -14,10 +16,14 @@ import java.util.List;
 public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHolder> {
     private final List<String> listFilter;
     private final FilterListener listener;
+    int positionOld = 0;
+    private final List<Boolean> listSelected;
+    private int default_position = 0;
 
-    public FilterAdapter(List<String> listSalary, FilterListener listener) {
+    public FilterAdapter(List<String> listSalary, List<Boolean> listSelected, FilterListener listener) {
         this.listFilter = listSalary;
         this.listener = listener;
+        this.listSelected = listSelected;
     }
 
     @NonNull
@@ -35,8 +41,19 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.FilterHold
     public void onBindViewHolder(@NonNull FilterHolder holder, int position) {
         holder.setData(listFilter.get(position));
 
+        if (listSelected.get(position) == false) {
+            holder.binding.imageCheck.setVisibility(View.INVISIBLE);
+        } else {
+            holder.binding.imageCheck.setVisibility(View.VISIBLE);
+        }
         holder.binding.getRoot().setOnClickListener(v -> {
             listener.onClickItem(listFilter.get(position), position);
+            listSelected.set(default_position, false);
+            listSelected.set(position, true);
+            notifyItemChanged(position);
+            notifyItemChanged(default_position);
+            default_position = position;
+
         });
     }
 

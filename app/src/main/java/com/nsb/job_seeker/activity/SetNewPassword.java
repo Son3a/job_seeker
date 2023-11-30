@@ -50,7 +50,6 @@ public class SetNewPassword extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_set_new_password);
-        this.loadingDialog = new LoadingDialog(SetNewPassword.this);
         Intent i = getIntent();
         this.code = i.getStringExtra("code");
         Log.d("ABC", this.code.toString());
@@ -59,6 +58,7 @@ public class SetNewPassword extends BaseActivity {
     }
 
     private void setControl() {
+        loadingDialog = new LoadingDialog(getApplicationContext());
         edtPassword = findViewById(R.id.tiePassword);
         edtPasswordConfirm = findViewById(R.id.tieConfirmPassword);
         btnConfirm = findViewById(R.id.btnConfirmResetPassword);

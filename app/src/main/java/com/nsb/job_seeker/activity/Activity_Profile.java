@@ -1,7 +1,6 @@
 package com.nsb.job_seeker.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -9,11 +8,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
@@ -25,16 +22,18 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.seeker.SeekerMainActivity;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
-import com.nsb.job_seeker.common.EventKeyboard;
+import com.nsb.job_seeker.listener.EventKeyboard;
 import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityProfileBinding;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -218,7 +217,11 @@ public class Activity_Profile extends BaseActivity {
                         image = response.getString("avatar");
                         encodeImage = response.getString("avatar");
                         if (image != null && !image.equals("")) {
-                            binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(image));
+                            if(URLUtil.isValidUrl(image)){
+                                Picasso.get().load(image).into(binding.imageAvatar);
+                            } else {
+                                binding.imageAvatar.setImageBitmap(Constant.getBitmapFromEncodedString(image));
+                            }
                         }
                     }
 
@@ -292,15 +295,9 @@ public class Activity_Profile extends BaseActivity {
                     preferenceManager.putString(Constant.PHONE, phone);
                     preferenceManager.putString(Constant.MAIL, email);
                     preferenceManager.putString(Constant.AVATAR, encodeImage);
-                    CustomToast.makeText(Activity_Profile.this, "Cập nhật thông tin thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
-
                     sendBroadcast(encodeImage);
 
-                    Intent intent = new Intent(Activity_Profile.this, SeekerMainActivity.class);
-                    intent.putExtra(Constant.AVATAR, encodeImage);
-                    intent.putExtra(Constant.NAME, name);
-                    setResult(RESULT_OK, intent);
-                    finish();
+                    updateImageFirebase(encodeImage);
                 } catch (JSONException e) {
                     Log.d("ABC", e.toString());
                     e.printStackTrace();
@@ -334,8 +331,6 @@ public class Activity_Profile extends BaseActivity {
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                SharedPreferences sharedPreferences = getSharedPreferences(Constant.sharedPreferencesName, MODE_PRIVATE);
-                String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
                 params.put("Authorization", preferenceManager.getString(Constant.TOKEN));
@@ -344,6 +339,28 @@ public class Activity_Profile extends BaseActivity {
         };
         ;
         mRequestQueue.add(jsonObjectRequest);
+    }
+
+    private void updateImageFirebase(String image) {
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+        DocumentReference documentReference =
+                database.collection(Constant.KEY_COLLECTION_USERS).document(
+                        preferenceManager.getString(Constant.KEY_USER_ID)
+                );
+        documentReference.update(Constant.KEY_IMAGE, image)
+                .addOnSuccessListener(runnable -> {
+                    CustomToast.makeText(Activity_Profile.this, "Cập nhật thông tin thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+                    Intent intent = new Intent(Activity_Profile.this, SeekerMainActivity.class);
+                    intent.putExtra(Constant.AVATAR, encodeImage);
+                    intent.putExtra(Constant.NAME, name);
+                    setResult(RESULT_OK, intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("Error", "Error update token: " + e.toString());
+                    CustomToast.makeText(Activity_Profile.this, "Can not update image to Firebase!", CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
+                });
     }
 
     private void sendBroadcast(String avatar) {

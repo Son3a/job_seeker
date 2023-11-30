@@ -4,11 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -21,8 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.nsb.job_seeker.activity.BaseActivity;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
@@ -31,13 +27,16 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
-import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.activity.BaseActivity;
 import com.nsb.job_seeker.activity.LoginActivity;
+import com.nsb.job_seeker.common.Constant;
+import com.nsb.job_seeker.common.CustomToast;
+import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.common.RealPathUtil;
 import com.nsb.job_seeker.common.VolleyMultipartRequest;
-import com.nsb.job_seeker.databinding.ActivitySeekerApplyJobBinding;
+import com.nsb.job_seeker.databinding.LayoutApplyJobBinding;
 import com.nsb.job_seeker.model.DataPart;
 
 import java.io.ByteArrayOutputStream;
@@ -50,14 +49,14 @@ import java.util.Map;
 
 
 public class ApplyJobActivity extends BaseActivity {
-    private ActivitySeekerApplyJobBinding binding;
+    private LayoutApplyJobBinding binding;
     private static final int MY_REQUEST_CODE = 10;
     private static final String TAG = ApplyJobActivity.class.getName();
     private Uri mUri;
     private String fileName;
     private String url = Constant.url_dev + "/application/create";
     private PreferenceManager preferenceManager;
-
+    private LoadingDialog loadingDialog;
     private ActivityResultLauncher<Intent> mActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -74,14 +73,13 @@ public class ApplyJobActivity extends BaseActivity {
                         String path = RealPathUtil.getPath(ApplyJobActivity.this, uri);
                         fileName = path.substring(path.lastIndexOf("/") + 1);
                         binding.textFileName.setText(fileName);
-                        binding.layoutInfo.setVisibility(View.VISIBLE);
                     }
                 }
             });
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        binding = ActivitySeekerApplyJobBinding.inflate(getLayoutInflater());
+        binding = LayoutApplyJobBinding.inflate(getLayoutInflater());
         super.onCreate(savedInstanceState);
         setContentView(binding.getRoot());
 
@@ -95,17 +93,14 @@ public class ApplyJobActivity extends BaseActivity {
 
     private void setControl() {
         preferenceManager = new PreferenceManager(this);
+        loadingDialog = new LoadingDialog(this);
     }
 
     private void setEvent() throws URISyntaxException {
         back();
-
         loadInfo();
-
         clickOpenFile();
-
         removeFile();
-
         clickApply();
     }
 
@@ -118,45 +113,45 @@ public class ApplyJobActivity extends BaseActivity {
     }
 
     private void clickApply() {
-        binding.btnApply.setOnClickListener(v -> {
-            //validate email
-            if (isEmpty(binding.textEmailSeeker)) {
-                binding.layoutErrorEmail.setVisibility(View.VISIBLE);
-                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_error);
-            } else {
-                binding.layoutErrorEmail.setVisibility(View.GONE);
-                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_register);
-            }
-
-            //validate password
-            if (isEmpty(binding.textPhoneSeeker)) {
-                binding.layoutErrorPhone.setVisibility(View.VISIBLE);
-                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_error);
-            } else {
-                binding.layoutErrorPhone.setVisibility(View.GONE);
-                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_register);
-            }
-
-            //validate name
-            if (isEmpty(binding.textNameSeeker)) {
-                binding.layoutErrorName.setVisibility(View.VISIBLE);
-                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_error);
-            } else {
-                binding.layoutErrorName.setVisibility(View.GONE);
-                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_register);
-            }
-
-            if (!isEmpty(binding.textNameSeeker) && !isEmpty(binding.textPhoneSeeker) && !isEmpty(binding.textEmailSeeker)) {
-                binding.layoutErrorName.setVisibility(View.GONE);
-                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_register);
-                binding.layoutErrorPhone.setVisibility(View.GONE);
-                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_register);
-                binding.layoutErrorEmail.setVisibility(View.GONE);
-                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_register);
-
-                uploadPDF(fileName, mUri);
-            }
-        });
+//        binding.btnApply.setOnClickListener(v -> {
+//            //validate email
+//            if (isEmpty(binding.textEmailSeeker)) {
+//                binding.layoutErrorEmail.setVisibility(View.VISIBLE);
+//                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_error);
+//            } else {
+//                binding.layoutErrorEmail.setVisibility(View.GONE);
+//                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+//            }
+//
+//            //validate password
+//            if (isEmpty(binding.textPhoneSeeker)) {
+//                binding.layoutErrorPhone.setVisibility(View.VISIBLE);
+//                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_error);
+//            } else {
+//                binding.layoutErrorPhone.setVisibility(View.GONE);
+//                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+//            }
+//
+//            //validate name
+//            if (isEmpty(binding.textNameSeeker)) {
+//                binding.layoutErrorName.setVisibility(View.VISIBLE);
+//                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_error);
+//            } else {
+//                binding.layoutErrorName.setVisibility(View.GONE);
+//                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+//            }
+//
+//            if (!isEmpty(binding.textNameSeeker) && !isEmpty(binding.textPhoneSeeker) && !isEmpty(binding.textEmailSeeker)) {
+//                binding.layoutErrorName.setVisibility(View.GONE);
+//                binding.textNameSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+//                binding.layoutErrorPhone.setVisibility(View.GONE);
+//                binding.textPhoneSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+//                binding.layoutErrorEmail.setVisibility(View.GONE);
+//                binding.textEmailSeeker.setBackgroundResource(R.drawable.background_edittext_register);
+//
+//                uploadPDF(fileName, mUri);
+//            }
+//        });
 
     }
 
@@ -172,24 +167,18 @@ public class ApplyJobActivity extends BaseActivity {
         binding.imageRemoveFile.setOnClickListener(v -> {
             binding.textFileName.setText("");
             mUri = null;
-            binding.layoutInfo.setVisibility(View.GONE);
         });
     }
 
     private void back() {
-        binding.icBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+
     }
 
     private void uploadPDF(final String pdfname, Uri pdffile) {
         String access_token = preferenceManager.getString(Constant.TOKEN);
         String idJob = getIntent().getExtras().getString("idJob");
         Log.d("idJob", idJob);
-        binding.idLoadingPB.setVisibility(View.VISIBLE);
+        loadingDialog.showDialog();
         RequestQueue rQueue = Volley.newRequestQueue(ApplyJobActivity.this);
 
         InputStream iStream = null;
@@ -202,13 +191,16 @@ public class ApplyJobActivity extends BaseActivity {
                     new Response.Listener<NetworkResponse>() {
                         @Override
                         public void onResponse(NetworkResponse response) {
-                            binding.idLoadingPB.setVisibility(View.GONE);
-                            Toast.makeText(ApplyJobActivity.this, "Apply thành công!", Toast.LENGTH_SHORT).show();
+                            loadingDialog.hideDialog();
+                            Constant.idAppliedJob.add(idJob);
+                            CustomToast.makeText(ApplyJobActivity.this, "Ứng tuyển thành công!",
+                                    CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            loadingDialog.hideDialog();
                             if (error instanceof com.android.volley.NoConnectionError) {
 
                             } else if (error.networkResponse.statusCode == 401) {
@@ -217,7 +209,6 @@ public class ApplyJobActivity extends BaseActivity {
                                 preferenceManager.clear();
                                 startActivity(i);
                             }
-                            binding.idLoadingPB.setVisibility(View.GONE);
                             Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }) {
@@ -296,25 +287,7 @@ public class ApplyJobActivity extends BaseActivity {
         });
     }
 
-    private String getFileName(Uri uri) throws IllegalArgumentException {
-        // Obtain a cursor with information regarding this uri
-        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-
-        if (cursor.getCount() <= 0) {
-            cursor.close();
-            throw new IllegalArgumentException("Can't obtain file name, cursor is empty");
-        }
-
-        cursor.moveToFirst();
-
-        String fileName = cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME));
-
-        cursor.close();
-
-        return fileName;
-    }
-
-    private void openStorge() {
+    private void openStorage() {
         Intent i = new Intent();
         i.setType("*/*");
         i.setAction(Intent.ACTION_GET_CONTENT);
@@ -323,11 +296,11 @@ public class ApplyJobActivity extends BaseActivity {
 
     private void onClickRequestPermision() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            openStorge();
+            openStorage();
             return;
         }
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            openStorge();
+            openStorage();
         } else {
             String[] permision = {Manifest.permission.READ_EXTERNAL_STORAGE};
             requestPermissions(permision, MY_REQUEST_CODE);
@@ -339,7 +312,7 @@ public class ApplyJobActivity extends BaseActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openStorge();
+                openStorage();
             }
         }
     }

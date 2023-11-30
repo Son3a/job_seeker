@@ -47,14 +47,14 @@ public class JobRelativeFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onClick(Job job) {
+    public void onClick(Job job, int position) {
         Intent i = new Intent(getContext(), JobDetailActivity.class);
         i.putExtra("id", job.getId());
         startActivity(i);
     }
 
     @Override
-    public void onSave(Job job, ListViewItemJobBinding binding) {
+    public void onSave(Job job, ListViewItemJobBinding binding, int position) {
 
     }
 }

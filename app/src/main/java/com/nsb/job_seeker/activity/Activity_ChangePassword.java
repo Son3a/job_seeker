@@ -1,13 +1,12 @@
 package com.nsb.job_seeker.activity;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.nsb.job_seeker.R;
-import com.nsb.job_seeker.activity.BaseActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -22,13 +21,12 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomToast;
-import com.nsb.job_seeker.common.EventKeyboard;
+import com.nsb.job_seeker.listener.EventKeyboard;
 import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.ActivityChangePasswordBinding;
@@ -247,5 +245,4 @@ public class Activity_ChangePassword extends BaseActivity {
                 })
                 .addOnFailureListener(e -> Log.d("Error", e.getMessage()));
     }
-
 }

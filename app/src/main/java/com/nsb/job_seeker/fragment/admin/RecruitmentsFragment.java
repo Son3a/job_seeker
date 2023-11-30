@@ -1,6 +1,9 @@
 package com.nsb.job_seeker.fragment.admin;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +46,34 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
     private List<Job> jobList;
     private JobAdapter jobAdapter;
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Constant.JOB_MODEL.equals(intent.getAction())) {
+                int position = intent.getIntExtra(Constant.POSITION, -1);
+                Job job = (Job) intent.getSerializableExtra(Constant.JOB_MODEL);
+                jobList.get(position).setId(job.getId());
+                jobList.get(position).setId(job.getNameJob());
+                jobList.get(position).setId(job.getCompanyId());
+                jobList.get(position).setId(job.getCompanyName());
+                jobList.get(position).setId(job.getPlace());
+                jobList.get(position).setId(job.getSalary());
+                jobList.get(position).setId(job.getDeadline());
+                jobList.get(position).setId(job.getDesJob());
+                jobList.get(position).setId(job.getReqJob());
+                jobList.get(position).setId(job.getTypeId());
+                jobList.get(position).setId(job.getTypeJob());
+                jobList.get(position).setId(job.getImage());
+                jobList.get(position).setId(job.getAmountRecruitment());
+                jobList.get(position).setId(job.getWorkingForm());
+                jobList.get(position).setId(job.getExperience());
+                jobList.get(position).setId(job.getGender());
+
+                jobAdapter.notifyItemChanged(position);
+            }
+        }
+    };
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,10 +86,6 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
     }
 
     private void setControl() {
-        jobList = new ArrayList<>();
-        jobAdapter = new JobAdapter(getContext(), jobList, this, false);
-        binding.rcvRecruitments.setAdapter(jobAdapter);
-
         preferenceManager = new PreferenceManager(getActivity());
     }
 
@@ -75,12 +102,16 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
         });
     }
 
+    private void setAdapter(){
+        jobAdapter = new JobAdapter(getContext(), jobList, this, false);
+        binding.rcvRecruitments.setAdapter(jobAdapter);
+    }
+
     private void getListJobOfCompany() {
         String url = Constant.url_dev + "/job/list/all-moderator-job";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         binding.idLoadingPB.setVisibility(View.VISIBLE);
-        jobList.clear();
-        jobAdapter.notifyDataSetChanged();
+        jobList = new ArrayList<>();
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
                 url,
                 null,
@@ -99,7 +130,7 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
                                             job.getJSONObject("idCompany").getString("name"),
                                             job.getString("locationWorking"),
                                             job.getString("salary"),
-                                            Constant.setTime(job.getString("deadline")),
+                                            job.getString("deadline"),
                                             job.getString("description"),
                                             job.getString("requirement"),
                                             job.getJSONObject("idOccupation").getString("_id"),
@@ -114,10 +145,9 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
                             }
                             binding.idLoadingPB.setVisibility(View.GONE);
                             binding.textAmount.setText(String.valueOf(jobsList.length()));
-                            jobAdapter.notifyDataSetChanged();
+
+                            setAdapter();
                         } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     }
@@ -160,14 +190,28 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onClick(Job job) {
+    public void onClick(Job job, int position) {
         Intent intent = new Intent(getContext(), JobDetailActivity.class);
         intent.putExtra(Constant.JOB_ID, job.getId());
+        intent.putExtra(Constant.POSITION, position);
         startActivity(intent);
     }
 
     @Override
-    public void onSave(Job job, ListViewItemJobBinding binding) {
+    public void onSave(Job job, ListViewItemJobBinding binding, int position) {
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(Constant.JOB_MODEL);
+        getContext().registerReceiver(broadcastReceiver, intentFilter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().unregisterReceiver(broadcastReceiver);
     }
 }

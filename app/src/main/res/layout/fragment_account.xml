@@ -35,7 +35,7 @@
             android:paddingEnd="10dp"
             android:paddingBottom="20dp">
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cvAvatar"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
@@ -44,39 +44,89 @@
                 app:cardCornerRadius="50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="@color/green"
+                app:strokeWidth="0.7dp">
 
                 <ImageView
                     android:id="@+id/imageAvatar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_account" />
-            </androidx.cardview.widget.CardView>
+                    android:src="@drawable/ic_avatar" />
+            </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:id="@+id/textName"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutProfile"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
-                android:textColor="@color/black"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/cvAvatar"
-                app:layout_constraintStart_toEndOf="@+id/cvAvatar"
-                app:layout_constraintTop_toTopOf="@id/cvAvatar" />
-
-            <ImageView
-                android:id="@+id/imageChangeProfile"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
                 android:layout_marginEnd="15dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_change_info"
-                app:layout_constraintBottom_toBottomOf="@id/textName"
+                app:layout_constraintBottom_toBottomOf="@id/cvAvatar"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/textName"
-                app:tint="@color/black" />
+                app:layout_constraintStart_toEndOf="@+id/cvAvatar"
+                app:layout_constraintTop_toTopOf="@id/cvAvatar">
+
+                <TextView
+                    android:id="@+id/textName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/imageChangeProfile"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/imageChangeProfile"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_change_info"
+                    app:layout_constraintBottom_toBottomOf="@id/textName"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/textName"
+                    app:tint="@color/black" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cvAvatar"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vui lòng đăng nhập"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:backgroundTint="@color/green"
+                    android:text="Đăng nhập"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    app:cornerRadius="30dp" />
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
@@ -116,9 +166,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
+                android:background="@drawable/background_border"
                 android:padding="10dp"
                 android:text="Xóa tài khoản"
-                android:background="@drawable/background_border"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="@id/cvDealHistory"
@@ -176,7 +226,30 @@
                 android:textStyle="bold"
                 app:cornerRadius="20dp"
                 app:icon="@drawable/ic_logout"
-                app:iconGravity="textStart"
+                app:iconGravity="textEnd"
+                app:iconSize="30dp"
+                app:iconTint="@color/white"
+                app:layout_constraintBottom_toTopOf="@id/textVersion"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonLogin"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="28dp"
+                android:backgroundTint="@color/green"
+                android:text="Đăng nhập"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:cornerRadius="20dp"
+                app:icon="@drawable/ic_login"
+                app:iconGravity="textEnd"
                 app:iconSize="30dp"
                 app:iconTint="@color/white"
                 app:layout_constraintBottom_toTopOf="@id/textVersion"

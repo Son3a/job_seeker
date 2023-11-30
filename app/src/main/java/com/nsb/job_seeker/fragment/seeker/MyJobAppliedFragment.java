@@ -72,8 +72,25 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
     }
 
     private void setEvent() {
-        getJobApplied();
-        refreshContent();
+        if (preferenceManager.getBoolean(Constant.KEY_IS_SIGNED_IN)) {
+            getJobApplied();
+            refreshContent();
+        } else {
+            binding.layoutRefresh.setEnabled(false);
+            binding.layoutLogin.setVisibility(View.VISIBLE);
+            binding.layoutEmpty.setVisibility(View.GONE);
+            binding.lvJobApplied.setVisibility(View.GONE);
+            gotoLogin();
+        }
+
+    }
+
+    private void gotoLogin() {
+        binding.btnLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
     }
 
     private void refreshContent() {
@@ -106,7 +123,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
                                         job.getJSONObject("idCompany").getString("name"),
                                         job.getString("locationWorking"),
                                         job.getString("salary"),
-                                        Constant.setTime(job.getString("deadline")),
+                                        job.getString("deadline"),
                                         job.getString("description"),
                                         job.getString("requirement"),
                                         "",
@@ -126,8 +143,6 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
                             jobAdapter.notifyDataSetChanged();
                             loadingDialog.hideDialog();
                         } catch (JSONException e) {
-                            e.printStackTrace();
-                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     }
@@ -184,7 +199,7 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onClick(Job job) {
+    public void onClick(Job job, int position) {
         Intent i = new Intent(getActivity(), JobDetailActivity.class);
         i.putExtra(Constant.JOB_ID, job.getId());
         i.putExtra("isApply", false);
@@ -192,7 +207,8 @@ public class MyJobAppliedFragment extends Fragment implements JobListener {
     }
 
     @Override
-    public void onSave(Job job, ListViewItemJobBinding binding) {
-
+    public void onSave(Job job, ListViewItemJobBinding binding, int position) {
     }
+
+
 }

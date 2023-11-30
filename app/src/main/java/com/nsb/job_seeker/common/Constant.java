@@ -1,7 +1,5 @@
 package com.nsb.job_seeker.common;
 
-import static java.lang.Math.abs;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,9 +12,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 
-import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.listener.EventKeyboard;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
@@ -25,33 +22,34 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 public class Constant {
     public static final String url_dev = "https://job-seeker-server.onrender.com";
 //    public static final String url_dev = "http://192.168.137.1:8000";
 
-    public static String url_dev_img = url_dev + "/images";
     public static final String ROLE = "role";
     public static final String TOKEN = "token";
     public static final String REFRESH_TOKEN = "refreshToken";
     public static final String COMPANY_ID = "companyId";
     public static final String sharedPreferencesName = "JobSharedPreference";
-    public static final String LIST_SAVED_JOB = "listSavedJob";
     public static final String KEY_IS_SIGNED_IN = "is_signed_in";
     public static final String USER_ROLE = "user";
     public static final String ADMIN_ROLE = "admin";
-    public static final String KEY_COLLECTION_USERS = "users";
+    public static final String KEY_COLLECTION_USERS = "user";
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
+    public static final String KEY_COMPANY = "company";
     public static final String KEY_PASSWORD = "password";
     public static final String KEY_USER_ID = "id";
     public static final String KEY_IMAGE = "image";
     public static final String KEY_FCM_TOKEN = "fcmToken";
-    public static final String KEY_USER = "user";
     public static final String KEY_COLLECTION_CHAT = "chat";
     public static final String KEY_SENDER_ID = "senderId";
     public static final String KEY_RECEIVER_ID = "receiverId";
@@ -59,9 +57,9 @@ public class Constant {
     public static final String KEY_TIMESTAMP = "timestamp";
     public static final String KEY_COLLECTION_CONVERSATIONS = "conversations";
     public static final String KEY_SENDER_NAME = "senderName";
-    public static final String KEU_RECEIVER_NAME = "receiverName";
+    public static final String KEY_RECEIVER_NAME = "receiverName";
     public static final String KEY_SENDER_IMAGE = "senderImage";
-    public static final String KEU_RECEIVER_IMAGE = "receiverImage";
+    public static final String KEY_RECEIVER_IMAGE = "receiverImage";
     public static final String KEY_LAST_MESSAGE = "lastMessage";
     public static final String KEY_AVAILABILITY = "availability";
     public static final String REMOTE_MSG_AUTHORIZATION = "Authorization";
@@ -77,7 +75,9 @@ public class Constant {
     public static final String MAIL = "MAIL_USER";
     public static final String JOB_ID = "jobId";
     public static final String BROADCAST_AVATAR = "send_avatar";
-    public static String avatar;
+    public static final String PASSWORD_DEFAULT = "123456";
+    public static final String POSITION = "position";
+    public static final String BROADCAST_SAVE_JOB = "broadSaveJob";
     public static List<String> idSavedJobs, idAppliedJob;
 
     public static HashMap<String, String> remoteMsgHeaders = null;
@@ -87,7 +87,7 @@ public class Constant {
             remoteMsgHeaders = new HashMap<>();
             remoteMsgHeaders.put(
                     REMOTE_MSG_AUTHORIZATION,
-                    "key=AAAApmSiZK0:APA91bHPvzSMi7ykwF7MJd5pWzs-2tAFJ6iWbFJGFtAp4TmN5XB9fhFvLprCI7Dwy-7XuQyzC4binn91MjhIa_NEs-i2AQW6uPMvygHjEXUm-VOe4V72Pxc1jXQ7wZsW2oYFj-WhgWZF"
+                    "key=AAAAz4h1nOM:APA91bG6UoIhNtTfOhnpeOy54ZDgEpTcjzEE0L8eJY0QRbg3B_aLxKex7gOP8Asl0RyuZKiFPs7EcwEjlW_Ilfix-iduL2nLMI7DGylIX9qVNYDJ5WySGJtZBAn55E_rgwRrV9rfFyHw"
             );
             remoteMsgHeaders.put(
                     REMOTE_MSG_CONTENT_TYPE,
@@ -98,8 +98,56 @@ public class Constant {
         return remoteMsgHeaders;
     }
 
+
+    public static String getReadableDateTime(Date date) {
+        if (compareDate(new Date(), date) == 0) {
+            return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(date);
+        }
+        Date dayBefore = new Date(new Date().getTime() - Duration.ofDays(1).toMillis());
+        if (compareDate(dayBefore, date) == 0) {
+            return "Hôm qua " + new SimpleDateFormat("HH:mm", Locale.getDefault()).format(date);
+        }
+
+        return new SimpleDateFormat("MMMM dd", Locale.getDefault()).format(date);
+    }
+
+    private static int compareDate(Date date1, Date date2) {
+        Calendar calendar1 = Calendar.getInstance();
+        Calendar calendar2 = Calendar.getInstance();
+        calendar1.setTime(date1);
+        calendar2.setTime(date2);
+        int day1 = calendar1.get(Calendar.DAY_OF_MONTH);
+        int day2 = calendar2.get(Calendar.DAY_OF_MONTH);
+        int month1 = calendar1.get(Calendar.MONTH);
+        int month2 = calendar2.get(Calendar.MONTH);
+        int year1 = calendar1.get(Calendar.YEAR);
+        int year2 = calendar2.get(Calendar.YEAR);
+
+        if (year1 > year2) {
+            return 1;
+        } else if (year1 < year2) {
+            return -1;
+        }
+
+        //year1 == year2
+        if (month1 > month2) {
+            return 1;
+        } else if (month1 < month2) {
+            return -1;
+        }
+
+        //year1 == year2, month1 == month2
+        if (day1 > day2) {
+            return 1;
+        } else if (day1 < day2) {
+            return -1;
+        }
+
+        //year1 == year2, month1 == month2, day1 == day2
+        return 0;
+    }
+
     public static String formatSalary(String salary) {
-        Log.d("salary", salary);
         NumberFormat df = NumberFormat.getCurrencyInstance();
         DecimalFormatSymbols dfs = new DecimalFormatSymbols();
         dfs.setGroupingSeparator('.');
@@ -124,18 +172,18 @@ public class Constant {
     }
 
     public static long calculateTime(String deadline) throws ParseException {
-        if(deadline == null) return -1;
+        if (deadline == null) return -1;
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date timeNow = new Date(System.currentTimeMillis());
         Date create = format.parse(deadline);
-        Log.d("Deadline", timeNow.toString() + "\n" + create.toString());
         long difference = (create.getTime() - timeNow.getTime());
+        Log.d("Deadline", create.toString());
         return difference;
     }
 
     public static String setTime(String timeDeadline) throws ParseException {
         long time = calculateTime(timeDeadline);
-        Log.d("Time", time + "");
+        Log.d("Deadline", time + "");
         if (time < 0) {
             return null;
         }
@@ -159,6 +207,14 @@ public class Constant {
     public static String formatTimeDDMMYYYY(String time) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         SimpleDateFormat output = new SimpleDateFormat("dd-MM-yyyy");
+
+        String newTime = output.format(sdf.parse(time));
+        return newTime;
+    }
+
+    public static String formatTimeMMDDYYYY(String time) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat output = new SimpleDateFormat("MM-dd-yyyy");
 
         String newTime = output.format(sdf.parse(time));
         return newTime;
@@ -228,7 +284,6 @@ public class Constant {
         String newString = "";
         if (containsHTMLTag) {
             String htmlString = String.valueOf(Html.fromHtml(string, Html.FROM_HTML_MODE_LEGACY));
-            Log.d("HTML", htmlString);
             listString = htmlString.split("\n");
         } else {
             listString = string.split("\\.");
@@ -279,8 +334,6 @@ public class Constant {
                 // r.bottom is the position above soft keypad or device button.
                 // if keypad is shown, the r.bottom is smaller than that before.
                 int keypadHeight = screenHeight - r.bottom;
-
-                Log.d("TAG", "keypadHeight = " + keypadHeight);
 
                 if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                     // keyboard is opened

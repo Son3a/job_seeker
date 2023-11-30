@@ -17,19 +17,28 @@ import com.nsb.job_seeker.R;
 
 public abstract class CustomDialogDelete {
     private Context context;
-    private String accept, cancel;
-    private boolean isShowImage;
+    private String accept, cancel, msg;
+    private Integer resourceImage;
 
-    public CustomDialogDelete(Context context, String accept, String cancel, boolean isShowImage){
+    public CustomDialogDelete(Context context, String msg, String accept, String cancel) {
         this.context = context;
         this.accept = accept;
         this.cancel = cancel;
-        this.isShowImage = isShowImage;
+        this.msg = msg;
+    }
+    public CustomDialogDelete(Context context, String msg, String accept, String cancel, Integer resourceImage) {
+        this.context = context;
+        this.accept = accept;
+        this.cancel = cancel;
+        this.resourceImage = resourceImage;
+        this.msg = msg;
     }
 
-    public abstract void doSomeThing();
+    public abstract void doAccept();
 
-    public void openDiaLogDelete(String contentDelete) {
+    public abstract void doCancel();
+
+    public void openDiaLogDelete() {
         final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.custom_layout_answer);
@@ -52,19 +61,22 @@ public abstract class CustomDialogDelete {
         MaterialButton btnCancel = dialog.findViewById(R.id.btnCancel);
         TextView textContent = dialog.findViewById(R.id.textContent);
         ImageView imageView = dialog.findViewById(R.id.image);
-        if(isShowImage == false){
+        if (resourceImage == null) {
             imageView.setVisibility(View.GONE);
+        } else {
+            imageView.setImageResource(resourceImage);
         }
-        textContent.setText(contentDelete);
+        textContent.setText(msg);
         btnDelete.setText(accept);
         btnCancel.setText(cancel);
 
         btnDelete.setOnClickListener(v -> {
-            doSomeThing();
+            doAccept();
             dialog.dismiss();
         });
 
         btnCancel.setOnClickListener(v -> {
+            doCancel();
             dialog.dismiss();
         });
 

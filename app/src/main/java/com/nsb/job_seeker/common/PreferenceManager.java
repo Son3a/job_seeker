@@ -36,20 +36,6 @@ public class PreferenceManager {
         return sharedPreferences.getString(key, null);
     }
 
-    public void putArray(List<String> list) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
-        String json = gson.toJson(list);
-        editor.putString(Constant.LIST_SAVED_JOB, json);
-        editor.apply();
-    }
-
-    public List<String> getArray(String key) {
-        Gson gson = new Gson();
-        List<String> outputList = gson.fromJson(sharedPreferences.getString(key, null), ArrayList.class);
-        return outputList;
-    }
-
     public void clear() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();

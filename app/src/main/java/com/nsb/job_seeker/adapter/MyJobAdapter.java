@@ -18,13 +18,14 @@ public class MyJobAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position){
+        switch (position) {
             case 0:
                 return new MyJobSavedFragment();
             case 1:
                 return new MyJobAppliedFragment();
+            default:
+                return new MyJobSavedFragment();
         }
-        return null;
     }
 
     @Override

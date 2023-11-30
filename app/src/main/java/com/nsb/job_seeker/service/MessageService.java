@@ -27,28 +27,29 @@ public class MessageService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         Log.d("FCM", "Token: " + token);
+
     }
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
-        Log.d("Chat",message.getNotification().getBody());
+        //Log.d("Chat",message.getNotification().getBody());
         User user = new User();
-        user.id = message.getData().get(Constant.KEY_USER_ID);
-        user.name = message.getData().get(Constant.KEY_NAME);
-        user.token = message.getData().get(Constant.KEY_FCM_TOKEN);
+        user.setId(message.getData().get(Constant.KEY_USER_ID));
+        user.setName(message.getData().get(Constant.KEY_NAME));
+        user.setToken(message.getData().get(Constant.KEY_FCM_TOKEN));
 
         int notificationId = new Random().nextInt();
         String channelId = "chat_message";
 
         Intent intent = new Intent(this, ChatActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.putExtra(Constant.KEY_USER, user);
+        intent.putExtra(Constant.KEY_COLLECTION_USERS, user);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0 | PendingIntent.FLAG_MUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId);
-        builder.setSmallIcon(R.drawable.ic_notification);
-        builder.setContentTitle(user.name);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setContentTitle(user.getName());
         builder.setContentText(message.getData().get(Constant.KEY_MESSAGE));
         builder.setStyle(new NotificationCompat.BigTextStyle().bigText((
                 message.getData().get(Constant.KEY_MESSAGE)

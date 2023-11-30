@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+
 import com.nsb.job_seeker.activity.BaseActivity;
 
 import com.nsb.job_seeker.common.Constant;
@@ -150,13 +151,18 @@ public class SearchActivity extends BaseActivity implements JobListener, Keyword
 
     private void clickDeleteHistory() {
         binding.textDeleteAll.setOnClickListener(v -> {
-            CustomDialogDelete dialogDelete = new CustomDialogDelete(this, "Xóa", "Hủy", true) {
+            CustomDialogDelete dialogDelete = new CustomDialogDelete(this, getString(R.string.string_delete_all), "Xóa", "Hủy") {
                 @Override
-                public void doSomeThing() {
+                public void doAccept() {
                     deleteAllHistory();
                 }
+
+                @Override
+                public void doCancel() {
+
+                }
             };
-            dialogDelete.openDiaLogDelete(getString(R.string.string_delete_all));
+            dialogDelete.openDiaLogDelete();
         });
     }
 
@@ -305,23 +311,22 @@ public class SearchActivity extends BaseActivity implements JobListener, Keyword
 //    }
 
     @Override
-    public void onClick(Job job) {
+    public void onClick(Job job, int position) {
         Intent i = new Intent(this, JobDetailActivity.class);
         i.putExtra("id", job.getId());
-        i.putExtra("isApply", true);
         startActivity(i);
     }
 
     @Override
-    public void onSave(Job job, ListViewItemJobBinding binding) {
+    public void onSave(Job job, ListViewItemJobBinding binding, int position) {
 
     }
 
     @Override
     public void onClickRemove(KeyWord keyWord, int position) {
-        CustomDialogDelete dialogDelete = new CustomDialogDelete(this, "Xóa", "Hủy", true) {
+        CustomDialogDelete dialogDelete = new CustomDialogDelete(this, getString(R.string.string_delete_one), "Xóa", "Hủy", R.drawable.image_answer) {
             @Override
-            public void doSomeThing() {
+            public void doAccept() {
                 if (keyWordList.size() != 0) {
                     keyWordList.remove(keyWord);
                     keywordAdapter.notifyDataSetChanged();
@@ -332,8 +337,13 @@ public class SearchActivity extends BaseActivity implements JobListener, Keyword
                 }
                 KeywordDatabase.getInstance(SearchActivity.this).keywordDAO().deleteKeyword(keyWord);
             }
+
+            @Override
+            public void doCancel() {
+
+            }
         };
-        dialogDelete.openDiaLogDelete(getString(R.string.string_delete_one));
+        dialogDelete.openDiaLogDelete();
     }
 
     @Override

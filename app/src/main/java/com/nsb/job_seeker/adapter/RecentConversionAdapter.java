@@ -3,27 +3,34 @@ package com.nsb.job_seeker.adapter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.databinding.ItemContainerRecentConversionBinding;
 import com.nsb.job_seeker.listener.ConversionListener;
 import com.nsb.job_seeker.model.ChatMessage;
 import com.nsb.job_seeker.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class RecentConversionAdapter extends RecyclerView.Adapter<RecentConversionAdapter.ConversionViewHolder>{
+public class RecentConversionAdapter extends RecyclerView.Adapter<RecentConversionAdapter.ConversionViewHolder> implements Filterable {
 
-    private final List<ChatMessage> chatMessages;
+    private List<ChatMessage> chatMessages;
+    private List<ChatMessage> chatMessagesOld;
     private final ConversionListener conversionListener;
 
-    public RecentConversionAdapter(List<ChatMessage> chatMessages,ConversionListener conversionListener) {
+    public RecentConversionAdapter(List<ChatMessage> chatMessages, ConversionListener conversionListener) {
         this.chatMessages = chatMessages;
         this.conversionListener = conversionListener;
+        this.chatMessagesOld = chatMessages;
     }
 
     @NonNull
@@ -40,7 +47,7 @@ public class RecentConversionAdapter extends RecyclerView.Adapter<RecentConversi
 
     @Override
     public void onBindViewHolder(@NonNull ConversionViewHolder holder, int position) {
-    holder.setData(chatMessages.get(position));
+        holder.setData(chatMessages.get(position));
     }
 
     @Override
@@ -51,27 +58,57 @@ public class RecentConversionAdapter extends RecyclerView.Adapter<RecentConversi
     class ConversionViewHolder extends RecyclerView.ViewHolder {
         ItemContainerRecentConversionBinding binding;
 
-        ConversionViewHolder(ItemContainerRecentConversionBinding itemContainerRecentConversionBinding){
+        ConversionViewHolder(ItemContainerRecentConversionBinding itemContainerRecentConversionBinding) {
             super(itemContainerRecentConversionBinding.getRoot());
             binding = itemContainerRecentConversionBinding;
         }
 
-        void setData(ChatMessage chatMessage){
-//            binding.imageProfile.setImageBitmap(getConversionImage(chatMessage.conversionImage));
+        void setData(ChatMessage chatMessage) {
+            if (chatMessage.conversionImage != null) {
+                binding.imageProfile.setImageBitmap(Constant.getBitmapFromEncodedString(chatMessage.conversionImage));
+            }
             binding.textName.setText(chatMessage.conversionName);
             binding.textRecentMessage.setText(chatMessage.message);
-            binding.getRoot().setOnClickListener(v->{
+            binding.textTime.setText(" \u2022 " + Constant.getReadableDateTime(chatMessage.dateObject));
+            binding.getRoot().setOnClickListener(v -> {
                 User user = new User();
-                user.id = chatMessage.conversionId;
-                user.name = chatMessage.conversionName;
-                user.image = chatMessage.conversionImage;
-                conversionListener.onConversionClicked(user);
+                user.setId(chatMessage.conversionId);
+                user.setName(chatMessage.conversionName);
+                user.setImage(chatMessage.conversionImage);
+                conversionListener.onConversionClicked(user, chatMessage.conversionCompany);
             });
         }
     }
 
-    private Bitmap getConversionImage(String encodedImage) {
-        byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String strSearch = charSequence.toString();
+                if (strSearch == null) {
+                    chatMessages = chatMessagesOld;
+                } else {
+                    List<ChatMessage> list = new ArrayList<>();
+                    for (ChatMessage chatMessage : chatMessagesOld) {
+                        if (chatMessage.conversionName.toLowerCase().contains(strSearch.toLowerCase())) {
+                            list.add(chatMessage);
+                        }
+                    }
+                    chatMessages = list;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = chatMessages;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                chatMessages = (List<ChatMessage>) filterResults.values;
+                conversionListener.onChangeListConversion(chatMessages);
+                notifyDataSetChanged();
+            }
+        };
     }
 }

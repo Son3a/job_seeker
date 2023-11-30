@@ -42,7 +42,7 @@ import com.nsb.job_seeker.adapter.KeywordAdapter;
 import com.nsb.job_seeker.adapter.PositionAdapter;
 import com.nsb.job_seeker.adapter.FilterAdapter;
 import com.nsb.job_seeker.common.CustomDialogDelete;
-import com.nsb.job_seeker.common.EventKeyboard;
+import com.nsb.job_seeker.listener.EventKeyboard;
 import com.nsb.job_seeker.databinding.ActivitySeekerSearchResultBinding;
 import com.nsb.job_seeker.databinding.ListViewItemJobBinding;
 import com.nsb.job_seeker.listener.JobListener;
@@ -65,7 +65,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SearchResultActivity extends BaseActivity implements JobListener,
-        PositionListener,  KeywordListener {
+        PositionListener, KeywordListener {
     private ActivitySeekerSearchResultBinding binding;
     private List<Job> jobList;
     private JobAdapter jobAdapter;
@@ -79,7 +79,8 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
     private List<KeyWord> keyWordList;
     private KeywordAdapter keywordAdapter;
     private String experience = "", salary = "", key = "", locationWorking = "";
-
+    private List<Boolean> listSelectedPosition, listSelectedSalary, listSelectedExperience;
+    private FilterAdapter salaryAdapter, experienceAdapter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         binding = ActivitySeekerSearchResultBinding.inflate(getLayoutInflater());
@@ -97,6 +98,9 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
 
     private void init() {
         key = getIntent().getStringExtra("Keyword");
+        listSelectedPosition = new ArrayList<>();
+        listSelectedExperience = new ArrayList<>();
+        listSelectedSalary = new ArrayList<>();
         jobList = new ArrayList<>();
         jobAdapter = new JobAdapter(this, jobList, this, true);
         binding.rcvResultSearch.setAdapter(jobAdapter);
@@ -138,13 +142,18 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
 
     private void clickDeleteHistory() {
         binding.textDeleteAll.setOnClickListener(v -> {
-            CustomDialogDelete dialogDelete = new CustomDialogDelete(this, "Xóa", "Hủy", true) {
+            CustomDialogDelete dialogDelete = new CustomDialogDelete(this, getString(R.string.string_delete_all), "Xóa", "Hủy", R.drawable.image_answer) {
                 @Override
-                public void doSomeThing() {
+                public void doAccept() {
                     deleteAllHistory();
                 }
+
+                @Override
+                public void doCancel() {
+
+                }
             };
-            dialogDelete.openDiaLogDelete(getString(R.string.string_delete_all));
+            dialogDelete.openDiaLogDelete();
         });
     }
 
@@ -175,6 +184,8 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
                 if (isKeyboardShowing) {
                     binding.textKeySearch.clearFocus();
                     binding.textKeySearch.setBackgroundResource(R.drawable.background_search_job);
+                    binding.layoutContentSearch.setVisibility(View.VISIBLE);
+                    binding.layoutHistory.setVisibility(View.INVISIBLE);
                     isKeyboardShowing = false;
                 }
             }
@@ -224,8 +235,9 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
     private void initBottomSheetPosition() {
         listPosition = new ArrayList<>();
         listPosition.add("Tất cả");
+        listSelectedPosition.add(false);
 
-        positionAdapter = new PositionAdapter(listPosition, this);
+        positionAdapter = new PositionAdapter(listPosition, this, listSelectedPosition);
         recyclerViewPosition = layoutBottomPosition.findViewById(R.id.rcvPosition);
         recyclerViewPosition.setAdapter(positionAdapter);
         bottomSheetPosition = new BottomSheetDialog(this);
@@ -267,13 +279,15 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
         listExperiences.add("4 năm");
         listExperiences.add("5 năm");
         listExperiences.add("Trên 5 năm");
-
+        for (int i = 0; i < 9; i++) {
+            listSelectedExperience.add(false);
+        }
 
         layoutBottomExperience = getLayoutInflater().inflate(R.layout.layout_filter, null);
         bottomSheetExperience = new BottomSheetDialog(this);
         bottomSheetExperience.setContentView(layoutBottomExperience);
 
-        FilterAdapter experienceAdapter = new FilterAdapter(listExperiences, new FilterListener() {
+        experienceAdapter = new FilterAdapter(listExperiences,listSelectedExperience, new FilterListener() {
             @Override
             public void onClickItem(String data, int position) {
                 experience = data;
@@ -307,9 +321,12 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
         listSalary.add("30 - 50 triệu");
         listSalary.add("Trên 50 triệu");
         listSalary.add("Thỏa thuận");
+        for (int i = 0; i < 9; i++) {
+            listSelectedSalary.add(false);
+        }
 
         layoutBottomSalary = getLayoutInflater().inflate(R.layout.layout_filter, null);
-        FilterAdapter salaryAdapter = new FilterAdapter(listSalary, new FilterListener() {
+        salaryAdapter = new FilterAdapter(listSalary,listSelectedSalary, new FilterListener() {
             @Override
             public void onClickItem(String data, int position) {
                 salary = data;
@@ -342,6 +359,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
 
     private void openBottomPosition() {
         binding.layoutPosition.setOnClickListener(v -> {
+            searchView.setQuery("", false);
             bottomSheetPosition.show();
         });
     }
@@ -392,6 +410,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
                         String data = jsonObject.getString("name");
                         String newData = data.replace("Tỉnh", "");
                         listPosition.add(newData.replace("Thành phố", ""));
+                        listSelectedPosition.add(false);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -476,7 +495,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
     private void findJob(String key, String experience, String salary, String locationWorking) throws JSONException {
         binding.pbLoading.setVisibility(View.VISIBLE);
         binding.layoutAmountResult.setVisibility(View.INVISIBLE);
-        binding.textEmpty.setVisibility(View.GONE);
+        binding.layoutEmpty.setVisibility(View.GONE);
         String url = Constant.url_dev + "/job/list/search";
 
         jobList.clear();
@@ -498,12 +517,12 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
 //                        tvNote.setText("Kết quả tìm kiếm không có");
 //                        tvNote.setVisibility(View.VISIBLE);
 //                        listView.setVisibility(View.GONE);
-                        binding.textEmpty.setVisibility(View.VISIBLE);
+                        binding.layoutEmpty.setVisibility(View.VISIBLE);
                         binding.pbLoading.setVisibility(View.GONE);
                         binding.textAmountResult.setText("0");
                         return;
                     }
-                    binding.textEmpty.setVisibility(View.INVISIBLE);
+                    binding.layoutEmpty.setVisibility(View.INVISIBLE);
                     binding.textAmountResult.setText(String.valueOf(listJobs.length()));
                     binding.layoutAmountResult.setVisibility(View.VISIBLE);
                     for (int i = 0; i < listJobs.length(); i++) {
@@ -575,7 +594,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
     }
 
     @Override
-    public void onClick(Job job) {
+    public void onClick(Job job, int position) {
         Intent i = new Intent(this, JobDetailActivity.class);
         i.putExtra("id", job.getId());
         i.putExtra("isApply", true);
@@ -583,7 +602,7 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
     }
 
     @Override
-    public void onSave(Job job, ListViewItemJobBinding binding) {
+    public void onSave(Job job, ListViewItemJobBinding binding, int position) {
 
     }
 
@@ -605,9 +624,9 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
 
     @Override
     public void onClickRemove(KeyWord keyWord, int position) {
-        CustomDialogDelete dialogDelete = new CustomDialogDelete(this, "Xóa", "Hủy", true) {
+        CustomDialogDelete dialogDelete = new CustomDialogDelete(this, getString(R.string.string_delete_one), "Xóa", "Hủy", R.drawable.image_answer) {
             @Override
-            public void doSomeThing() {
+            public void doAccept() {
                 if (keyWordList.size() != 0) {
                     keyWordList.remove(keyWord);
                     keywordAdapter.notifyDataSetChanged();
@@ -618,8 +637,13 @@ public class SearchResultActivity extends BaseActivity implements JobListener,
                 }
                 KeywordDatabase.getInstance(SearchResultActivity.this).keywordDAO().deleteKeyword(keyWord);
             }
+
+            @Override
+            public void doCancel() {
+
+            }
         };
-        dialogDelete.openDiaLogDelete(getString(R.string.string_delete_one));
+        dialogDelete.openDiaLogDelete();
     }
 
     @Override

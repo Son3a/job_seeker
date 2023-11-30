@@ -1,42 +1,62 @@
 {
   "project_info": {
-    "project_number": "714652935341",
-    "firebase_url": "https://jobseeker-76157-default-rtdb.firebaseio.com",
-    "project_id": "jobseeker-76157",
-    "storage_bucket": "jobseeker-76157.appspot.com"
+    "project_number": "891347639523",
+    "project_id": "chatapp-8328a",
+    "storage_bucket": "chatapp-8328a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:714652935341:android:ec09c59d86a1e5991cd224",
+        "mobilesdk_app_id": "1:891347639523:android:9b78ba92c14a4e2df6f9d6",
         "android_client_info": {
-          "package_name": "com.nsb.job_seeker"
+          "package_name": "com.nsb.chatapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "714652935341-ab9m7d6vmq1igeknq4dg5joj96rkus1d.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.nsb.job_seeker",
-            "certificate_hash": "6affb9ba90a1454e54b568fb5ceb17a8ab840fa8"
-          }
-        },
-        {
-          "client_id": "714652935341-8a29f32q6g9670n5cenok84h5umaigvr.apps.googleusercontent.com",
+          "client_id": "891347639523-iaql7faapp727u3j1lgjepe4cuktfcdg.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDJkd7fFynoPc5zSdQkWcnCUX_mdsTO4Fc"
+          "current_key": "AIzaSyDMKi2Lar3C3ml6d_-JXfDhs_k7X1zxs-4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "714652935341-8a29f32q6g9670n5cenok84h5umaigvr.apps.googleusercontent.com",
+              "client_id": "891347639523-iaql7faapp727u3j1lgjepe4cuktfcdg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891347639523:android:6f580c594343abd1f6f9d6",
+        "android_client_info": {
+          "package_name": "com.nsb.job_seeker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "891347639523-iaql7faapp727u3j1lgjepe4cuktfcdg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMKi2Lar3C3ml6d_-JXfDhs_k7X1zxs-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "891347639523-iaql7faapp727u3j1lgjepe4cuktfcdg.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -193,6 +193,10 @@ public class Job implements Serializable, Parcelable {
         this.gender = gender;
     }
 
+    public String getTypeId() {
+        return typeId;
+    }
+
     @Override
     public String toString() {
         return "Job{" +

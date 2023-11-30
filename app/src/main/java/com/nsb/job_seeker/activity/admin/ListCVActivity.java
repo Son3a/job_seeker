@@ -159,4 +159,5 @@ public class ListCVActivity extends BaseActivity {
         });
         queue.add(data);
     }
+
 }

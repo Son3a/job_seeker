@@ -186,4 +186,5 @@ public class CompanyFragment extends Fragment {
         });
         requestQueue.add(jsonObjectRequest);
     }
+
 }

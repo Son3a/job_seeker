@@ -55,8 +55,8 @@
         </activity>
         <activity android:name=".activity.seeker.ApplyJobActivity" />
         <activity android:name=".activity.seeker.JobDetailActivity" />
-        <activity android:name=".activity.admin.StatisticalJobActivity" />
         <activity android:name=".activity.seeker.SeekerMainActivity" />
+        <activity android:name=".activity.admin.EmployerMainActivity" />
         <activity android:name=".activity.admin.ListCVActivity" />
         <activity android:name=".activity.admin.EditRecruitmentActivity" />
         <activity
@@ -106,9 +106,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".activity.admin.EmployerMainActivity"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
             android:name=".activity.messenger.ChatActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize">
@@ -123,23 +120,9 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name=".activity.messenger.MessageFragment"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
 
         <service
             android:name=".service.MessageService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service
-            android:name=".service.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

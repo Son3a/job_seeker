@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +25,7 @@ import com.nsb.job_seeker.model.ChatMessage;
 import com.nsb.job_seeker.model.User;
 import com.nsb.job_seeker.network.ApiClient;
 import com.nsb.job_seeker.network.ApiService;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,50 +61,71 @@ public class ChatActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        setEvent();
-        loadReceiverDetail();
+
+
         init();
+        setEvent();
         listenMessages();
     }
 
     private void init() {
         preferenceManager = new PreferenceManager(this);
-        chatMessages = new ArrayList<>();
-        chatAdapter = new ChatAdapter(
-                chatMessages,
-                preferenceManager.getString(Constant.KEY_USER_ID),
-                getBitmapFromEncodedString(receiverUser.image)
-        );
-        binding.chatRecycleView.setAdapter(chatAdapter);
         database = FirebaseFirestore.getInstance();
+        chatMessages = new ArrayList<>();
+
+        loadReceiverDetail();
+
+        if (receiverUser != null) {
+            chatAdapter = new ChatAdapter(
+                    chatMessages,
+                    preferenceManager.getString(Constant.KEY_USER_ID),
+                    receiverUser.getImage()
+            );
+            binding.chatRecycleView.setAdapter(chatAdapter);
+        }
+    }
+
+    private void setEvent() {
+        binding.imageBack.setOnClickListener(v -> onBackPressed());
+        binding.layoutSend.setOnClickListener(v -> sendMessage());
+        hideKeyBoard();
+    }
+
+    private void hideKeyBoard() {
+        binding.chatRecycleView.setOnClickListener(v -> {
+            Constant.hideKeyboardFrom(getApplicationContext(), binding.chatRecycleView);
+        });
     }
 
     private void sendMessage() {
         HashMap<String, Object> message = new HashMap<>();
         message.put(Constant.KEY_SENDER_ID, preferenceManager.getString(Constant.KEY_USER_ID));
-        message.put(Constant.KEY_RECEIVER_ID, receiverUser.id);
+        message.put(Constant.KEY_RECEIVER_ID, receiverUser.getId());
         message.put(Constant.KEY_MESSAGE, binding.inputMessage.getText().toString());
         message.put(Constant.KEY_TIMESTAMP, new Date());
-        database.collection(Constant.KEY_COLLECTION_CHAT).add(message);
+        database.collection(Constant.KEY_COLLECTION_CHAT).add(message).addOnSuccessListener(runnable -> {
+            binding.textNotifyEmptyChats.setVisibility(View.GONE);
+        });
         if (conversionId != null) {
             updateConversion(binding.inputMessage.getText().toString());
         } else {
             HashMap<String, Object> conversion = new HashMap<>();
             conversion.put(Constant.KEY_SENDER_ID, preferenceManager.getString(Constant.KEY_USER_ID));
             conversion.put(Constant.KEY_SENDER_NAME, preferenceManager.getString(Constant.KEY_NAME));
-            conversion.put(Constant.KEY_SENDER_IMAGE, preferenceManager.getString(Constant.KEY_IMAGE));
+            conversion.put(Constant.KEY_SENDER_IMAGE, preferenceManager.getString(Constant.AVATAR));
 
-            conversion.put(Constant.KEY_RECEIVER_ID, receiverUser.id);
-            conversion.put(Constant.KEU_RECEIVER_NAME, receiverUser.name);
-            conversion.put(Constant.KEU_RECEIVER_IMAGE, receiverUser.image);
+            conversion.put(Constant.KEY_RECEIVER_ID, receiverUser.getId());
+            conversion.put(Constant.KEY_RECEIVER_NAME, receiverUser.getName());
+            conversion.put(Constant.KEY_RECEIVER_IMAGE, receiverUser.getImage());
             conversion.put(Constant.KEY_LAST_MESSAGE, binding.inputMessage.getText().toString());
+            conversion.put(Constant.KEY_COMPANY, getIntent().getStringExtra(Constant.KEY_COMPANY));
             conversion.put(Constant.KEY_TIMESTAMP, new Date());
             addConversion(conversion);
         }
-        if (!isReceiverAvailable) {
+        if (!isReceiverAvailable && receiverUser.getToken() != null) {
             try {
                 JSONArray tokens = new JSONArray();
-                tokens.put(receiverUser.token);
+                tokens.put(receiverUser.getToken());
 
                 JSONObject data = new JSONObject();
                 data.put(Constant.KEY_USER_ID, preferenceManager.getString(Constant.KEY_USER_ID));
@@ -113,7 +136,6 @@ public class ChatActivity extends BaseActivity {
                 JSONObject body = new JSONObject();
                 body.put(Constant.REMOTE_MSG_DATA, data);
                 body.put(Constant.REMOTE_MSG_REGISTRATION_IDS, tokens);
-
                 sendNotification(body.toString());
             } catch (Exception e) {
                 showToast(e.getMessage());
@@ -138,13 +160,15 @@ public class ChatActivity extends BaseActivity {
                         JSONObject reJsonObject = null;
                         try {
                             reJsonObject = new JSONObject(response.body());
-                            JSONArray result = reJsonObject.getJSONArray("result");
+                            Log.d("ResultBody", reJsonObject.toString());
+                            JSONArray result = reJsonObject.getJSONArray("results");
                             if (reJsonObject.getInt("failure") == 1) {
                                 JSONObject error = (JSONObject) result.get(0);
                                 showToast(error.getString("error"));
                                 return;
                             }
                         } catch (JSONException e) {
+                            Log.d("Error", "Err chat: " + e.toString());
                             e.printStackTrace();
                         }
                     }
@@ -161,11 +185,10 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void listenAvailabilityOfReceiver() {
-        if(receiverUser == null) return;
-        Log.d("receiverUser",receiverUser.toString());
+        if (receiverUser == null) return;
 
         database.collection(Constant.KEY_COLLECTION_USERS).document(
-                receiverUser.id
+                receiverUser.getId()
         ).addSnapshotListener(ChatActivity.this, (value, error) -> {
             if (error != null) {
                 return;
@@ -177,17 +200,19 @@ public class ChatActivity extends BaseActivity {
                     ).intValue();
                     isReceiverAvailable = availability == 1;
                 }
-                receiverUser.token = value.getString(Constant.KEY_FCM_TOKEN);
-                if (receiverUser.image == null) {
-                    receiverUser.image = value.getString(Constant.KEY_IMAGE);
+                receiverUser.setToken(value.getString(Constant.KEY_FCM_TOKEN));
+                if (receiverUser.getImage() == null) {
+                    receiverUser.setImage(value.getString(Constant.KEY_IMAGE));
 //                    chatAdapter.setReceiverProfileImage(getBitmapFromEncodedString(receiverUser.image));
                     chatAdapter.notifyItemRangeChanged(0, chatMessages.size());
                 }
             }
             if (isReceiverAvailable) {
-                binding.textAvailability.setVisibility(View.VISIBLE);
+                binding.textAvailability.setText("Online");
+                binding.imageStatus.setVisibility(View.VISIBLE);
             } else {
-                binding.textAvailability.setVisibility(View.GONE);
+                binding.textAvailability.setText("Offline");
+                binding.imageStatus.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -195,11 +220,11 @@ public class ChatActivity extends BaseActivity {
     private void listenMessages() {
         database.collection(Constant.KEY_COLLECTION_CHAT)
                 .whereEqualTo(Constant.KEY_SENDER_ID, preferenceManager.getString(Constant.KEY_USER_ID))
-                .whereEqualTo(Constant.KEY_RECEIVER_ID, receiverUser.id)
+                .whereEqualTo(Constant.KEY_RECEIVER_ID, receiverUser.getId())
                 .addSnapshotListener(eventListener);
 
         database.collection(Constant.KEY_COLLECTION_CHAT)
-                .whereEqualTo(Constant.KEY_SENDER_ID, receiverUser.id)
+                .whereEqualTo(Constant.KEY_SENDER_ID, receiverUser.getId())
                 .whereEqualTo(Constant.KEY_RECEIVER_ID, preferenceManager.getString(Constant.KEY_USER_ID))
                 .addSnapshotListener(eventListener);
     }
@@ -210,26 +235,23 @@ public class ChatActivity extends BaseActivity {
             return;
         }
         if (value != null) {
-            int count = chatMessages.size();
             for (DocumentChange documentChange : value.getDocumentChanges()) {
                 if (documentChange.getType() == DocumentChange.Type.ADDED) {
                     ChatMessage chatMessage = new ChatMessage();
                     chatMessage.senderId = documentChange.getDocument().getString(Constant.KEY_SENDER_ID);
                     chatMessage.receiverId = documentChange.getDocument().getString(Constant.KEY_RECEIVER_ID);
                     chatMessage.message = documentChange.getDocument().getString(Constant.KEY_MESSAGE);
-                    chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate(Constant.KEY_TIMESTAMP));
+                    chatMessage.dateTime = Constant.getReadableDateTime(documentChange.getDocument().getDate(Constant.KEY_TIMESTAMP));
                     chatMessage.dateObject = documentChange.getDocument().getDate(Constant.KEY_TIMESTAMP);
                     chatMessages.add(chatMessage);
                 }
             }
 
-            Collections.sort(chatMessages, (o1, o2) ->
-                    new SortByDate().compare(o1, o2)
-            );
-
-            if (count == 0) {
+            if (chatMessages.size() == 0) {
                 chatAdapter.notifyDataSetChanged();
+                binding.textNotifyEmptyChats.setVisibility(View.VISIBLE);
             } else {
+                binding.textNotifyEmptyChats.setVisibility(View.GONE);
                 chatAdapter.notifyItemRangeInserted(chatMessages.size(), chatMessages.size());
                 binding.chatRecycleView.smoothScrollToPosition(chatMessages.size() - 1);
             }
@@ -249,41 +271,37 @@ public class ChatActivity extends BaseActivity {
         }
     }
 
-    private Bitmap getBitmapFromEncodedString(String encodedImage) {
-        if (encodedImage != null) {
-            byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);
-            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        } else {
-            return null;
-        }
-    }
-
     private void loadReceiverDetail() {
-        receiverUser = (User) getIntent().getSerializableExtra(Constant.KEY_USER);
-        binding.textName.setText(receiverUser.name);
+        receiverUser = (User) getIntent().getSerializableExtra(Constant.KEY_COLLECTION_USERS);
+        binding.textName.setText(receiverUser.getName());
+        if (receiverUser.getImage() != null) {
+            if (URLUtil.isValidUrl(receiverUser.getImage())) {
+                Picasso.get().load(receiverUser.getImage()).into(binding.imageAvatarReceiver);
+            } else {
+                binding.imageAvatarReceiver.setImageBitmap(Constant.getBitmapFromEncodedString(receiverUser.getImage()));
+            }
+        }
+        if (preferenceManager.getString(Constant.ROLE).equals(Constant.USER_ROLE)) {
+            binding.textNameCompany.setText(getIntent().getStringExtra(Constant.KEY_COMPANY));
+            binding.textNameCompany.setVisibility(View.VISIBLE);
+        } else {
+            binding.textNameCompany.setVisibility(View.GONE);
+        }
     }
 
     private void checkForConversion() {
         if (chatMessages.size() > 0) {
             checkForConversionRemotely(
                     preferenceManager.getString(Constant.KEY_USER_ID),
-                    receiverUser.id
+                    receiverUser.getId()
             );
             checkForConversionRemotely(
-                    receiverUser.id,
+                    receiverUser.getId(),
                     preferenceManager.getString(Constant.KEY_USER_ID)
             );
         }
     }
 
-    private void setEvent() {
-        binding.imageBack.setOnClickListener(v -> onBackPressed());
-        binding.layoutSend.setOnClickListener(v -> sendMessage());
-    }
-
-    private String getReadableDateTime(Date date) {
-        return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
-    }
 
     private void addConversion(HashMap<String, Object> conversion) {
         database.collection(Constant.KEY_COLLECTION_CONVERSATIONS)

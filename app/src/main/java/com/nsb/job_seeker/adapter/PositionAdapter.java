@@ -1,6 +1,7 @@
 package com.nsb.job_seeker.adapter;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -18,10 +19,13 @@ public class PositionAdapter extends RecyclerView.Adapter<PositionAdapter.Experi
     private List<String> listPosition;
     private final PositionListener listener;
     private List<String> listPositionOld;
-    public PositionAdapter(List<String> listPosition, PositionListener listener) {
+    private final List<Boolean> listSelected;
+    private int default_position = 0;
+    public PositionAdapter(List<String> listPosition, PositionListener listener, List<Boolean> listSelected) {
         this.listPosition = listPosition;
         this.listener = listener;
         this.listPositionOld = listPosition;
+        this.listSelected = listSelected;
     }
 
     @NonNull
@@ -38,6 +42,21 @@ public class PositionAdapter extends RecyclerView.Adapter<PositionAdapter.Experi
     @Override
     public void onBindViewHolder(@NonNull ExperienceHolder holder, int position) {
         holder.setData(listPosition.get(position));
+
+        if (listSelected.get(position) == false) {
+            holder.binding.imageCheck.setVisibility(View.INVISIBLE);
+        } else {
+            holder.binding.imageCheck.setVisibility(View.VISIBLE);
+        }
+        holder.binding.getRoot().setOnClickListener(v -> {
+            listener.onClickPosition(listPosition.get(position));
+            listSelected.set(default_position, false);
+            listSelected.set(position, true);
+            notifyItemChanged(position);
+            notifyItemChanged(default_position);
+            default_position = position;
+
+        });
     }
 
     @Override
@@ -55,9 +74,6 @@ public class PositionAdapter extends RecyclerView.Adapter<PositionAdapter.Experi
 
         void setData(String data) {
             binding.textExperience.setText(data);
-            binding.getRoot().setOnClickListener(v -> {
-                listener.onClickPosition(data);
-            });
         }
     }
 

@@ -31,6 +31,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.LoginActivity;
+import com.nsb.job_seeker.activity.admin.EditRecruitmentActivity;
 import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
 import com.nsb.job_seeker.adapter.FilterAdapter;
 import com.nsb.job_seeker.common.Constant;
@@ -45,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,6 +64,8 @@ public class CreateRecruitmentFragment extends Fragment {
     private BottomSheetDialog bottomSheetUnitMoney, bottomSheetTypeJob, bottomSheetGender;
     private String idOccupation;
     private LoadingDialog loadingDialog;
+    private FilterAdapter genderAdapter, typeJobAdapter, unitMoney;
+    private List<Boolean> listSelectedGender, listSelectedTypeJob, listSelectedUnitMoney;
 
     @Nullable
     @Override
@@ -73,12 +77,10 @@ public class CreateRecruitmentFragment extends Fragment {
     }
 
     private void setControl() {
-        idTypeJobs = new ArrayList<>();
-        nameTypeJobs = new ArrayList<>();
-        nameTypeJobs.add("Lĩnh vực");
-
         loadingDialog = new LoadingDialog(getContext());
         preferenceManager = new PreferenceManager(getActivity());
+        initBottomSheetGender();
+        initBottomUnitMoney();
     }
 
 
@@ -88,18 +90,13 @@ public class CreateRecruitmentFragment extends Fragment {
         SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
         Date date = new Date(System.currentTimeMillis());
 
+        getTypeJob();
         pickTime();
-
         formatBullet();
-
-        openBottomUnitMoney();
-
+        openBottomSheetMoney();
         openBottomSheetTypeJob();
-
         openBottomSheetGender();
-
         clickCreateJob();
-
         cancelProcess();
     }
 
@@ -108,13 +105,18 @@ public class CreateRecruitmentFragment extends Fragment {
             if (checkAllEmpty()) {
                 return;
             }
-            CustomDialogDelete customDialogDelete = new CustomDialogDelete(getContext(), "Có", "Không", false) {
+            CustomDialogDelete customDialogDelete = new CustomDialogDelete(getContext(), "Bạn chắc chắn muốn hủy quá trình này?", "Có", "Không") {
                 @Override
-                public void doSomeThing() {
+                public void doAccept() {
                     clearText();
                 }
+
+                @Override
+                public void doCancel() {
+
+                }
             };
-            customDialogDelete.openDiaLogDelete("Bạn chắc chắn muốn hủy quá trình này?");
+            customDialogDelete.openDiaLogDelete();
         });
     }
 
@@ -143,88 +145,107 @@ public class CreateRecruitmentFragment extends Fragment {
 
     private void openBottomSheetTypeJob() {
         binding.textTypeJob.setOnClickListener(v -> {
-            getTypeJob();
+            if (bottomSheetTypeJob != null) {
+                bottomSheetTypeJob.show();
+            }
+        });
+    }
+
+    private void initBottomSheetGender() {
+        bottomSheetGender = new BottomSheetDialog(getContext());
+        View layoutGender = getLayoutInflater().inflate(R.layout.layout_filter, null);
+        TextView textTitle = (TextView) layoutGender.findViewById(R.id.textTitle);
+        textTitle.setText("Chọn giới tính");
+        List<String> listGender = new ArrayList<>();
+        listSelectedGender = new ArrayList<>();
+        listGender.add("Không yêu cầu");
+        listGender.add("Nam");
+        listGender.add("Nữ");
+        listSelectedGender.add(false);
+        listSelectedGender.add(false);
+        listSelectedGender.add(false);
+        RecyclerView recyclerView = layoutGender.findViewById(R.id.rcvFilter);
+        genderAdapter = new FilterAdapter(listGender, listSelectedGender, new FilterListener() {
+            @Override
+            public void onClickItem(String data, int position) {
+                binding.textGender.setText(data);
+                bottomSheetGender.dismiss();
+            }
+        });
+        recyclerView.setAdapter(genderAdapter);
+        bottomSheetGender.setContentView(layoutGender);
+
+        ImageView imgClose = layoutGender.findViewById(R.id.imageClose);
+        imgClose.setOnClickListener(view -> {
+            bottomSheetGender.dismiss();
         });
     }
 
     private void openBottomSheetGender() {
         binding.textGender.setOnClickListener(v -> {
-            bottomSheetGender = new BottomSheetDialog(getContext());
-            View layoutGender = getLayoutInflater().inflate(R.layout.layout_filter, null);
-            TextView textTitle = (TextView) layoutGender.findViewById(R.id.textTitle);
-            textTitle.setText("Chọn giới tính");
-            List<String> listGender = new ArrayList<>();
-            listGender.add("Không yêu cầu");
-            listGender.add("Nam");
-            listGender.add("Nữ");
-            RecyclerView recyclerView = layoutGender.findViewById(R.id.rcvFilter);
-            FilterAdapter positionAdapter = new FilterAdapter(listGender, new FilterListener() {
-                @Override
-                public void onClickItem(String data, int position) {
-                    binding.textGender.setText(data);
-                    bottomSheetGender.dismiss();
-                }
-            });
-            recyclerView.setAdapter(positionAdapter);
-            bottomSheetGender.setContentView(layoutGender);
-            bottomSheetGender.show();
-
-            ImageView imgClose = layoutGender.findViewById(R.id.imageClose);
-            imgClose.setOnClickListener(view -> {
-                bottomSheetGender.dismiss();
-            });
+            if (bottomSheetGender != null) {
+                bottomSheetGender.show();
+            }
         });
     }
 
-    private void initBottomSheetTypeJob(List<String> listTypeJob) {
+    private void initBottomSheetTypeJob() {
         bottomSheetTypeJob = new BottomSheetDialog(getContext());
         View layoutTypeJob = getLayoutInflater().inflate(R.layout.layout_filter, null);
         TextView textTitle = (TextView) layoutTypeJob.findViewById(R.id.textTitle);
         textTitle.setText("Chọn loại công việc");
 
         RecyclerView recyclerView = layoutTypeJob.findViewById(R.id.rcvFilter);
-        FilterAdapter filterAdapter = new FilterAdapter(listTypeJob, new FilterListener() {
+        typeJobAdapter = new FilterAdapter(nameTypeJobs, listSelectedTypeJob, new FilterListener() {
             @Override
             public void onClickItem(String data, int position) {
                 binding.textTypeJob.setText(data);
+                idOccupation = idTypeJobs.get(position);
                 bottomSheetTypeJob.dismiss();
             }
         });
-        recyclerView.setAdapter(filterAdapter);
-        bottomSheetTypeJob.setContentView(layoutTypeJob);
-        bottomSheetTypeJob.show();
-
         ImageView imgClose = layoutTypeJob.findViewById(R.id.imageClose);
         imgClose.setOnClickListener(view -> {
             bottomSheetTypeJob.dismiss();
         });
+        recyclerView.setAdapter(typeJobAdapter);
+        typeJobAdapter.notifyDataSetChanged();
+        bottomSheetTypeJob.setContentView(layoutTypeJob);
     }
 
-    private void openBottomUnitMoney() {
-        binding.textUnitMoney.setOnClickListener(v -> {
-            bottomSheetUnitMoney = new BottomSheetDialog(getContext());
-            View layoutUnitMoney = getLayoutInflater().inflate(R.layout.layout_filter, null);
-            TextView textTitle = (TextView) layoutUnitMoney.findViewById(R.id.textTitle);
-            textTitle.setText("Chọn đơn vị tiền");
-            List<String> listUnitMoney = new ArrayList<>();
-            listUnitMoney.add("VND");
-            listUnitMoney.add("USD");
-            RecyclerView recyclerView = layoutUnitMoney.findViewById(R.id.rcvFilter);
-            FilterAdapter filterAdapter = new FilterAdapter(listUnitMoney, new FilterListener() {
-                @Override
-                public void onClickItem(String data, int position) {
-                    binding.textUnitMoney.setText(data);
-                    bottomSheetUnitMoney.dismiss();
-                }
-            });
-            recyclerView.setAdapter(filterAdapter);
-            bottomSheetUnitMoney.setContentView(layoutUnitMoney);
-            bottomSheetUnitMoney.show();
-
-            ImageView imgClose = layoutUnitMoney.findViewById(R.id.imageClose);
-            imgClose.setOnClickListener(view -> {
+    private void initBottomUnitMoney() {
+        bottomSheetUnitMoney = new BottomSheetDialog(getContext());
+        View layoutUnitMoney = getLayoutInflater().inflate(R.layout.layout_filter, null);
+        TextView textTitle = (TextView) layoutUnitMoney.findViewById(R.id.textTitle);
+        textTitle.setText("Chọn đơn vị tiền");
+        List<String> listUnitMoney = new ArrayList<>();
+        listSelectedUnitMoney = new ArrayList<>();
+        listUnitMoney.add("VND");
+        listUnitMoney.add("USD");
+        listSelectedUnitMoney.add(false);
+        listSelectedUnitMoney.add(false);
+        RecyclerView recyclerView = layoutUnitMoney.findViewById(R.id.rcvFilter);
+        unitMoney = new FilterAdapter(listUnitMoney, listSelectedUnitMoney, new FilterListener() {
+            @Override
+            public void onClickItem(String data, int position) {
+                binding.textUnitMoney.setText(data);
                 bottomSheetUnitMoney.dismiss();
-            });
+            }
+        });
+        recyclerView.setAdapter(unitMoney);
+        bottomSheetUnitMoney.setContentView(layoutUnitMoney);
+
+        ImageView imgClose = layoutUnitMoney.findViewById(R.id.imageClose);
+        imgClose.setOnClickListener(view -> {
+            bottomSheetUnitMoney.dismiss();
+        });
+    }
+
+    private void openBottomSheetMoney() {
+        binding.textUnitMoney.setOnClickListener(v -> {
+            if (bottomSheetUnitMoney != null) {
+                bottomSheetUnitMoney.show();
+            }
         });
     }
 
@@ -242,7 +263,7 @@ public class CreateRecruitmentFragment extends Fragment {
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 
                         if (Constant.checkValidDeadline(day, month + 1, year)) {
-                            binding.edtDeadline.setText((month + 1) + "-" + day + "-" + year);
+                            binding.edtDeadline.setText(day + "-" + (month + 1) + "-" + year);
                         } else {
                             Toast.makeText(getActivity(), "Hạn nộp không hợp lệ, vui lòng chọn lại !", Toast.LENGTH_SHORT).show();
                             binding.edtDeadline.requestFocus();
@@ -298,7 +319,7 @@ public class CreateRecruitmentFragment extends Fragment {
                             binding.edtNameJob.getText().toString().trim(),
                             Constant.formatStringToBullet(binding.edtDetailJob.getText().toString().trim()),
                             Constant.formatStringToBullet(binding.edtJobReq.getText().toString().trim()),
-                            binding.edtDeadline.getText().toString().trim(),
+                            Constant.formatTimeMMDDYYYY(binding.edtDeadline.getText().toString().trim()),
                             binding.textSalary.getText().toString().trim(),
                             binding.textPosition.getText().toString().trim(),
                             idOccupation,
@@ -309,6 +330,8 @@ public class CreateRecruitmentFragment extends Fragment {
                             binding.textApplyAmount.getText().toString().trim());
                 }
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
         });
@@ -514,9 +537,12 @@ public class CreateRecruitmentFragment extends Fragment {
 
 
     private void getTypeJob() {
-
         String urlTypeJob = Constant.url_dev + "/occupation/list";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
+
+        idTypeJobs = new ArrayList<>();
+        nameTypeJobs = new ArrayList<>();
+        listSelectedTypeJob = new ArrayList<>();
 
         JsonObjectRequest sr = new JsonObjectRequest(Request.Method.GET, urlTypeJob, null, new Response.Listener<JSONObject>() {
             @Override
@@ -529,9 +555,10 @@ public class CreateRecruitmentFragment extends Fragment {
                             Log.d("TypeJob", typeJob.getString("name"));
                             nameTypeJobs.add(typeJob.getString("name"));
                             idTypeJobs.add(typeJob.getString("_id"));
+                            listSelectedTypeJob.add(false);
                         }
                     }
-                    initBottomSheetTypeJob(nameTypeJobs);
+                    initBottomSheetTypeJob();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -570,4 +597,5 @@ public class CreateRecruitmentFragment extends Fragment {
         });
         queue.add(sr);
     }
+
 }

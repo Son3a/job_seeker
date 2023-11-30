@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.nsb.job_seeker.activity.BaseActivity;
 
@@ -17,6 +18,7 @@ import android.view.Window;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
+import com.nsb.job_seeker.adapter.SeekerMainAdapter;
 import com.nsb.job_seeker.fragment.AccountFragment;
 import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.common.MovableFloatingActionButton;
@@ -26,17 +28,18 @@ import com.nsb.job_seeker.fragment.seeker.NewsJobFragment;
 
 public class SeekerMainActivity extends BaseActivity {
     public static BottomNavigationView bottomNavigationView;
+    private ViewPager2 viewPager2;
+    private SeekerMainAdapter seekerMainAdapter;
 
     private NewsJobFragment newsJobFragment;
     private MyJobFragment myJobFragment;
     private MessageFragment messageFragment;
     private AccountFragment accountFragment;
-    private Dialog dialogMessage;
+    private Fragment activeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_seeker_main);
 
         setControl();
@@ -45,83 +48,72 @@ public class SeekerMainActivity extends BaseActivity {
 
     private void setControl() {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-//        fabMessenger = findViewById(R.id.fab_messenger);
+        viewPager2 = findViewById(R.id.view_pager_seeker);
+        seekerMainAdapter = new SeekerMainAdapter(SeekerMainActivity.this);
+        viewPager2.setAdapter(seekerMainAdapter);
+        viewPager2.setUserInputEnabled(false);
+        viewPager2.setOffscreenPageLimit(4);
 
-        newsJobFragment = new NewsJobFragment();
-        myJobFragment = new MyJobFragment();
-        messageFragment = new MessageFragment();
-        accountFragment = new AccountFragment();
-
-        //setup dialog
-        dialogMessage = new Dialog(this);
-        dialogMessage.setContentView(R.layout.layout_message);
-        dialogMessage.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//        newsJobFragment = new NewsJobFragment();
+//        myJobFragment = new MyJobFragment();
+//        messageFragment = new MessageFragment();
+//        accountFragment = new AccountFragment();
+//        activeFragment = new NewsJobFragment();
     }
 
     private void setEvent() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, newsJobFragment)
-                .addToBackStack(null)
-                .commit();
-//        BadgeDrawable badgeDrawable = bottomNavigationView.getOrCreateBadge(R.id.menu_notifiation);
-//        badgeDrawable.setVisible(true);
-//        badgeDrawable.setNumber(10);
-
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.menu_forme:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, newsJobFragment)
-                                .addToBackStack(null)
-                                .commit();
-                        return true;
-                    case R.id.menu_myjob:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, myJobFragment)
-                                .addToBackStack(null)
-                                .commit();
-                        return true;
-                    case R.id.menu_message:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, messageFragment)
-                                .addToBackStack(null)
-                                .commit();
-                        return true;
-                    case R.id.menu_account:
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.container, accountFragment)
-                                .addToBackStack(null)
-                                .commit();
-                        return true;
-                }
-                return false;
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.menu_forme:
+                    viewPager2.setCurrentItem(0, false);
+                    break;
+                case R.id.menu_myjob:
+                    viewPager2.setCurrentItem(1, false);
+                    break;
+                case R.id.menu_message:
+                    viewPager2.setCurrentItem(2, false);
+                    break;
+                case R.id.menu_account:
+                    viewPager2.setCurrentItem(3, false);
+                    break;
             }
+            return true;
         });
 
-        openMessenger();
-        closeMessenger();
-    }
-
-    private void openMessenger() {
-//        fabMessenger.setOnClickListener(v -> {
-//            fabMessenger.setVisibility(View.GONE);
-//            dialogMessage.show();
-//            Window window = dialogMessage.getWindow();
-//            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//            getSupportFragmentManager().beginTransaction().replace(R.id.layout_container_chat, new MessageFragment()).commit();
-
-//            messageFragment.show(getSupportFragmentManager(),"MessageFragment");
-//        });
-    }
-
-    private void closeMessenger() {
-//        fabMessage.setOnClickListener(v->{
-//            if(dialogMessage.isShowing()){
-//                dialogMessage.dismiss();
-//                fabMessenger.setVisibility(View.VISIBLE);
+//        getSupportFragmentManager().beginTransaction().add(R.id.container, newsJobFragment, "info").commit();
+//        getSupportFragmentManager().beginTransaction().add(R.id.container, myJobFragment, "info").hide(myJobFragment).commit();
+//        getSupportFragmentManager().beginTransaction().add(R.id.container, messageFragment, "info").hide(messageFragment).commit();
+//        getSupportFragmentManager().beginTransaction().add(R.id.container, accountFragment, "info").hide(accountFragment).commit();
+//        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                switch (item.getItemId()) {
+//                    case R.id.menu_forme:
+//                        getSupportFragmentManager().beginTransaction().hide(activeFragment).show(newsJobFragment).commit();
+//                        activeFragment = newsJobFragment;
+//                        return true;
+//                    case R.id.menu_myjob:
+//                        getSupportFragmentManager().beginTransaction().hide(activeFragment).show(myJobFragment).commit();
+//                        activeFragment = myJobFragment;
+//                        return true;
+//                    case R.id.menu_message:
+//                        getSupportFragmentManager().beginTransaction().hide(activeFragment).show(messageFragment).commit();
+//                        activeFragment = messageFragment;
+//                        return true;
+//                    case R.id.menu_account:
+//                        getSupportFragmentManager().beginTransaction().hide(activeFragment).show(accountFragment).commit();
+//                        activeFragment = accountFragment;
+//                        return true;
+//                }
+//
+//                return false;
 //            }
 //        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
     }
 }
