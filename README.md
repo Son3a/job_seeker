@@ -50,23 +50,28 @@ This is a project of the subject - "Android Programing" <br>
 <br><img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701778291/jobseeker/zjby0t46eg8zvehncw8s.png" width="300">
 - Recruitment news list was created
 
-<div>
-  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701783441/jobseeker/ise7th4xc6evxtogzys5.png" width="300">
-- View detail of the job
-  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701783441/jobseeker/oagu6vxu8p8w6rss8eev.png" width="300">
-- Here the recruiter can hadle two function
-</div>
 
-<div>
-  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701783441/jobseeker/z3rnk3lizsjxwtxq8xjb.png" width="300">
-- Edit recruitment's infomation.
-  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701780769/jobseeker/dhw8vlk2ydcsorfpl09i.png" width="300">
-- View the list of candidates's CV
+<div align="center">
+  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701783441/jobseeker/ise7th4xc6evxtogzys5.png" width="23%">
+  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701783441/jobseeker/oagu6vxu8p8w6rss8eev.png" width="23%">
+  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701783441/jobseeker/z3rnk3lizsjxwtxq8xjb.png" width="23%">
+  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701780769/jobseeker/dhw8vlk2ydcsorfpl09i.png" width="23%">
 </div>
+<br>
+- Here the recruiter can see detail job, click on "three dots" to show two options: 
+<ul>
+  <li>Edit recruitment's infomation</li>
+  <li>View the list of candidates's CV</li>
+</ul>
 
-<div>
-  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701778291/jobseeker/n45vsiexu9we6hqhnv97.png" width="300">
-- View company's information.
-  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701780769/jobseeker/dhw8vlk2ydcsorfpl09i.png" width="300">
-- View the list of candidates's CV
+<br><div align="center">
+  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701778291/jobseeker/n45vsiexu9we6hqhnv97.png" width=300>
+  &nbsp; &nbsp; &nbsp; &nbsp;
+  <img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701778291/jobseeker/pbsd4goqbbd512bno9cp.png" width=300>
 </div>
+- View company's information and edit company's information
+
+<br><img src="https://res.cloudinary.com/dnstykqpa/image/upload/v1701778290/jobseeker/yprqsbpwt5dotvlnrvj6.png" width="300">
+- Create new recruitment.
+
+### Seeker
