@@ -220,10 +220,12 @@ public class RegisterActivity extends BaseActivity {
                     binding.btnRegister.setVisibility(View.VISIBLE);
                     binding.pbLoading.setVisibility(View.GONE);
                     preferenceManager.putString(Constant.KEY_USER_ID, documentReference.getId());
-                    preferenceManager.putString(Constant.KEY_NAME, documentReference.get().getResult().getString(Constant.KEY_NAME));
-                    Log.d("NameFB", documentReference.get().getResult().getString(Constant.KEY_NAME));
-                    preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
-                    redirectToApp(role);
+                    if (documentReference.get().getResult() != null) {
+                        preferenceManager.putString(Constant.KEY_NAME, documentReference.get().getResult().getString(Constant.KEY_NAME));
+                        Log.d("NameFB", documentReference.get().getResult().getString(Constant.KEY_NAME));
+                        preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
+                        redirectToApp(role);
+                    }
                 });
     }
 

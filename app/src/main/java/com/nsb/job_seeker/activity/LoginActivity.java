@@ -518,7 +518,6 @@ public class LoginActivity extends AppCompatActivity {
                                     task.getResult().getDocuments().size() > 0) {
                                 binding.btnLogin.setVisibility(View.VISIBLE);
                                 binding.pbLoading.setVisibility(View.GONE);
-
                                 DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
                                 Log.d("UserId", documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_USER_ID, documentSnapshot.getId());
