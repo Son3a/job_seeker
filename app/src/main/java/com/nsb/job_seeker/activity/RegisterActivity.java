@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class RegisterActivity extends BaseActivity {
@@ -155,12 +155,24 @@ public class RegisterActivity extends BaseActivity {
         binding.btnRegister.setVisibility(View.GONE);
         binding.pbLoading.setVisibility(View.VISIBLE);
 
+        String finalRole = role;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, base_url + "/register", jsonReq, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     JSONObject jsonObject = response.getJSONObject("data");
-                    signUp(jsonObject.getString("_id")); // sign up on firebase
+                    preferenceManager.putString(Constant.TOKEN, "Bearer " + jsonObject.getString("refreshToken").replace("\"", ""));
+                    preferenceManager.putString(Constant.NAME, jsonObject.getString("name"));
+                    preferenceManager.putString(Constant.MAIL, jsonObject.getString("email"));
+                    if (!jsonObject.getString("avatar").isEmpty()) {
+                        preferenceManager.putString(Constant.AVATAR, jsonObject.getString("avatar"));
+                        preferenceManager.putString(Constant.PHONE, jsonObject.getString("phone"));
+                    }
+                    preferenceManager.putString(Constant.ROLE, jsonObject.getString("role"));
+
+                    Constant.idAppliedJob = new ArrayList<>();
+                    Constant.idAppliedJob = new ArrayList<>();
+                    signUp(jsonObject.getString("_id"), finalRole); // sign up on firebase
                 } catch (JSONException e) {
                     binding.btnRegister.setVisibility(View.VISIBLE);
                     binding.pbLoading.setVisibility(View.GONE);
@@ -192,7 +204,7 @@ public class RegisterActivity extends BaseActivity {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    private void signUp(String id) {
+    private void signUp(String id, String role) {
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         HashMap<String, Object> user = new HashMap<>();
         user.put(Constant.KEY_USER_ID, id);
@@ -207,11 +219,11 @@ public class RegisterActivity extends BaseActivity {
                 .addOnSuccessListener(documentReference -> {
                     binding.btnRegister.setVisibility(View.VISIBLE);
                     binding.pbLoading.setVisibility(View.GONE);
-
-                    CustomToast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
+                    preferenceManager.putString(Constant.KEY_USER_ID, documentReference.getId());
+                    preferenceManager.putString(Constant.KEY_NAME, documentReference.get().getResult().getString(Constant.KEY_NAME));
+                    Log.d("NameFB", documentReference.get().getResult().getString(Constant.KEY_NAME));
+                    preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
+                    redirectToApp(role);
                 });
     }
 
@@ -220,5 +232,18 @@ public class RegisterActivity extends BaseActivity {
             finish();
             startActivity(new Intent(this, LoginActivity.class));
         });
+    }
+
+    private void redirectToApp(String role) {
+        if (role.trim().equals("user")) {
+            CustomToast.makeText(RegisterActivity.this, "Đăng ký tài khoản thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
+            Intent intent = new Intent(this, SeekerMainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, NameCompanyActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
     }
 }

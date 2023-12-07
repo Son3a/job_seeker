@@ -12,6 +12,10 @@ public class Company implements Serializable, Parcelable {
     String id, name, isDelete, link, image, about, address, location, phone;
     int totalEmployee;
 
+    public Company(){
+
+    }
+
     public Company(String id, String name, String isDelete, String link, String image, int totalEmployee,
                    String about, String address, String location, String phone) {
         this.id = id;
@@ -129,6 +133,22 @@ public class Company implements Serializable, Parcelable {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", isDelete='" + isDelete + '\'' +
+                ", link='" + link + '\'' +
+                ", image='" + image + '\'' +
+                ", about='" + about + '\'' +
+                ", address='" + address + '\'' +
+                ", location='" + location + '\'' +
+                ", phone='" + phone + '\'' +
+                ", totalEmployee=" + totalEmployee +
+                '}';
     }
 
     @Override

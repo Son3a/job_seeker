@@ -203,7 +203,6 @@ public class Activity_ChangePassword extends BaseActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 SharedPreferences sharedPreferences = getSharedPreferences(Constant.sharedPreferencesName, MODE_PRIVATE);
-                String ACCESSTOKEN = sharedPreferences.getString("accessToken", "");
                 Map<String, String> params = new HashMap<>();
                 params.put("Content-Type", "application/json; charset=UTF-8");
                 params.put("Authorization", preferenceManager.getString(Constant.TOKEN));
