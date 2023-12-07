@@ -182,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
                                 preferenceManager.putString(Constant.KEY_USER_ID, documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_NAME, documentSnapshot.getString(Constant.KEY_NAME));
                                 preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
-                                redirectAfterLogin(role);
+                                redirectToApp(role);
 
                             } else {
                                 HashMap<String, Object> user = new HashMap<>();
@@ -203,7 +203,7 @@ public class LoginActivity extends AppCompatActivity {
                                             preferenceManager.putString(Constant.KEY_USER_ID, documentReference.getId());
                                             preferenceManager.putString(Constant.KEY_NAME, name);
                                             preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
-                                            redirectAfterLogin(role);
+                                            redirectToApp(role);
                                         });
                             }
                         }
@@ -491,7 +491,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void redirectAfterLogin(String role) {
+    private void redirectToApp(String role) {
         if (role.trim().equals("user")) {
             Log.d("ABC", "user");
             Intent intent = new Intent(this, SeekerMainActivity.class);
@@ -518,13 +518,12 @@ public class LoginActivity extends AppCompatActivity {
                                     task.getResult().getDocuments().size() > 0) {
                                 binding.btnLogin.setVisibility(View.VISIBLE);
                                 binding.pbLoading.setVisibility(View.GONE);
-
                                 DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
                                 Log.d("UserId", documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_USER_ID, documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_NAME, documentSnapshot.getString(Constant.KEY_NAME));
                                 preferenceManager.putBoolean(Constant.KEY_IS_SIGNED_IN, true);
-                                redirectAfterLogin(role);
+                                redirectToApp(role);
                                 Log.d("Process", "Login Firebase successfully");
                             }
                         }
