@@ -39,6 +39,7 @@ public class WebsiteCompanyActivity extends AppCompatActivity {
     private ActivityWebsiteCompanyBinding binding;
     private LoadingDialog loadingDialog;
     private PreferenceManager preferenceManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         binding = ActivityWebsiteCompanyBinding.inflate(getLayoutInflater());
@@ -56,6 +57,7 @@ public class WebsiteCompanyActivity extends AppCompatActivity {
                 binding.layoutErrorWebsite.setVisibility(View.VISIBLE);
             } else {
                 binding.layoutErrorWebsite.setVisibility(View.GONE);
+                Log.d("TokenWeb", preferenceManager.getString(Constant.TOKEN));
                 createCompany();
             }
         });
@@ -82,11 +84,12 @@ public class WebsiteCompanyActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    String message = response.getString("message");
-                    //changePasswordFirebase(newPassword, message);
                     loadingDialog.hideDialog();
+                    preferenceManager.putString(Constant.COMPANY_ID, response.getJSONObject("data").getString("_id"));
                     CustomToast.makeText(WebsiteCompanyActivity.this, "Đăng ký thành công!", CustomToast.LENGTH_SHORT, CustomToast.SUCCESS).show();
-                    finish();
+                    Intent intent = new Intent(WebsiteCompanyActivity.this, EmployerMainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 } catch (JSONException e) {
                     Log.d("ABC", e.toString());
                     e.printStackTrace();
@@ -98,7 +101,6 @@ public class WebsiteCompanyActivity extends AppCompatActivity {
                 loadingDialog.hideDialog();
                 String body;
                 //get status code here
-                String statusCode = String.valueOf(error.networkResponse.statusCode);
 
                 if (error.networkResponse.data != null) {
                     try {

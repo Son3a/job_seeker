@@ -70,10 +70,26 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/layout"
                 android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="15dp"
                 android:scrollingCache="true"
                 android:smoothScrollbar="true"
-                android:layout_marginTop="15dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCreateJob"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="80dp"
+                android:backgroundTint="@color/primary"
+                android:paddingHorizontal="25dp"
+                android:paddingVertical="10dp"
+                android:text="Tạo công việc ngay nào"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:cornerRadius="25dp" />
 
             <ProgressBar
                 android:id="@+id/idLoadingPB"

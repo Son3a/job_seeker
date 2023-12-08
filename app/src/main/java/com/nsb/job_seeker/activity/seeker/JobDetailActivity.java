@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -68,6 +69,7 @@ import com.nsb.job_seeker.model.Company;
 import com.nsb.job_seeker.model.DataPart;
 import com.nsb.job_seeker.model.Job;
 import com.nsb.job_seeker.model.User;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -774,7 +776,11 @@ public class JobDetailActivity extends BaseActivity {
                     binding.textPosition.setText(place);
                     binding.textSalary.setText(jsonObject.getString("salary"));
                     if (!jsonObject.getJSONObject("idCompany").getString("image").isEmpty()) {
-                        binding.imageCompany.setImageBitmap(Constant.getBitmapFromEncodedString(jsonObject.getJSONObject("idCompany").getString("image")));
+                        if(!URLUtil.isValidUrl(jsonObject.getJSONObject("idCompany").getString("image"))) {
+                            binding.imageCompany.setImageBitmap(Constant.getBitmapFromEncodedString(jsonObject.getJSONObject("idCompany").getString("image")));
+                        } else {
+                            Picasso.get().load(jsonObject.getJSONObject("idCompany").getString("image")).into(binding.imageCompany);
+                        }
                     }
 
                     for (int i = 0; i < jsonObject.getJSONArray("relatedJob").length(); i++) {

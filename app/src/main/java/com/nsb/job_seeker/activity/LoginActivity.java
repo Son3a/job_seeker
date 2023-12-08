@@ -380,8 +380,7 @@ public class LoginActivity extends AppCompatActivity {
     private void postLogin() throws JSONException {
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        binding.btnLogin.setVisibility(View.GONE);
-        binding.pbLoading.setVisibility(View.VISIBLE);
+        loadingDialog.showDialog();
 
         String email = binding.textEmail.getText().toString().trim();
         String password = binding.textPassword.getText().toString().trim();
@@ -438,8 +437,7 @@ public class LoginActivity extends AppCompatActivity {
 
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            binding.btnLogin.setVisibility(View.VISIBLE);
-                            binding.pbLoading.setVisibility(View.GONE);
+                            loadingDialog.hideDialog();
                         }
                     }
                 },
@@ -449,8 +447,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("Error", "Error response: " + error.toString());
                         String body;
                         //get status code here
-                        binding.btnLogin.setVisibility(View.VISIBLE);
-                        binding.pbLoading.setVisibility(View.GONE);
+                        loadingDialog.hideDialog();
 
                         if (error instanceof com.android.volley.NoConnectionError) {
                             CustomToast.makeText(LoginActivity.this, "Hệ thống đang có lỗi, quý khách vui lòng quay lại sau!",
@@ -516,8 +513,7 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                             if (task.isSuccessful() && task.getResult() != null &&
                                     task.getResult().getDocuments().size() > 0) {
-                                binding.btnLogin.setVisibility(View.VISIBLE);
-                                binding.pbLoading.setVisibility(View.GONE);
+                                loadingDialog.hideDialog();
                                 DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
                                 Log.d("UserId", documentSnapshot.getId());
                                 preferenceManager.putString(Constant.KEY_USER_ID, documentSnapshot.getId());
@@ -529,6 +525,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                 ).addOnFailureListener(e -> {
                     preferenceManager.clear();
+                    loadingDialog.hideDialog();
                     CustomToast.makeText(LoginActivity.this, e.getMessage(), CustomToast.LENGTH_SHORT, CustomToast.WARNING).show();
                     Log.d("Error", e.getMessage());
                 });

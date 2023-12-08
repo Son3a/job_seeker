@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -31,6 +32,7 @@ import com.nsb.job_seeker.common.LoadingDialog;
 import com.nsb.job_seeker.common.PreferenceManager;
 import com.nsb.job_seeker.databinding.FragmentEmployerCompanyBinding;
 import com.nsb.job_seeker.model.Company;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,14 +77,18 @@ public class CompanyFragment extends Fragment {
     }
 
     private void init() {
-        loadingDialog = new LoadingDialog(getContext());
-        preferenceManager = new PreferenceManager(getContext());
+        if (getContext() != null) {
+            loadingDialog = new LoadingDialog(getContext());
+            preferenceManager = new PreferenceManager(getContext());
+        }
     }
 
     private void setEvent() {
-        setExpandText();
-        getInfoCompany();
-        openBottomFunc();
+        if (getContext() != null) {
+            setExpandText();
+            getInfoCompany();
+            openBottomFunc();
+        }
     }
 
     private void openBottomFunc() {
@@ -122,7 +128,9 @@ public class CompanyFragment extends Fragment {
 
     private void getInfoCompany() {
         String url = Constant.url_dev + "/company/detail?id=" + preferenceManager.getString(Constant.COMPANY_ID);
-        loadingDialog.showDialog();
+        if(loadingDialog!=null) {
+            loadingDialog.showDialog();
+        }
         binding.layoutHeader.setVisibility(View.GONE);
         binding.layoutContent.setVisibility(View.GONE);
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
@@ -147,14 +155,20 @@ public class CompanyFragment extends Fragment {
                             jsonObject.getString("phone")
                     );
                     if (company.getImage() != null && !company.getImage().equals("")) {
-                        binding.imageCompany.setImageBitmap(Constant.getBitmapFromEncodedString(company.getImage()));
+                        if (!URLUtil.isValidUrl(company.getImage())) {
+                            binding.imageCompany.setImageBitmap(Constant.getBitmapFromEncodedString(company.getImage()));
+                        } else {
+                            Picasso.get().load(company.getImage()).into(binding.imageCompany);
+                        }
                     }
                     binding.textNameCompany.setText(company.getName());
                     binding.textIntroduceCompany.setText(company.getAbout());
                     binding.textLink.setText(company.getLink());
                     binding.textAddress.setText(company.getAddress());
                     binding.textAmountEmployer.setText(company.getTotalEmployee() + " nhân viên");
-                    loadingDialog.hideDialog();
+                    if(loadingDialog!=null) {
+                        loadingDialog.hideDialog();
+                    }
                     binding.layoutHeader.setVisibility(View.VISIBLE);
                     binding.layoutContent.setVisibility(View.VISIBLE);
                 } catch (JSONException e) {

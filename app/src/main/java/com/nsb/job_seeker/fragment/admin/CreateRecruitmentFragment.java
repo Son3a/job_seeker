@@ -2,6 +2,7 @@ package com.nsb.job_seeker.fragment.admin;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +36,7 @@ import com.nsb.job_seeker.R;
 import com.nsb.job_seeker.activity.LoginActivity;
 import com.nsb.job_seeker.activity.admin.EditRecruitmentActivity;
 import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
+import com.nsb.job_seeker.activity.seeker.SearchResultActivity;
 import com.nsb.job_seeker.adapter.FilterAdapter;
 import com.nsb.job_seeker.common.Constant;
 import com.nsb.job_seeker.common.CustomDialogDelete;
@@ -65,7 +69,9 @@ public class CreateRecruitmentFragment extends Fragment {
     private String idOccupation;
     private LoadingDialog loadingDialog;
     private FilterAdapter genderAdapter, typeJobAdapter, unitMoney;
-    private List<Boolean> listSelectedGender, listSelectedTypeJob, listSelectedUnitMoney;
+    private List<Boolean> listSelectedGender, listSelectedTypeJob, listSelectedUnitMoney, listSelectedExperience;
+    private List<String> listExperiences;
+    private BottomSheetDialog bottomSheetExperience;
 
     @Nullable
     @Override
@@ -77,10 +83,13 @@ public class CreateRecruitmentFragment extends Fragment {
     }
 
     private void setControl() {
-        loadingDialog = new LoadingDialog(getContext());
-        preferenceManager = new PreferenceManager(getActivity());
+        if (getActivity() != null) {
+            loadingDialog = new LoadingDialog(getActivity());
+            preferenceManager = new PreferenceManager(getActivity());
+        }
         initBottomSheetGender();
         initBottomUnitMoney();
+        initBottomSheetExperience();
     }
 
 
@@ -96,6 +105,7 @@ public class CreateRecruitmentFragment extends Fragment {
         openBottomSheetMoney();
         openBottomSheetTypeJob();
         openBottomSheetGender();
+        openBottomSheetExperience();
         clickCreateJob();
         cancelProcess();
     }
@@ -151,6 +161,48 @@ public class CreateRecruitmentFragment extends Fragment {
         });
     }
 
+    private void openBottomSheetExperience() {
+        binding.textExperience.setOnClickListener(v -> {
+            if (bottomSheetExperience != null) {
+                bottomSheetExperience.show();
+            }
+        });
+    }
+
+    private void initBottomSheetExperience() {
+        listSelectedExperience = new ArrayList<>();
+        listExperiences = new ArrayList<>();
+        listExperiences.add("Không yêu cầu");
+        listExperiences.add("Dưới 1 năm");
+        listExperiences.add("1 năm");
+        listExperiences.add("2 năm");
+        listExperiences.add("3 năm");
+        listExperiences.add("4 năm");
+        listExperiences.add("5 năm");
+        listExperiences.add("Trên 5 năm");
+        for (int i = 0; i < 8; i++) {
+            listSelectedExperience.add(false);
+        }
+
+        View layoutBottomExperience = getLayoutInflater().inflate(R.layout.layout_filter, null);
+        bottomSheetExperience = new BottomSheetDialog(getContext());
+        bottomSheetExperience.setContentView(layoutBottomExperience);
+        ImageView imageClose = layoutBottomExperience.findViewById(R.id.imageClose);
+        imageClose.setOnClickListener(v -> {
+            bottomSheetExperience.dismiss();
+        });
+
+        FilterAdapter experienceAdapter = new FilterAdapter(listExperiences, listSelectedExperience, new FilterListener() {
+            @Override
+            public void onClickItem(String data, int position) {
+                binding.textExperience.setText(data);
+                bottomSheetExperience.dismiss();
+            }
+        });
+        RecyclerView recyclerViewExperience = layoutBottomExperience.findViewById(R.id.rcvFilter);
+        recyclerViewExperience.setAdapter(experienceAdapter);
+    }
+
     private void initBottomSheetGender() {
         bottomSheetGender = new BottomSheetDialog(getContext());
         View layoutGender = getLayoutInflater().inflate(R.layout.layout_filter, null);
@@ -190,27 +242,29 @@ public class CreateRecruitmentFragment extends Fragment {
     }
 
     private void initBottomSheetTypeJob() {
-        bottomSheetTypeJob = new BottomSheetDialog(getContext());
-        View layoutTypeJob = getLayoutInflater().inflate(R.layout.layout_filter, null);
-        TextView textTitle = (TextView) layoutTypeJob.findViewById(R.id.textTitle);
-        textTitle.setText("Chọn loại công việc");
+        if (getContext() != null) {
+            bottomSheetTypeJob = new BottomSheetDialog(getContext());
+            View layoutTypeJob = getLayoutInflater().inflate(R.layout.layout_filter, null);
+            TextView textTitle = (TextView) layoutTypeJob.findViewById(R.id.textTitle);
+            textTitle.setText("Chọn loại công việc");
 
-        RecyclerView recyclerView = layoutTypeJob.findViewById(R.id.rcvFilter);
-        typeJobAdapter = new FilterAdapter(nameTypeJobs, listSelectedTypeJob, new FilterListener() {
-            @Override
-            public void onClickItem(String data, int position) {
-                binding.textTypeJob.setText(data);
-                idOccupation = idTypeJobs.get(position);
+            RecyclerView recyclerView = layoutTypeJob.findViewById(R.id.rcvFilter);
+            typeJobAdapter = new FilterAdapter(nameTypeJobs, listSelectedTypeJob, new FilterListener() {
+                @Override
+                public void onClickItem(String data, int position) {
+                    binding.textTypeJob.setText(data);
+                    idOccupation = idTypeJobs.get(position);
+                    bottomSheetTypeJob.dismiss();
+                }
+            });
+            ImageView imgClose = layoutTypeJob.findViewById(R.id.imageClose);
+            imgClose.setOnClickListener(view -> {
                 bottomSheetTypeJob.dismiss();
-            }
-        });
-        ImageView imgClose = layoutTypeJob.findViewById(R.id.imageClose);
-        imgClose.setOnClickListener(view -> {
-            bottomSheetTypeJob.dismiss();
-        });
-        recyclerView.setAdapter(typeJobAdapter);
-        typeJobAdapter.notifyDataSetChanged();
-        bottomSheetTypeJob.setContentView(layoutTypeJob);
+            });
+            recyclerView.setAdapter(typeJobAdapter);
+            typeJobAdapter.notifyDataSetChanged();
+            bottomSheetTypeJob.setContentView(layoutTypeJob);
+        }
     }
 
     private void initBottomUnitMoney() {
@@ -317,8 +371,8 @@ public class CreateRecruitmentFragment extends Fragment {
                 if (!checkExistEmpty()) {
                     createRecruitment(
                             binding.edtNameJob.getText().toString().trim(),
-                            Constant.formatStringToBullet(binding.edtDetailJob.getText().toString().trim()),
-                            Constant.formatStringToBullet(binding.edtJobReq.getText().toString().trim()),
+                            Constant.formatStringFromBullet(binding.edtDetailJob.getText().toString().trim()),
+                            Constant.formatStringFromBullet(binding.edtJobReq.getText().toString().trim()),
                             Constant.formatTimeMMDDYYYY(binding.edtDeadline.getText().toString().trim()),
                             binding.textSalary.getText().toString().trim(),
                             binding.textPosition.getText().toString().trim(),

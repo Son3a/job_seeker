@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -79,7 +80,11 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.JobHolder> {
             binding.tvPlace.setText(job.getPlace());
             binding.tvSalary.setText(job.getSalary());
             if (job.getImage() != null && !job.getImage().equals("")) {
-                binding.imgJob.setImageBitmap(Constant.getBitmapFromEncodedString(job.getImage()));
+                if(!URLUtil.isValidUrl(job.getImage())) {
+                    binding.imgJob.setImageBitmap(Constant.getBitmapFromEncodedString(job.getImage()));
+                } else {
+                    Picasso.get().load(job.getImage()).into(binding.imgJob);
+                }
             }
 
             if (isVisibleBtnSave == false) { //hide icon

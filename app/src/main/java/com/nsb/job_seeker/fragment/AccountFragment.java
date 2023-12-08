@@ -85,8 +85,10 @@ public class AccountFragment extends Fragment {
     }
 
     private void setControl() {
-        loadingDialog = new LoadingDialog(getActivity());
-        preferenceManager = new PreferenceManager(getActivity());
+        if (getActivity() != null) {
+            loadingDialog = new LoadingDialog(getActivity());
+            preferenceManager = new PreferenceManager(getActivity());
+        }
     }
 
     private void setEvent() {

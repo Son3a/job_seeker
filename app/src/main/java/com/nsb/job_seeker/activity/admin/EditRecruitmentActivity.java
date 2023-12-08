@@ -61,7 +61,9 @@ public class EditRecruitmentActivity extends BaseActivity {
     private String idOccupation;
     private LoadingDialog loadingDialog;
     private FilterAdapter genderAdapter, typeJobAdapter, unitMoney;
-    private List<Boolean> listSelectedGender, listSelectedTypeJob, listSelectedUnitMoney;
+    private List<Boolean> listSelectedGender, listSelectedTypeJob, listSelectedUnitMoney, listSelectedExperience;
+    private List<String> listExperiences;
+    private BottomSheetDialog bottomSheetExperience;
 
     @Override
 
@@ -79,6 +81,7 @@ public class EditRecruitmentActivity extends BaseActivity {
         preferenceManager = new PreferenceManager(EditRecruitmentActivity.this);
         initBottomUnitMoney();
         initBottomSheetGender();
+        initBottomSheetExperience();
     }
 
 
@@ -93,6 +96,7 @@ public class EditRecruitmentActivity extends BaseActivity {
         openBottomSheetTypeJob();
         openBottomSheetGender();
         openBottomSheetMoney();
+        openBottomSheetExperience();
         clickUpdateJob();
         cancelProcess();
         getTypeJob();
@@ -236,6 +240,48 @@ public class EditRecruitmentActivity extends BaseActivity {
         recyclerView.setAdapter(typeJobAdapter);
         typeJobAdapter.notifyDataSetChanged();
         bottomSheetTypeJob.setContentView(layoutTypeJob);
+    }
+
+    private void openBottomSheetExperience() {
+        binding.textExperience.setOnClickListener(v -> {
+            if (bottomSheetExperience != null) {
+                bottomSheetExperience.show();
+            }
+        });
+    }
+
+    private void initBottomSheetExperience() {
+        listSelectedExperience = new ArrayList<>();
+        listExperiences = new ArrayList<>();
+        listExperiences.add("Không yêu cầu");
+        listExperiences.add("Dưới 1 năm");
+        listExperiences.add("1 năm");
+        listExperiences.add("2 năm");
+        listExperiences.add("3 năm");
+        listExperiences.add("4 năm");
+        listExperiences.add("5 năm");
+        listExperiences.add("Trên 5 năm");
+        for (int i = 0; i < 8; i++) {
+            listSelectedExperience.add(false);
+        }
+
+        View layoutBottomExperience = getLayoutInflater().inflate(R.layout.layout_filter, null);
+        bottomSheetExperience = new BottomSheetDialog(EditRecruitmentActivity.this);
+        bottomSheetExperience.setContentView(layoutBottomExperience);
+        ImageView imageClose = layoutBottomExperience.findViewById(R.id.imageClose);
+        imageClose.setOnClickListener(v -> {
+            bottomSheetExperience.dismiss();
+        });
+
+        FilterAdapter experienceAdapter = new FilterAdapter(listExperiences, null, new FilterListener() {
+            @Override
+            public void onClickItem(String data, int position) {
+                binding.textExperience.setText(data);
+                bottomSheetExperience.dismiss();
+            }
+        });
+        RecyclerView recyclerViewExperience = layoutBottomExperience.findViewById(R.id.rcvFilter);
+        recyclerViewExperience.setAdapter(experienceAdapter);
     }
 
     private void initBottomUnitMoney() {

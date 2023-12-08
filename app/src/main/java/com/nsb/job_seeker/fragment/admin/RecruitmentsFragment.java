@@ -21,6 +21,8 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.nsb.job_seeker.R;
+import com.nsb.job_seeker.activity.admin.EmployerMainActivity;
 import com.nsb.job_seeker.activity.seeker.JobDetailActivity;
 import com.nsb.job_seeker.adapter.JobAdapter;
 import com.nsb.job_seeker.common.Constant;
@@ -86,13 +88,24 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
     }
 
     private void setControl() {
-        preferenceManager = new PreferenceManager(getActivity());
+        if (getActivity() != null) {
+            jobList = new ArrayList<>();
+            preferenceManager = new PreferenceManager(getActivity());
+            jobAdapter = new JobAdapter(getContext(), jobList, this, false);
+            binding.rcvRecruitments.setAdapter(jobAdapter);
+        }
     }
-
 
     private void setEvent() {
         getListJobOfCompany();
         refreshContent();
+        gotoCreateJob();
+    }
+
+    private void gotoCreateJob(){
+        binding.btnCreateJob.setOnClickListener(v->{
+            EmployerMainActivity.bottomNavigationView.setSelectedItemId(R.id.menu_up_news);
+        });
     }
 
     private void refreshContent() {
@@ -102,16 +115,11 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
         });
     }
 
-    private void setAdapter(){
-        jobAdapter = new JobAdapter(getContext(), jobList, this, false);
-        binding.rcvRecruitments.setAdapter(jobAdapter);
-    }
-
     private void getListJobOfCompany() {
         String url = Constant.url_dev + "/job/list/all-moderator-job";
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         binding.idLoadingPB.setVisibility(View.VISIBLE);
-        jobList = new ArrayList<>();
+        jobList.clear();
         JsonObjectRequest data = new JsonObjectRequest(Request.Method.GET,
                 url,
                 null,
@@ -145,8 +153,14 @@ public class RecruitmentsFragment extends Fragment implements JobListener {
                             }
                             binding.idLoadingPB.setVisibility(View.GONE);
                             binding.textAmount.setText(String.valueOf(jobsList.length()));
-
-                            setAdapter();
+                            jobAdapter.notifyDataSetChanged();
+                            if (jobList.size() == 0) {
+                                binding.btnCreateJob.setVisibility(View.VISIBLE);
+                                binding.rcvRecruitments.setVisibility(View.GONE);
+                            } else {
+                                binding.btnCreateJob.setVisibility(View.GONE);
+                                binding.rcvRecruitments.setVisibility(View.VISIBLE);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

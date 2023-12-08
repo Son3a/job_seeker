@@ -34,9 +34,9 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_border_no_color"
             android:layout_below="@+id/layoutHeader"
-            android:layout_margin="10dp">
+            android:layout_margin="10dp"
+            android:background="@drawable/background_border_no_color">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -312,9 +312,11 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/custom_edittext_cre_news"
                         android:drawableLeft="@drawable/ic_experience"
+                        android:drawableRight="@drawable/ic_down"
                         android:drawablePadding="20dp"
                         android:drawableTint="@color/green"
-                        android:hint="Nhập kinh nghiệm"
+                        android:hint="Chọn kinh nghiệm"
+                        android:focusable="false"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:maxLines="1"
@@ -531,11 +533,11 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/secondary_text"
-                        android:text="Thời hạn nộp hồ sơ"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="5dp"
-                        android:textSize="16sp"/>
+                        android:text="Thời hạn nộp hồ sơ"
+                        android:textColor="@color/secondary_text"
+                        android:textSize="16sp" />
 
                     <EditText
                         android:id="@+id/edt_deadline"

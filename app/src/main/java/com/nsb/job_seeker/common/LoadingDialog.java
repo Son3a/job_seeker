@@ -16,16 +16,18 @@ public class LoadingDialog {
     }
 
     public void showDialog() {
-        dialog = new Dialog(context);
-        dialog.setContentView(R.layout.layout_loading);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setCancelable(false);
-        dialog.create();
-        dialog.show();
+        if (context != null) {
+            dialog = new Dialog(context);
+            dialog.setContentView(R.layout.layout_loading);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.setCancelable(false);
+            dialog.create();
+            dialog.show();
+        }
     }
 
     public void hideDialog() {
-        if (dialog != null) {
+        if (dialog != null && context != null) {
             dialog.dismiss();
         }
     }
