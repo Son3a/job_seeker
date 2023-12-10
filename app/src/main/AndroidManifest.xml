@@ -91,7 +91,9 @@
         <activity android:name=".activity.seeker.ApplyJobActivity" />
         <activity android:name=".activity.seeker.JobDetailActivity" />
         <activity android:name=".activity.seeker.SeekerMainActivity" />
-        <activity android:name=".activity.admin.EmployerMainActivity" />
+        <activity
+            android:name=".activity.admin.EmployerMainActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".activity.admin.ListCVActivity" />
         <activity android:name=".activity.admin.EditRecruitmentActivity" />
         <activity
