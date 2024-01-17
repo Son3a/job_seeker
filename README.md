@@ -22,7 +22,7 @@ This is a project of the subject - "Android Programing" <br>
 
 ## Download
 
-<p>You can visit to my app by click <a href="https://drive.google.com/file/d/1Kjv_U_Vs5Os1QIbRKbili0M38dbJ2E5O/view?usp=sharing">here</a> to download</p>
+<p>You can visit to my app by click <a href="https://drive.google.com/drive/folders/1SUgJMy6hawSKvqC01HZmSi50ivUYPuAE?usp=sharing">here</a> to download</p>
 
 ## Main features
 
